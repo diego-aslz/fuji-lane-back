@@ -59,6 +59,15 @@
   version = "1.0.1"
 
 [[projects]]
+  branch = "master"
+  name = "github.com/rdumont/assistdog"
+  packages = [
+    ".",
+    "defaults"
+  ]
+  revision = "c91d7a54538c6d66d976d4e71ad31b8661eddea3"
+
+[[projects]]
   name = "github.com/ugorji/go"
   packages = ["codec"]
   revision = "b4c50a2b199d93b13dc15e78929cfb23bfdf21ab"
@@ -85,6 +94,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "25282843704dd4c1d3cbf2560a1a77f58c153b86f6c431c29a7888c778331669"
+  inputs-digest = "e99d6d2739a9512f52f51f2d44dc1af732df4e2a1f7d5a29871ebb9018515cd9"
   solver-name = "gps-cdcl"
   solver-version = 1

@@ -12,5 +12,5 @@
 
 vendor
 
-.*.sh
+.dev.sh
 .DS_Store

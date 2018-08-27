@@ -9,3 +9,7 @@
 [[constraint]]
   name = "github.com/DATA-DOG/godog"
   version = "0.7.6"
+
+[[constraint]]
+  branch = "master"
+  name = "github.com/rdumont/assistdog"
