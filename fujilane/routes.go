@@ -1,7 +1,11 @@
 package fujilane
 
 import (
+	"net/http"
+	"time"
+
 	"github.com/gin-gonic/gin"
+	"github.com/jinzhu/gorm"
 )
 
 const (
@@ -21,6 +25,8 @@ func (a *Application) statusRoute(c *gin.Context) {
 
 type facebookSignInBody struct {
 	ID          string `json:"id"`
+	Email       string `json:"email"`
+	Name        string `json:"name"`
 	AccessToken string `json:"accessToken"`
 }
 
@@ -28,15 +34,30 @@ func (a *Application) facebookSignInRoute(c *gin.Context) {
 	body := &facebookSignInBody{}
 	err := c.BindJSON(body)
 	if err != nil {
-		c.AbortWithError(500, err)
+		c.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
 
 	err = a.facebook.validate(body.AccessToken, body.ID)
 	if err != nil {
-		c.AbortWithError(400, err)
+		c.AbortWithError(http.StatusUnauthorized, err)
 		return
 	}
 
-	c.JSON(200, gin.H{"status": "active"})
+	user := &User{}
+	err = withDatabase(func(db *gorm.DB) error {
+		err := db.Where(User{Email: body.Email}).Assign(User{Name: body.Name, FacebookID: body.ID, LastSignedIn: time.Now()}).FirstOrCreate(user).Error
+		if err != nil {
+			return err
+		}
+
+		return nil
+	})
+
+	if err != nil {
+		c.AbortWithError(http.StatusInternalServerError, err)
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"status": "active"})
 }

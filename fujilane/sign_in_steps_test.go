@@ -72,12 +72,7 @@ func theFollowingUserSignsInViaFacebook(table *gherkin.DataTable) error {
 	return nil
 }
 
-func weShouldHaveTheFollowingUsers(table *gherkin.DataTable) error {
-	return godog.ErrPending
-}
-
 func SignInContext(s *godog.Suite) {
 	s.Step(`^Facebook recognizes the following tokens:$`, facebookRecognizesTheFollowingTokens)
 	s.Step(`^the following user signs in via Facebook:$`, theFollowingUserSignsInViaFacebook)
-	s.Step(`^we should have the following users:$`, weShouldHaveTheFollowingUsers)
 }
