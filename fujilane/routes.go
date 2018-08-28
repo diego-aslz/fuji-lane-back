@@ -46,7 +46,8 @@ func (a *Application) facebookSignInRoute(c *gin.Context) {
 
 	user := &User{}
 	err = withDatabase(func(db *gorm.DB) error {
-		err := db.Where(User{Email: body.Email}).Assign(User{Name: body.Name, FacebookID: body.ID, LastSignedIn: time.Now()}).FirstOrCreate(user).Error
+		assignUser := User{Name: body.Name, FacebookID: body.ID, LastSignedIn: time.Now()}
+		err := db.Where(User{Email: body.Email}).Assign(assignUser).FirstOrCreate(user).Error
 		if err != nil {
 			return err
 		}

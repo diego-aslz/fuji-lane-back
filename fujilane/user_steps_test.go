@@ -49,7 +49,24 @@ func weShouldHaveTheFollowingUsers(table *gherkin.DataTable) error {
 	})
 }
 
+func weShouldHaveNoUsers() error {
+	return withDatabase(func(db *gorm.DB) error {
+		count := 0
+		err := db.Model(&User{}).Count(&count).Error
+		if err != nil {
+			return err
+		}
+
+		if count != 0 {
+			return fmt.Errorf("Expected to have %d users in the DB, got %d", 0, count)
+		}
+
+		return nil
+	})
+}
+
 func UserContext(s *godog.Suite) {
 	s.Step(`^the following users:$`, theFollowingUsers)
 	s.Step(`^we should have the following users:$`, weShouldHaveTheFollowingUsers)
+	s.Step(`^we should have no users$`, weShouldHaveNoUsers)
 }

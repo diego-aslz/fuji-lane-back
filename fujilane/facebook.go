@@ -58,6 +58,10 @@ func (f *facebook) validate(token string, userID string) error {
 		return err
 	}
 
+	if !details.IsValid {
+		return fmt.Errorf("Token %s is not valid according to Facebook", token)
+	}
+
 	if details.AppID != f.appID {
 		return fmt.Errorf("Token %s belongs to app %s, expected %s", token, details.AppID, f.appID)
 	}
