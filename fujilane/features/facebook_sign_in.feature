@@ -31,6 +31,40 @@ Feature: Facebook Signing in
       | diego@selzlein.com | Diego Selzlein | 123        |
     And the system should respond with "OK"
 
+  Scenario: Signing in when user already exists, but didn't come from Facebook
+    Given the following users:
+      | Email              | Name                 |
+      | diego@selzlein.com | Diego Aguir Selzlein |
+    And Facebook recognizes the following tokens:
+      | accessToken | AppID | IsValid | UserID |
+      | token-222   | 111   | true    | 123    |
+    When the following user signs in via Facebook:
+      | accessToken | token-222          |
+      | id          | 123                |
+      | name        | Diego Selzlein     |
+      | email       | diego@selzlein.com |
+    Then we should have the following users:
+      | Email              | Name           | FacebookID |
+      | diego@selzlein.com | Diego Selzlein | 123        |
+    And the system should respond with "OK"
+
+  Scenario: Signing in when user already exists, but Facebook email changed
+    Given the following users:
+      | Email                    | Name                 | FacebookID |
+      | diego+other@selzlein.com | Diego Aguir Selzlein | 123        |
+    And Facebook recognizes the following tokens:
+      | accessToken | AppID | IsValid | UserID |
+      | token-222   | 111   | true    | 123    |
+    When the following user signs in via Facebook:
+      | accessToken | token-222          |
+      | id          | 123                |
+      | name        | Diego Selzlein     |
+      | email       | diego@selzlein.com |
+    Then we should have the following users:
+      | Email                    | Name           | FacebookID |
+      | diego+other@selzlein.com | Diego Selzlein | 123        |
+    And the system should respond with "OK"
+
   Scenario: Signing in with unrecognized token
     When the following user signs in via Facebook:
       | accessToken | unrecognized-token |

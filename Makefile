@@ -5,3 +5,6 @@ migrate:
 
 feature:
 	cd fujilane && godog
+
+server:
+	go run cmd/server/main.go

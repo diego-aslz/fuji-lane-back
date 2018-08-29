@@ -8,12 +8,12 @@ import (
 )
 
 type facebookTokenDetails struct {
-	AppID       string
-	Application string
-	ExpiresAt   int
-	IsValid     bool
-	Scopes      []string
-	UserID      string
+	AppID       string   `json:"app_id"`
+	Application string   `json:"application"`
+	ExpiresAt   int      `json:"expires_at"`
+	IsValid     bool     `json:"is_valid"`
+	Scopes      []string `json:"scopes"`
+	UserID      string   `json:"user_id"`
 }
 
 type facebookTokenDetailsResponse struct {

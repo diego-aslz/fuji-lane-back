@@ -5,7 +5,6 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/jinzhu/gorm"
 )
 
 const (
@@ -45,16 +44,16 @@ func (a *Application) facebookSignInRoute(c *gin.Context) {
 	}
 
 	user := &User{}
-	err = withDatabase(func(db *gorm.DB) error {
-		assignUser := User{Name: body.Name, FacebookID: body.ID, LastSignedIn: time.Now()}
-		err := db.Where(User{Email: body.Email}).Assign(assignUser).FirstOrCreate(user).Error
-		if err != nil {
-			return err
-		}
+	err = a.usersRepository.findForFacebookSignIn(body.ID, body.Email, user)
+	if err != nil {
+		c.AbortWithError(http.StatusInternalServerError, err)
+		return
+	}
 
-		return nil
-	})
+	user.Name = body.Name
+	user.LastSignedIn = time.Now()
 
+	err = a.usersRepository.save(user)
 	if err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
