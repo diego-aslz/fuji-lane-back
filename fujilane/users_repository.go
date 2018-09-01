@@ -18,12 +18,6 @@ func (r *usersRepository) findForFacebookSignIn(facebookID, email string, user *
 			return err
 		}
 
-		user.FacebookID = facebookID
-
-		if user.Email == "" {
-			user.Email = email
-		}
-
 		return nil
 	})
 }

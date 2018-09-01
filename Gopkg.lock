@@ -12,6 +12,12 @@
   version = "v0.7.6"
 
 [[projects]]
+  name = "github.com/dgrijalva/jwt-go"
+  packages = ["."]
+  revision = "06ea1031745cb8b3dab3f6a236daf2b0aa468b7e"
+  version = "v3.2.0"
+
+[[projects]]
   branch = "master"
   name = "github.com/gin-contrib/sse"
   packages = ["."]
@@ -33,7 +39,9 @@
   packages = [
     ".",
     "database",
-    "source"
+    "database/postgres",
+    "source",
+    "source/file"
   ]
   revision = "e968e8a5f0fd43301a2e0ef025ce6db56eedb205"
   version = "v3.4.0"
@@ -129,6 +137,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "489f3860270e20509aae18673d59572a53ee7c8d325e5ec6788c917bdf434a35"
+  inputs-digest = "3b5edd6d6190b6d4c5d46e12ce6593cf4f99b1acdac577068e100cc227e3105c"
   solver-name = "gps-cdcl"
   solver-version = 1

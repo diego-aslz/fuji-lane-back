@@ -1,6 +1,8 @@
 package fujilane
 
 import (
+	"time"
+
 	"github.com/gin-gonic/gin"
 )
 
@@ -8,6 +10,7 @@ import (
 type Application struct {
 	facebook        *facebook
 	usersRepository *usersRepository
+	timeFunc        func() time.Time
 }
 
 // Start listening to requests
@@ -27,5 +30,6 @@ func NewApplication(facebookClient FacebookClient) *Application {
 	return &Application{
 		facebook:        newFacebook(facebookClient),
 		usersRepository: &usersRepository{},
+		timeFunc:        time.Now,
 	}
 }
