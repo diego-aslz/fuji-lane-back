@@ -10,11 +10,11 @@ func (r *usersRepository) findForFacebookSignIn(facebookID, email string, user *
 	return withDatabase(func(db *gorm.DB) error {
 		err := db.Where(User{FacebookID: facebookID}).First(user).Error
 
-		if err == gorm.ErrRecordNotFound {
+		if gorm.IsRecordNotFoundError(err) {
 			err = db.Where(User{Email: email}).First(user).Error
 		}
 
-		if err != nil && err != gorm.ErrRecordNotFound {
+		if err != nil && !gorm.IsRecordNotFoundError(err) {
 			return err
 		}
 
