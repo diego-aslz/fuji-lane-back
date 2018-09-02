@@ -7,10 +7,9 @@ import (
 )
 
 type signUpBody struct {
-	Email           string `json:"email"`
-	Password        string `json:"password"`
-	errors          []string
-	usersRepository *usersRepository
+	Email    string `json:"email"`
+	Password string `json:"password"`
+	errors   []string
 }
 
 const (
@@ -29,18 +28,10 @@ func (b *signUpBody) validate() {
 	if passLen < 8 || passLen > 30 {
 		b.errors = append(b.errors, "Invalid password: length should be between 8 and 30")
 	}
-
-	inUse, err := b.usersRepository.isEmailInUse(b.Email)
-	if err != nil {
-		fmt.Printf("Unable to check email uniqueness: %s\n", err.Error())
-		b.errors = append(b.errors, "Unable to validate email")
-	} else if inUse {
-		b.errors = append(b.errors, fmt.Sprintf("Invalid email: %s is already in use", b.Email))
-	}
 }
 
 func (a *Application) routeSignUp(c *routeContext) {
-	body := &signUpBody{usersRepository: a.usersRepository}
+	body := &signUpBody{}
 	if !c.parseBodyOrFail(body) {
 		return
 	}
@@ -54,7 +45,11 @@ func (a *Application) routeSignUp(c *routeContext) {
 
 	user, err := a.usersRepository.signUp(body.Email, body.Password)
 	if err != nil {
-		c.fail(http.StatusInternalServerError, err)
+		if isUniqueConstraintViolation(err) {
+			c.respond(http.StatusUnprocessableEntity, c.errorsBody([]string{"Invalid email: already in use"}))
+		} else {
+			c.fail(http.StatusInternalServerError, err)
+		}
 		return
 	}
 

@@ -34,7 +34,7 @@ Feature: Email Sign Up
       | email    | diego@selzlein.com |
       | password | 12345678           |
     Then the system should respond with "UNPROCESSABLE ENTITY" and the following errors:
-      | Invalid email: diego@selzlein.com is already in use |
+      | Invalid email: already in use |
     And we should have the following users:
       | Email              | Name                 | LastSignedIn         |
       | diego@selzlein.com | Diego Aguir Selzlein | 2018-05-01T08:00:00Z |

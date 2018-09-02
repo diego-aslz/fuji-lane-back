@@ -2,6 +2,7 @@ package fujilane
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/golang-migrate/migrate"
 	"github.com/golang-migrate/migrate/database/postgres"
@@ -36,4 +37,8 @@ func Migrate() error {
 
 		return m.Up()
 	})
+}
+
+func isUniqueConstraintViolation(err error) bool {
+	return strings.Contains(err.Error(), "violates unique constraint")
 }
