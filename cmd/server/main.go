@@ -5,6 +5,6 @@ import (
 )
 
 func main() {
-	app := fujilane.NewApplication(fujilane.NewFacebookHTTPClient())
-	app.Start()
+	fujilane.LoadConfiguration()
+	fujilane.NewApplication(fujilane.NewFacebookHTTPClient()).Start()
 }

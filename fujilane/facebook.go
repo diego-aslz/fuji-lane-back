@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"os"
 )
 
 type facebookTokenDetails struct {
@@ -74,15 +73,13 @@ func (f *facebook) validate(token string, userID string) error {
 }
 
 func newFacebook(client FacebookClient) *facebook {
-	f := &facebook{
+	return &facebook{
 		client: client,
-		appID:  os.Getenv("FACEBOOK_APP_ID"),
+		appID:  appConfig.facebookAppID,
 	}
-
-	return f
 }
 
 // NewFacebookHTTPClient creates a facebookClient that makes HTTP requests to validate tokens against Facebook API
 func NewFacebookHTTPClient() FacebookClient {
-	return &facebookHTTPClient{os.Getenv("FACEBOOK_CLIENT_TOKEN")}
+	return &facebookHTTPClient{appConfig.facebookClientToken}
 }

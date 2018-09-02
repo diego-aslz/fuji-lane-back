@@ -2,6 +2,7 @@ package fujilane
 
 import (
 	"log"
+	"os"
 	"time"
 
 	"github.com/DATA-DOG/godog"
@@ -17,6 +18,10 @@ var assist *assistdog.Assist
 const timeFormat = "02 Jan 06 15:04"
 
 func setupApplication() {
+	os.Setenv("STAGE", "test")
+
+	LoadConfiguration()
+
 	assist = assistdog.NewDefault()
 	facebookClient = &mockedFacebookClient{tokens: map[string]facebookTokenDetails{}}
 	application = NewApplication(facebookClient)

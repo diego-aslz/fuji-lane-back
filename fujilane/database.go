@@ -2,7 +2,6 @@ package fujilane
 
 import (
 	"fmt"
-	"os"
 
 	"github.com/golang-migrate/migrate"
 	"github.com/golang-migrate/migrate/database/postgres"
@@ -12,7 +11,7 @@ import (
 )
 
 func withDatabase(callback func(*gorm.DB) error) error {
-	url := os.Getenv("DATABASE_URL")
+	url := appConfig.databaseURL
 	db, err := gorm.Open("postgres", url)
 	if err != nil {
 		return fmt.Errorf("Unable to connect to %s: %s", url, err.Error())

@@ -7,6 +7,7 @@ import (
 )
 
 func main() {
+	fujilane.LoadConfiguration()
 	if err := fujilane.Migrate(); err != nil {
 		log.Fatal(err.Error())
 	}

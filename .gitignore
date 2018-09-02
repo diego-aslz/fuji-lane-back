@@ -12,5 +12,5 @@
 
 vendor
 
-.dev.sh
+config/development.yml
 .DS_Store

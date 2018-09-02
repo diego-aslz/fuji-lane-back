@@ -1,7 +1,6 @@
 package fujilane
 
 import (
-	"os"
 	"time"
 
 	jwt "github.com/dgrijalva/jwt-go"
@@ -23,7 +22,7 @@ func newSession(email string, timeFunc func() time.Time) *session {
 		IssuedAt:   now,
 		RenewAfter: now.Add(4 * 24 * time.Hour),
 		ExpiresAt:  now.Add(7 * 24 * time.Hour),
-		secret:     os.Getenv("TOKEN_SECRET"),
+		secret:     appConfig.tokenSecret,
 	}
 }
 

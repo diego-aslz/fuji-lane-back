@@ -1,4 +1,4 @@
-Feature: Facebook Signing in
+Feature: Facebook Signing In
 
   Background:
     Given it is currently "01 Jun 18 08:00"
