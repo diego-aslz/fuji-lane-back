@@ -16,3 +16,12 @@ Feature: Email Sign Up
     And we should have the following users:
       | Email              | LastSignedIn         |
       | diego@selzlein.com | 2018-06-01T08:00:00Z |
+
+  Scenario: Signing Up with invalid information
+    When the following user signs up with his email:
+      | email    | diego   |
+      | password | 1234567 |
+    Then the system should respond with "UNPROCESSABLE ENTITY" and the following errors:
+      | Invalid email: diego                                |
+      | Invalid password: length should be between 8 and 30 |
+    And we should have no users
