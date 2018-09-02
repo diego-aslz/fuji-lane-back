@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/http/httptest"
+	"strings"
 
 	"github.com/DATA-DOG/godog"
 	"github.com/DATA-DOG/godog/gherkin"
@@ -50,6 +51,30 @@ func assertResponseStatusTextAndBody(status string, table *gherkin.DataTable) er
 	return nil
 }
 
+func makePOSTRequest(path string, table *gherkin.DataTable) error {
+	response = httptest.NewRecorder()
+
+	body, err := assist.ParseMap(table)
+	if err != nil {
+		return err
+	}
+
+	json, err := json.Marshal(body)
+	if err != nil {
+		return err
+	}
+
+	req, err := http.NewRequest("POST", path, strings.NewReader(string(json)))
+
+	if err != nil {
+		return err
+	}
+
+	router.ServeHTTP(response, req)
+
+	return nil
+}
+
 func assertResponseStatusText(status string) error {
 	if response == nil {
 		return fmt.Errorf("Response is nil, are you sure you made any HTTP request?")
@@ -60,6 +85,8 @@ func assertResponseStatusText(status string) error {
 		return assertResponseStatus(http.StatusOK)
 	case "UNAUTHORIZED":
 		return assertResponseStatus(http.StatusUnauthorized)
+	case "CREATED":
+		return assertResponseStatus(http.StatusCreated)
 	default:
 		return fmt.Errorf("Unhandled status: %s", status)
 	}

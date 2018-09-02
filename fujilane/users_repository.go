@@ -27,3 +27,15 @@ func (r *usersRepository) save(user *User) error {
 		return db.Save(user).Error
 	})
 }
+
+func (r *usersRepository) signUp(email, password string) (u *User, err error) {
+	err = withDatabase(func(db *gorm.DB) error {
+		u = &User{Email: email}
+		if err := u.setPassword(password); err != nil {
+			return err
+		}
+
+		return db.Create(u).Error
+	})
+	return
+}

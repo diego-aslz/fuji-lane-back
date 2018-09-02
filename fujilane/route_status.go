@@ -1,7 +1,11 @@
 package fujilane
 
-import "github.com/gin-gonic/gin"
+import (
+	"net/http"
+
+	"github.com/gin-gonic/gin"
+)
 
 func (a *Application) routeStatus(c *gin.Context) {
-	c.JSON(200, gin.H{"status": "active"})
+	c.JSON(http.StatusOK, gin.H{"status": "active"})
 }

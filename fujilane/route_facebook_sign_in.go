@@ -6,11 +6,18 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+type facebookSignInBody struct {
+	ID          string `json:"id"`
+	Email       string `json:"email"`
+	Name        string `json:"name"`
+	AccessToken string `json:"accessToken"`
+}
+
 func (a *Application) routeFacebookSignIn(c *gin.Context) {
 	body := &facebookSignInBody{}
 	err := c.BindJSON(body)
 	if err != nil {
-		c.AbortWithError(http.StatusInternalServerError, err)
+		c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
 
@@ -40,7 +47,7 @@ func (a *Application) routeFacebookSignIn(c *gin.Context) {
 		return
 	}
 
-	s := newSession(user.Email, a.timeFunc)
+	s := newSession(user, a.timeFunc)
 	if err = s.generateToken(); err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return

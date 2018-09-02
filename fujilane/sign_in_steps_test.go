@@ -1,11 +1,7 @@
 package fujilane
 
 import (
-	"encoding/json"
 	"fmt"
-	"net/http"
-	"net/http/httptest"
-	"strings"
 
 	"github.com/DATA-DOG/godog"
 	"github.com/DATA-DOG/godog/gherkin"
@@ -49,27 +45,7 @@ func facebookRecognizesTheFollowingTokens(table *gherkin.DataTable) error {
 }
 
 func theFollowingUserSignsInViaFacebook(table *gherkin.DataTable) error {
-	response = httptest.NewRecorder()
-
-	credentials, err := assist.ParseMap(table)
-	if err != nil {
-		return err
-	}
-
-	json, err := json.Marshal(credentials)
-	if err != nil {
-		return err
-	}
-
-	req, err := http.NewRequest("POST", "/sign_in/facebook", strings.NewReader(string(json)))
-
-	if err != nil {
-		return err
-	}
-
-	router.ServeHTTP(response, req)
-
-	return nil
+	return makePOSTRequest(facebookSignInPath, table)
 }
 
 func SignInContext(s *godog.Suite) {

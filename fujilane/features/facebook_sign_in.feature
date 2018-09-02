@@ -13,8 +13,8 @@ Feature: Facebook Signing In
       | name        | Diego Selzlein     |
       | email       | diego@selzlein.com |
     Then we should have the following users:
-      | Email              | Name           | FacebookID |
-      | diego@selzlein.com | Diego Selzlein | 123        |
+      | Email              | Name           | FacebookID | LastSignedIn         |
+      | diego@selzlein.com | Diego Selzlein | 123        | 2018-06-01T08:00:00Z |
     And the system should respond with "OK" and the following body:
       | email       | diego@selzlein.com                                                                                                                                                                                                    |
       | issued_at   | 2018-06-01T08:00:00Z                                                                                                                                                                                                  |
@@ -35,8 +35,8 @@ Feature: Facebook Signing In
       | name        | Diego Selzlein     |
       | email       | diego@selzlein.com |
     Then we should have the following users:
-      | Email              | Name           | FacebookID |
-      | diego@selzlein.com | Diego Selzlein | 123        |
+      | Email              | Name           | FacebookID | LastSignedIn         |
+      | diego@selzlein.com | Diego Selzlein | 123        | 2018-06-01T08:00:00Z |
     And the system should respond with "OK" and the following body:
       | email       | diego@selzlein.com   |
       | issued_at   | 2018-06-01T08:00:00Z |
@@ -56,8 +56,8 @@ Feature: Facebook Signing In
       | name        | Diego Selzlein     |
       | email       | diego@selzlein.com |
     Then we should have the following users:
-      | Email              | Name           | FacebookID |
-      | diego@selzlein.com | Diego Selzlein | 123        |
+      | Email              | Name           | FacebookID | LastSignedIn         |
+      | diego@selzlein.com | Diego Selzlein | 123        | 2018-06-01T08:00:00Z |
     And the system should respond with "OK" and the following body:
       | email       | diego@selzlein.com   |
       | issued_at   | 2018-06-01T08:00:00Z |
@@ -77,8 +77,8 @@ Feature: Facebook Signing In
       | name        | Diego Selzlein     |
       | email       | diego@selzlein.com |
     Then we should have the following users:
-      | Email                    | Name           | FacebookID |
-      | diego+other@selzlein.com | Diego Selzlein | 123        |
+      | Email                    | Name           | FacebookID | LastSignedIn         |
+      | diego+other@selzlein.com | Diego Selzlein | 123        | 2018-06-01T08:00:00Z |
     And the system should respond with "OK" and the following body:
       | email       | diego+other@selzlein.com |
       | issued_at   | 2018-06-01T08:00:00Z     |

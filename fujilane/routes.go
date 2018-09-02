@@ -5,19 +5,16 @@ import (
 )
 
 const (
-	statusPath         = "/status"
+	statusPath = "/status"
+
+	signUpPath         = "/sign_up"
 	facebookSignInPath = "/sign_in/facebook"
 )
 
 // AddRoutes to a Gin Engine
 func (a *Application) AddRoutes(e *gin.Engine) {
 	e.GET(statusPath, a.routeStatus)
-	e.POST(facebookSignInPath, a.routeFacebookSignIn)
-}
 
-type facebookSignInBody struct {
-	ID          string `json:"id"`
-	Email       string `json:"email"`
-	Name        string `json:"name"`
-	AccessToken string `json:"accessToken"`
+	e.POST(signUpPath, a.routeSignUp)
+	e.POST(facebookSignInPath, a.routeFacebookSignIn)
 }

@@ -15,10 +15,10 @@ type session struct {
 	secret     string
 }
 
-func newSession(email string, timeFunc func() time.Time) *session {
+func newSession(user *User, timeFunc func() time.Time) *session {
 	now := timeFunc()
 	return &session{
-		Email:      email,
+		Email:      user.Email,
 		IssuedAt:   now,
 		RenewAfter: now.Add(4 * 24 * time.Hour),
 		ExpiresAt:  now.Add(7 * 24 * time.Hour),

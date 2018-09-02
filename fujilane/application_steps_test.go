@@ -1,6 +1,7 @@
 package fujilane
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"time"
@@ -9,6 +10,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
 	"github.com/rdumont/assistdog"
+	"github.com/rdumont/assistdog/defaults"
 )
 
 var application *Application
@@ -23,9 +25,32 @@ func setupApplication() {
 	LoadConfiguration()
 
 	assist = assistdog.NewDefault()
+	assist.RegisterComparer(time.Time{}, timeComparer)
+
 	facebookClient = &mockedFacebookClient{tokens: map[string]facebookTokenDetails{}}
 	application = NewApplication(facebookClient)
+
 	router = application.CreateRouter()
+}
+
+func timeComparer(raw string, rawActual interface{}) error {
+	at, ok := rawActual.(time.Time)
+	if !ok {
+		return fmt.Errorf("%v is not time.Time", rawActual)
+	}
+
+	et, err := defaults.ParseTime(raw)
+	if err != nil {
+		return err
+	}
+
+	expected := et.(time.Time).UTC()
+	actual := at.UTC()
+	if expected != actual {
+		return fmt.Errorf("Expected %v, but got %v", expected, actual)
+	}
+
+	return nil
 }
 
 func cleanup(_ interface{}, _ error) {
@@ -37,6 +62,7 @@ func cleanup(_ interface{}, _ error) {
 		log.Fatal(err.Error())
 	}
 }
+
 func itIsCurrently(timeExpr string) error {
 	t, err := time.Parse(timeFormat, timeExpr)
 	if err != nil {
