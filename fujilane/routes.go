@@ -32,6 +32,10 @@ func (a *routeContext) respond(status int, body interface{}) {
 	a.context.JSON(status, body)
 }
 
+func (a *routeContext) errorsBody(errors []string) map[string]interface{} {
+	return map[string]interface{}{"errors": errors}
+}
+
 func (a *routeContext) fail(status int, err error) {
 	a.context.AbortWithError(status, err)
 }

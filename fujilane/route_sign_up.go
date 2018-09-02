@@ -48,7 +48,7 @@ func (a *Application) routeSignUp(c *routeContext) {
 	body.validate()
 
 	if len(body.errors) > 0 {
-		c.respond(http.StatusUnprocessableEntity, map[string]interface{}{"errors": body.errors})
+		c.respond(http.StatusUnprocessableEntity, c.errorsBody(body.errors))
 		return
 	}
 
