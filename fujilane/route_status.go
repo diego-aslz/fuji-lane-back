@@ -5,5 +5,5 @@ import (
 )
 
 func (a *Application) routeStatus(c *routeContext) {
-	c.success(http.StatusOK, map[string]string{"status": "active"})
+	c.respond(http.StatusOK, map[string]string{"status": "active"})
 }

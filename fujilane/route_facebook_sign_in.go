@@ -49,5 +49,5 @@ func (a *Application) routeFacebookSignIn(c *routeContext) {
 		return
 	}
 
-	c.success(http.StatusOK, s)
+	c.respond(http.StatusOK, s)
 }

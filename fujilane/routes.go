@@ -27,8 +27,8 @@ type routeContext struct {
 	context *gin.Context
 }
 
-// success responds with the given status and body in JSON format
-func (a *routeContext) success(status int, body interface{}) {
+// respond responds with the given status and body in JSON format
+func (a *routeContext) respond(status int, body interface{}) {
 	a.context.JSON(status, body)
 }
 

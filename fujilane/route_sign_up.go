@@ -48,7 +48,7 @@ func (a *Application) routeSignUp(c *routeContext) {
 	body.validate()
 
 	if len(body.errors) > 0 {
-		c.success(http.StatusUnprocessableEntity, map[string]interface{}{"errors": body.errors})
+		c.respond(http.StatusUnprocessableEntity, map[string]interface{}{"errors": body.errors})
 		return
 	}
 
@@ -72,5 +72,5 @@ func (a *Application) routeSignUp(c *routeContext) {
 		return
 	}
 
-	c.success(http.StatusCreated, s)
+	c.respond(http.StatusCreated, s)
 }
