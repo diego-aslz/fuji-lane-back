@@ -7,9 +7,10 @@ import (
 )
 
 type signUpBody struct {
-	Email    string `json:"email"`
-	Password string `json:"password"`
-	errors   []string
+	Email           string `json:"email"`
+	Password        string `json:"password"`
+	errors          []string
+	usersRepository *usersRepository
 }
 
 const (
@@ -28,10 +29,18 @@ func (b *signUpBody) validate() {
 	if passLen < 8 || passLen > 30 {
 		b.errors = append(b.errors, "Invalid password: length should be between 8 and 30")
 	}
+
+	inUse, err := b.usersRepository.isEmailInUse(b.Email)
+	if err != nil {
+		fmt.Printf("Unable to check email uniqueness: %s\n", err.Error())
+		b.errors = append(b.errors, "Unable to validate email")
+	} else if inUse {
+		b.errors = append(b.errors, fmt.Sprintf("Invalid email: %s is already in use", b.Email))
+	}
 }
 
 func (a *Application) routeSignUp(c *routeContext) {
-	body := &signUpBody{}
+	body := &signUpBody{usersRepository: a.usersRepository}
 	if !c.parseBodyOrFail(body) {
 		return
 	}

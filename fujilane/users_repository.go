@@ -28,6 +28,14 @@ func (r *usersRepository) save(user *User) error {
 	})
 }
 
+func (r *usersRepository) isEmailInUse(email string) (bool, error) {
+	count := 0
+	err := withDatabase(func(db *gorm.DB) error {
+		return db.Table("users").Where(&User{Email: email}).Limit(1).Count(&count).Error
+	})
+	return count > 0, err
+}
+
 func (r *usersRepository) signUp(email, password string) (u *User, err error) {
 	err = withDatabase(func(db *gorm.DB) error {
 		u = &User{Email: email}

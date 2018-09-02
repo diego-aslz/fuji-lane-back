@@ -25,3 +25,16 @@ Feature: Email Sign Up
       | Invalid email: diego                                |
       | Invalid password: length should be between 8 and 30 |
     And we should have no users
+
+  Scenario: Signing Up with existing email
+    Given the following users:
+      | Email              | Name                 | LastSignedIn         |
+      | diego@selzlein.com | Diego Aguir Selzlein | 2018-05-01T08:00:00Z |
+    When the following user signs up with his email:
+      | email    | diego@selzlein.com |
+      | password | 12345678           |
+    Then the system should respond with "UNPROCESSABLE ENTITY" and the following errors:
+      | Invalid email: diego@selzlein.com is already in use |
+    And we should have the following users:
+      | Email              | Name                 | LastSignedIn         |
+      | diego@selzlein.com | Diego Aguir Selzlein | 2018-05-01T08:00:00Z |
