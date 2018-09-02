@@ -2,8 +2,6 @@ package fujilane
 
 import (
 	"net/http"
-
-	"github.com/gin-gonic/gin"
 )
 
 type facebookSignInBody struct {
@@ -13,24 +11,22 @@ type facebookSignInBody struct {
 	AccessToken string `json:"accessToken"`
 }
 
-func (a *Application) routeFacebookSignIn(c *gin.Context) {
+func (a *Application) routeFacebookSignIn(c *routeContext) {
 	body := &facebookSignInBody{}
-	err := c.BindJSON(body)
-	if err != nil {
-		c.AbortWithError(http.StatusBadRequest, err)
+	if !c.parseBodyOrFail(body) {
 		return
 	}
 
-	err = a.facebook.validate(body.AccessToken, body.ID)
+	err := a.facebook.validate(body.AccessToken, body.ID)
 	if err != nil {
-		c.AbortWithError(http.StatusUnauthorized, err)
+		c.fail(http.StatusUnauthorized, err)
 		return
 	}
 
 	user := &User{}
 	err = a.usersRepository.findForFacebookSignIn(body.ID, body.Email, user)
 	if err != nil {
-		c.AbortWithError(http.StatusInternalServerError, err)
+		c.fail(http.StatusInternalServerError, err)
 		return
 	}
 
@@ -43,15 +39,15 @@ func (a *Application) routeFacebookSignIn(c *gin.Context) {
 
 	err = a.usersRepository.save(user)
 	if err != nil {
-		c.AbortWithError(http.StatusInternalServerError, err)
+		c.fail(http.StatusInternalServerError, err)
 		return
 	}
 
 	s := newSession(user, a.timeFunc)
 	if err = s.generateToken(); err != nil {
-		c.AbortWithError(http.StatusInternalServerError, err)
+		c.fail(http.StatusInternalServerError, err)
 		return
 	}
 
-	c.JSON(http.StatusOK, s)
+	c.success(http.StatusOK, s)
 }

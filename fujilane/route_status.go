@@ -2,10 +2,8 @@ package fujilane
 
 import (
 	"net/http"
-
-	"github.com/gin-gonic/gin"
 )
 
-func (a *Application) routeStatus(c *gin.Context) {
-	c.JSON(http.StatusOK, gin.H{"status": "active"})
+func (a *Application) routeStatus(c *routeContext) {
+	c.success(http.StatusOK, map[string]string{"status": "active"})
 }
