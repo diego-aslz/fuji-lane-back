@@ -9,6 +9,7 @@ import (
 )
 
 type configuration struct {
+	databaseLogs        bool
 	databaseURL         string
 	facebookAppID       string
 	facebookClientToken string
@@ -29,6 +30,7 @@ func LoadConfiguration() {
 	}
 
 	appConfig = &configuration{
+		databaseLogs:        os.Getenv("DATABASE_LOGS") == "true",
 		databaseURL:         os.Getenv("DATABASE_URL"),
 		facebookAppID:       os.Getenv("FACEBOOK_APP_ID"),
 		facebookClientToken: os.Getenv("FACEBOOK_CLIENT_TOKEN"),

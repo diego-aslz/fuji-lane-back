@@ -1,3 +1,4 @@
+DATABASE_LOGS: false
 DATABASE_URL: postgres://postgres:@localhost/fujilane_test?sslmode=disable
 FACEBOOK_APP_ID: 111
 FACEBOOK_APP_SECRET: 222222

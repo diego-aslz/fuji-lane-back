@@ -17,6 +17,7 @@ func withDatabase(callback func(*gorm.DB) error) error {
 		return fmt.Errorf("Unable to connect to %s: %s", url, err.Error())
 	}
 	defer db.Close()
+	db.LogMode(appConfig.databaseLogs)
 	return callback(db)
 }
 
