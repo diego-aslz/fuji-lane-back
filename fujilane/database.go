@@ -35,7 +35,11 @@ func Migrate() error {
 			return err
 		}
 
-		return m.Up()
+		if err = m.Up(); err == migrate.ErrNoChange {
+			err = nil
+		}
+
+		return err
 	})
 }
 
