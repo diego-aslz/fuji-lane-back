@@ -32,12 +32,31 @@ func (a *routeContext) respond(status int, body interface{}) {
 	a.context.JSON(status, body)
 }
 
-func (a *routeContext) errorsBody(errors []string) map[string]interface{} {
-	return map[string]interface{}{"errors": errors}
+func (a *routeContext) errorsBody(errs []error) map[string]interface{} {
+	messages := []string{}
+	for _, err := range errs {
+		messages = append(messages, err.Error())
+	}
+
+	return map[string]interface{}{"errors": messages}
 }
 
 func (a *routeContext) fail(status int, err error) {
 	a.context.AbortWithError(status, err)
+}
+
+func (a *routeContext) parseBodyAndValidate(dst Validatable) bool {
+	return a.parseBodyOrFail(dst) && a.validate(dst)
+}
+
+func (a *routeContext) validate(v Validatable) bool {
+	errs := v.Validate()
+	if len(errs) > 0 {
+		a.respond(http.StatusUnprocessableEntity, a.errorsBody(errs))
+		return false
+	}
+
+	return true
 }
 
 // parseBodyOrFail will try to parse the body as JSON and fail with BAD_REQUEST if an error is returned

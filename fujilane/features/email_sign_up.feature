@@ -22,8 +22,8 @@ Feature: Email Sign Up
       | email    | diego   |
       | password | 1234567 |
     Then the system should respond with "UNPROCESSABLE ENTITY" and the following errors:
-      | Invalid email: diego                                |
-      | Invalid password: length should be between 8 and 30 |
+      | Invalid email: diego                |
+      | Invalid password: minimum size is 8 |
     And we should have no users
 
   Scenario: Signing Up with existing email
