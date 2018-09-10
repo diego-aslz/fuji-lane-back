@@ -1,7 +1,10 @@
 package fujilane
 
 import (
+	"errors"
+	"log"
 	"net/http"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 )
@@ -11,6 +14,8 @@ const (
 
 	signUpPath         = "/sign_up"
 	facebookSignInPath = "/sign_in/facebook"
+
+	propertiesPath = "/properties"
 )
 
 // AddRoutes to a Gin Engine
@@ -19,6 +24,8 @@ func (a *Application) AddRoutes(e *gin.Engine) {
 
 	e.POST(signUpPath, ginAdapt(a.routeSignUp))
 	e.POST(facebookSignInPath, ginAdapt(a.routeFacebookSignIn))
+
+	e.POST(propertiesPath, ginAdapt(a.requireUser(a.routePropertiesCreate)))
 }
 
 // routeContext is a thin abstraction layer around gin.Context so our routes don't directly depend on it and we can
@@ -66,6 +73,47 @@ func (a *routeContext) parseBodyOrFail(dst interface{}) bool {
 		a.fail(http.StatusBadRequest, err)
 	}
 	return err == nil
+}
+
+func (a *routeContext) getHeader(key string) string {
+	values := a.context.Request.Header[key]
+	if len(values) == 0 {
+		return ""
+	}
+	return values[0]
+}
+
+func (a *routeContext) set(key string, value interface{}) {
+	a.context.Set(key, value)
+}
+
+func (a *Application) requireUser(next func(*routeContext)) func(*routeContext) {
+	return func(c *routeContext) {
+		auth := c.getHeader("Authorization")
+		if auth == "" {
+			c.fail(http.StatusUnauthorized, errors.New("You need to sign in"))
+			return
+		}
+
+		auth = strings.TrimPrefix(auth, "Bearer ")
+		session, err := loadSession(auth)
+		if err != nil {
+			log.Printf("Unable to load session from token %s: %s\n", auth, err.Error())
+			c.fail(http.StatusUnauthorized, errors.New("You need to sign in"))
+			return
+		}
+
+		user, err := a.usersRepository.findByEmail(session.Email)
+		if err != nil {
+			log.Printf("Unable to load user (email: %s): %s\n", session.Email, err.Error())
+			c.fail(http.StatusUnauthorized, errors.New("You need to sign in"))
+			return
+		}
+
+		c.set("current-user", user)
+
+		next(c)
+	}
 }
 
 // ginAdapt wraps an application route with a function that abstracts gin.Context out of the flow so our routes can

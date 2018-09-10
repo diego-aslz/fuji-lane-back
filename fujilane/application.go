@@ -8,9 +8,10 @@ import (
 
 // Application is the struct that represents a Fuji Lane app
 type Application struct {
-	facebook        *facebook
-	usersRepository *usersRepository
-	timeFunc        func() time.Time
+	facebook             *facebook
+	usersRepository      *usersRepository
+	propertiesRepository *propertiesRepository
+	timeFunc             func() time.Time
 }
 
 // Start listening to requests
@@ -28,8 +29,9 @@ func (a *Application) CreateRouter() *gin.Engine {
 // NewApplication with the injected dependencies
 func NewApplication(facebookClient FacebookClient) *Application {
 	return &Application{
-		facebook:        newFacebook(facebookClient),
-		usersRepository: &usersRepository{},
-		timeFunc:        time.Now,
+		facebook:             newFacebook(facebookClient),
+		usersRepository:      &usersRepository{},
+		propertiesRepository: &propertiesRepository{},
+		timeFunc:             time.Now,
 	}
 }

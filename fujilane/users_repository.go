@@ -6,13 +6,27 @@ import (
 
 type usersRepository struct{}
 
-func (r *usersRepository) findForFacebookSignIn(facebookID, email string, user *User) error {
-	return withDatabase(func(db *gorm.DB) error {
+func (r *usersRepository) findForFacebookSignIn(facebookID, email string) (*User, error) {
+	user := &User{}
+	return user, withDatabase(func(db *gorm.DB) error {
 		err := db.Where(User{FacebookID: facebookID}).First(user).Error
 
 		if gorm.IsRecordNotFoundError(err) {
-			err = db.Where(User{Email: email}).First(user).Error
+			user, err = r.findByEmail(email)
 		}
+
+		if err != nil && !gorm.IsRecordNotFoundError(err) {
+			return err
+		}
+
+		return nil
+	})
+}
+
+func (r *usersRepository) findByEmail(email string) (*User, error) {
+	user := &User{}
+	return user, withDatabase(func(db *gorm.DB) error {
+		err := db.Where(User{Email: email}).First(user).Error
 
 		if err != nil && !gorm.IsRecordNotFoundError(err) {
 			return err

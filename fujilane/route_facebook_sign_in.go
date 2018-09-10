@@ -23,8 +23,7 @@ func (a *Application) routeFacebookSignIn(c *routeContext) {
 		return
 	}
 
-	user := &User{}
-	err = a.usersRepository.findForFacebookSignIn(body.ID, body.Email, user)
+	user, err := a.usersRepository.findForFacebookSignIn(body.ID, body.Email)
 	if err != nil {
 		c.fail(http.StatusInternalServerError, err)
 		return

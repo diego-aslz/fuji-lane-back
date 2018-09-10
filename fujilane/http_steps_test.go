@@ -82,17 +82,25 @@ func assertResponseStatusTextAndErrors(status string, table *gherkin.DataTable) 
 func makePOSTRequest(path string, table *gherkin.DataTable) error {
 	response = httptest.NewRecorder()
 
-	body, err := assist.ParseMap(table)
-	if err != nil {
-		return err
+	var jsonBody []byte
+
+	if len(table.Rows) > 0 {
+		body, err := assist.ParseMap(table)
+		if err != nil {
+			return err
+		}
+
+		jsonBody, err = json.Marshal(body)
+		if err != nil {
+			return err
+		}
 	}
 
-	json, err := json.Marshal(body)
-	if err != nil {
-		return err
-	}
+	req, err := http.NewRequest("POST", path, strings.NewReader(string(jsonBody)))
 
-	req, err := http.NewRequest("POST", path, strings.NewReader(string(json)))
+	if currentSession != nil {
+		req.Header["Authorization"] = []string{fmt.Sprintf("Bearer %s", currentSession.Token)}
+	}
 
 	if err != nil {
 		return err
