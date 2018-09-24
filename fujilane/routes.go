@@ -87,6 +87,11 @@ func (a *routeContext) set(key string, value interface{}) {
 	a.context.Set(key, value)
 }
 
+func (a *routeContext) currentUser() *User {
+	v, _ := a.context.Get("current-user")
+	return v.(*User)
+}
+
 func (a *Application) requireUser(next func(*routeContext)) func(*routeContext) {
 	return func(c *routeContext) {
 		auth := c.getHeader("Authorization")
@@ -106,6 +111,11 @@ func (a *Application) requireUser(next func(*routeContext)) func(*routeContext) 
 		user, err := a.usersRepository.findByEmail(session.Email)
 		if err != nil {
 			log.Printf("Unable to load user (email: %s): %s\n", session.Email, err.Error())
+			c.fail(http.StatusUnauthorized, errors.New("You need to sign in"))
+			return
+		}
+
+		if user == nil || user.ID == 0 {
 			c.fail(http.StatusUnauthorized, errors.New("You need to sign in"))
 			return
 		}

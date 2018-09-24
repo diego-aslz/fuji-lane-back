@@ -5,10 +5,7 @@ import (
 )
 
 func (a *Application) routePropertiesCreate(c *routeContext) {
-	v, _ := c.context.Get("current-user")
-	user := v.(*User)
-
-	property, err := a.propertiesRepository.create(user)
+	property, err := a.propertiesRepository.create(c.currentUser())
 	if err != nil {
 		c.fail(http.StatusInternalServerError, err)
 		return
