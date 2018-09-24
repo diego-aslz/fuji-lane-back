@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/DATA-DOG/godog"
+	"github.com/DATA-DOG/godog/gherkin"
 )
 
 var currentSession *session
@@ -23,6 +24,10 @@ func iAmAuthenticatedWith(email string) error {
 	return nil
 }
 
+func iSignInWith(table *gherkin.DataTable) error {
+	return makePOSTRequest(signInPath, table)
+}
+
 func resetSession(_ interface{}, _ error) {
 	currentSession = nil
 }
@@ -31,4 +36,5 @@ func SessionContext(s *godog.Suite) {
 	s.AfterScenario(resetSession)
 
 	s.Step(`^I am authenticated with "([^"]*)"$`, iAmAuthenticatedWith)
+	s.Step(`^I sign in with:$`, iSignInWith)
 }

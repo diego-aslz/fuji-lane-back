@@ -9,8 +9,13 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
+type testUser struct {
+	User
+	Password string
+}
+
 func theFollowingUsers(table *gherkin.DataTable) error {
-	sliceInterface, err := assist.CreateSlice(new(User), table)
+	sliceInterface, err := assist.CreateSlice(new(testUser), table)
 	if err != nil {
 		return err
 	}
@@ -19,8 +24,13 @@ func theFollowingUsers(table *gherkin.DataTable) error {
 
 	return withDatabase(func(db *gorm.DB) error {
 		for i := 0; i < users.Len(); i++ {
-			user, _ := users.Index(i).Interface().(*User)
-			err = db.Create(user).Error
+			tu, _ := users.Index(i).Interface().(*testUser)
+
+			if tu.Password != "" {
+				tu.User.setPassword(tu.Password)
+			}
+
+			err = db.Create(&tu.User).Error
 			if err != nil {
 				return err
 			}

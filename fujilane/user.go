@@ -27,3 +27,7 @@ func (u *User) setPassword(password string) error {
 
 	return nil
 }
+
+func (u *User) validatePassword(password string) bool {
+	return bcrypt.CompareHashAndPassword([]byte(u.EncryptedPassword), []byte(password)) == nil
+}

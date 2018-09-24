@@ -14,6 +14,7 @@ const (
 	statusPath = "/status"
 
 	signUpPath         = "/sign_up"
+	signInPath         = "/sign_in"
 	facebookSignInPath = "/sign_in/facebook"
 
 	propertiesPath = "/properties"
@@ -24,6 +25,7 @@ func (a *Application) AddRoutes(e *gin.Engine) {
 	e.GET(statusPath, ginAdapt(a.routeStatus))
 
 	e.POST(signUpPath, ginAdapt(a.routeSignUp))
+	e.POST(signInPath, ginAdapt(a.routeSignIn))
 	e.POST(facebookSignInPath, ginAdapt(a.routeFacebookSignIn))
 
 	e.POST(propertiesPath, ginAdapt(a.requireUser(a.routePropertiesCreate)))
