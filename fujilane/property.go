@@ -2,8 +2,8 @@ package fujilane
 
 import "github.com/jinzhu/gorm"
 
-// PropertyStatePending means this property is being filled in by the user
-const PropertyStatePending = 1
+// PropertyStateDraft means this property is being filled in by the user
+const PropertyStateDraft = 1
 
 var propertyStates map[int]string
 
@@ -23,5 +23,5 @@ func (p *Property) State() string {
 
 func init() {
 	propertyStates = make(map[int]string)
-	propertyStates[PropertyStatePending] = "Pending"
+	propertyStates[PropertyStateDraft] = "Draft"
 }

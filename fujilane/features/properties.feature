@@ -8,5 +8,5 @@ Feature: Properties Management
     When I add a new property
     Then the system should respond with "CREATED"
     And I should have the following properties:
-      | User                 | State   |
-      | Diego Aguir Selzlein | Pending |
+      | User                 | State |
+      | Diego Aguir Selzlein | Draft |

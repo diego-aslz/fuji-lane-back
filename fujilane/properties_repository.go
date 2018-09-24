@@ -6,7 +6,7 @@ type propertiesRepository struct{}
 
 func (r *propertiesRepository) create(user *User) (p *Property, err error) {
 	err = withDatabase(func(db *gorm.DB) error {
-		p = &Property{User: user, StateID: PropertyStatePending}
+		p = &Property{User: user, StateID: PropertyStateDraft}
 
 		return db.Create(p).Error
 	})
