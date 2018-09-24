@@ -1,0 +1,33 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: circleci/golang:1.10
+      - image: circleci/postgres:10
+        environment:
+        - POSTGRES_USER=postgres
+        - POSTGRES_DB=fujilane_test
+
+    working_directory: /go/src/github.com/nerde/fuji-lane-back
+    steps:
+      - checkout
+
+      - run: dockerize -wait tcp://localhost:5432 -timeout 1m
+
+      - restore_cache:
+          keys:
+            - godep-cache-{{ checksum "Gopkg.lock" }}
+            - godep-cache-
+
+      - run: make dependencies
+
+      - save_cache:
+          key: godep-cache-{{ checksum "Gopkg.lock" }}
+          paths:
+            - vendor
+
+      - run: make migrate
+      - run: make feature
+
+    environment:
+      STAGE: test
