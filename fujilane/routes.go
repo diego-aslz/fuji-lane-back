@@ -1,7 +1,6 @@
 package fujilane
 
 import (
-	"encoding/json"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -86,37 +85,6 @@ func (a *routeContext) getHeader(key string) string {
 
 func (a *routeContext) set(key string, value interface{}) {
 	a.context.Set(key, value)
-}
-
-func (a *routeContext) addLog(key, value string) {
-	logs := a.context.GetString("log-details")
-	if len(logs) > 0 {
-		logs += " "
-	}
-	a.context.Set("log-details", logs+key+"="+value)
-}
-
-func (a *routeContext) addLogQuoted(key, value string) {
-	a.addLog(key, "\""+value+"\"")
-}
-
-func (a *routeContext) addLogError(err error) {
-	a.addLogQuoted("error", err.Error())
-}
-
-func (a *routeContext) addLogJSON(key string, value interface{}) {
-	jsonObj, err := json.Marshal(value)
-	if err == nil {
-		a.addLog(key, string(jsonObj))
-	}
-}
-
-type filterableLog interface {
-	filterSensitiveInformation() filterableLog
-}
-
-func (a *routeContext) addLogFiltered(key string, value filterableLog) {
-	a.addLogJSON(key, value.filterSensitiveInformation())
 }
 
 // ginAdapt wraps an application route with a function that abstracts gin.Context out of the flow so our routes can
