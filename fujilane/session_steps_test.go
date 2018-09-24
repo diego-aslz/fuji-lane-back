@@ -28,6 +28,20 @@ func iSignInWith(table *gherkin.DataTable) error {
 	return makePOSTRequest(signInPath, table)
 }
 
+func theFollowingSession(table *gherkin.DataTable) error {
+	s, err := assist.CreateInstance(new(session), table)
+
+	if err != nil {
+		return err
+	}
+
+	currentSession = s.(*session)
+	currentSession.secret = appConfig.tokenSecret
+	currentSession.generateToken()
+
+	return nil
+}
+
 func resetSession(_ interface{}, _ error) {
 	currentSession = nil
 }
@@ -37,4 +51,5 @@ func SessionContext(s *godog.Suite) {
 
 	s.Step(`^I am authenticated with "([^"]*)"$`, iAmAuthenticatedWith)
 	s.Step(`^I sign in with:$`, iSignInWith)
+	s.Step(`^the following session:$`, theFollowingSession)
 }
