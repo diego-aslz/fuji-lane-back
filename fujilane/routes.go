@@ -1,8 +1,9 @@
 package fujilane
 
 import (
+	"encoding/json"
 	"errors"
-	"log"
+	"fmt"
 	"net/http"
 	"strings"
 
@@ -49,6 +50,7 @@ func (a *routeContext) errorsBody(errs []error) map[string]interface{} {
 }
 
 func (a *routeContext) fail(status int, err error) {
+	a.addLogError(err)
 	a.context.AbortWithError(status, err)
 }
 
@@ -87,6 +89,29 @@ func (a *routeContext) set(key string, value interface{}) {
 	a.context.Set(key, value)
 }
 
+func (a *routeContext) addLog(key, value string) {
+	logs := a.context.GetString("log-details")
+	if len(logs) > 0 {
+		logs += " "
+	}
+	a.context.Set("log-details", logs+key+"="+value)
+}
+
+func (a *routeContext) addLogQuoted(key, value string) {
+	a.addLog(key, "\""+value+"\"")
+}
+
+func (a *routeContext) addLogError(err error) {
+	a.addLogQuoted("error", err.Error())
+}
+
+func (a *routeContext) addLogJSON(key string, value interface{}) {
+	jsonObj, err := json.Marshal(value)
+	if err == nil {
+		a.addLog(key, string(jsonObj))
+	}
+}
+
 func (a *routeContext) currentUser() *User {
 	v, _ := a.context.Get("current-user")
 	return v.(*User)
@@ -96,6 +121,7 @@ func (a *Application) requireUser(next func(*routeContext)) func(*routeContext) 
 	return func(c *routeContext) {
 		auth := c.getHeader("Authorization")
 		if auth == "" {
+			c.addLogQuoted("reason", "Missing authentication token")
 			c.fail(http.StatusUnauthorized, errors.New("You need to sign in"))
 			return
 		}
@@ -103,23 +129,35 @@ func (a *Application) requireUser(next func(*routeContext)) func(*routeContext) 
 		auth = strings.TrimPrefix(auth, "Bearer ")
 		session, err := loadSession(auth)
 		if err != nil {
-			log.Printf("Unable to load session from token %s: %s\n", auth, err.Error())
+			c.addLogJSON("token", auth)
+			c.addLogQuoted("reason", "Unable to load session from token")
+			c.addLogError(err)
 			c.fail(http.StatusUnauthorized, errors.New("You need to sign in"))
 			return
 		}
 
 		user, err := a.usersRepository.findByEmail(session.Email)
 		if err != nil {
-			log.Printf("Unable to load user (email: %s): %s\n", session.Email, err.Error())
+			safeSession := *session
+			safeSession.Token = "[FILTERED]"
+			c.addLogJSON("session", safeSession)
+			c.addLogQuoted("reason", "Unable to load user")
+			c.addLogError(err)
 			c.fail(http.StatusUnauthorized, errors.New("You need to sign in"))
 			return
 		}
 
 		if user == nil || user.ID == 0 {
+			safeSession := *session
+			safeSession.Token = "[FILTERED]"
+			c.addLogJSON("session", safeSession)
+			c.addLogQuoted("reason", "User not found")
 			c.fail(http.StatusUnauthorized, errors.New("You need to sign in"))
 			return
 		}
 
+		c.addLog("user", user.Email)
+		c.addLog("user_id", fmt.Sprint(user.ID))
 		c.set("current-user", user)
 
 		next(c)

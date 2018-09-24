@@ -17,6 +17,10 @@ func (a *Application) routeFacebookSignIn(c *routeContext) {
 		return
 	}
 
+	safeBody := *body
+	safeBody.AccessToken = "[FILTERED]"
+	c.addLogJSON("params", safeBody)
+
 	err := a.facebook.validate(body.AccessToken, body.ID)
 	if err != nil {
 		c.fail(http.StatusUnauthorized, err)
