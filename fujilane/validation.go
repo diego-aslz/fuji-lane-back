@@ -40,7 +40,7 @@ type FieldValidation struct {
 // Required adds an error if the value is blank
 func (v FieldValidation) Required() FieldValidation {
 	if len(v.Value) == 0 {
-		v.Errors = append(v.Errors, fmt.Errorf("Invalid %s: cannot be blank.", v.Name))
+		v.Errors = append(v.Errors, fmt.Errorf("Invalid %s: cannot be blank", v.Name))
 	}
 
 	return v
