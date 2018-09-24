@@ -17,15 +17,18 @@ func (b *signUpBody) Validate() []error {
 	)
 }
 
+func (b signUpBody) filterSensitiveInformation() filterableLog {
+	b.Password = "[FILTERED]"
+	return b
+}
+
 func (a *Application) routeSignUp(c *routeContext) {
 	body := &signUpBody{}
 	if !c.parseBodyAndValidate(body) {
 		return
 	}
 
-	safeBody := *body
-	safeBody.Password = "[FILTERED]"
-	c.addLogJSON("params", safeBody)
+	c.addLogFiltered("params", body)
 
 	user, err := a.usersRepository.signUp(body.Email, body.Password)
 	if err != nil {

@@ -11,15 +11,18 @@ type facebookSignInBody struct {
 	AccessToken string `json:"accessToken"`
 }
 
+func (b facebookSignInBody) filterSensitiveInformation() filterableLog {
+	b.AccessToken = "[FILTERED]"
+	return b
+}
+
 func (a *Application) routeFacebookSignIn(c *routeContext) {
 	body := &facebookSignInBody{}
 	if !c.parseBodyOrFail(body) {
 		return
 	}
 
-	safeBody := *body
-	safeBody.AccessToken = "[FILTERED]"
-	c.addLogJSON("params", safeBody)
+	c.addLogFiltered("params", body)
 
 	err := a.facebook.validate(body.AccessToken, body.ID)
 	if err != nil {

@@ -32,6 +32,11 @@ func (s *session) claims() jwt.MapClaims {
 	}
 }
 
+func (s session) filterSensitiveInformation() filterableLog {
+	s.Token = "[FILTERED]"
+	return s
+}
+
 func newSession(user *User, timeFunc func() time.Time) *session {
 	now := timeFunc()
 	return &session{

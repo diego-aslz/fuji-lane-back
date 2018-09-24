@@ -10,6 +10,11 @@ type signInBody struct {
 	Password string `json:"password"`
 }
 
+func (b signInBody) filterSensitiveInformation() filterableLog {
+	b.Password = "[FILTERED]"
+	return b
+}
+
 const authenticationFailedMessage = "Invalid email or password"
 
 func (a *Application) routeSignIn(c *routeContext) {
@@ -18,9 +23,7 @@ func (a *Application) routeSignIn(c *routeContext) {
 		return
 	}
 
-	safeBody := *body
-	safeBody.Password = "[FILTERED]"
-	c.addLogJSON("params", safeBody)
+	c.addLogFiltered("params", body)
 
 	user, err := a.usersRepository.findByEmail(body.Email)
 	if err != nil {

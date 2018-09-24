@@ -114,6 +114,14 @@ func (a *routeContext) addLogJSON(key string, value interface{}) {
 	}
 }
 
+type filterableLog interface {
+	filterSensitiveInformation() filterableLog
+}
+
+func (a *routeContext) addLogFiltered(key string, value filterableLog) {
+	a.addLogJSON(key, value.filterSensitiveInformation())
+}
+
 func (a *routeContext) currentUser() *User {
 	v, _ := a.context.Get("current-user")
 	return v.(*User)
@@ -140,9 +148,7 @@ func (a *Application) requireUser(next func(*routeContext)) func(*routeContext) 
 
 		user, err := a.usersRepository.findByEmail(session.Email)
 		if err != nil {
-			safeSession := *session
-			safeSession.Token = "[FILTERED]"
-			c.addLogJSON("session", safeSession)
+			c.addLogFiltered("session", session)
 			c.addLogQuoted("reason", "Unable to load user")
 			c.addLogError(err)
 			c.fail(http.StatusUnauthorized, errors.New("You need to sign in"))
@@ -150,9 +156,7 @@ func (a *Application) requireUser(next func(*routeContext)) func(*routeContext) 
 		}
 
 		if user == nil || user.ID == 0 {
-			safeSession := *session
-			safeSession.Token = "[FILTERED]"
-			c.addLogJSON("session", safeSession)
+			c.addLogFiltered("session", session)
 			c.addLogQuoted("reason", "User not found")
 			c.fail(http.StatusUnauthorized, errors.New("You need to sign in"))
 			return
