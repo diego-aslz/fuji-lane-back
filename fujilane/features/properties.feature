@@ -10,7 +10,7 @@ Feature: Properties Management
     And I am authenticated with "diego@selzlein.com"
     When I add a new property
     Then the system should respond with "CREATED"
-    And I should have the following properties:
+    And we should have the following properties:
       | Account          | State |
       | Diego Apartments | Draft |
 
@@ -22,4 +22,4 @@ Feature: Properties Management
     When I add a new property
     Then the system should respond with "UNPROCESSABLE ENTITY" and the following errors:
       | You need a company account |
-    And I should have no properties
+    And we should have no properties

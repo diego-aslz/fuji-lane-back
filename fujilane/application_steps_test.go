@@ -2,13 +2,11 @@ package fujilane
 
 import (
 	"fmt"
-	"log"
 	"os"
 	"time"
 
 	"github.com/DATA-DOG/godog"
 	"github.com/gin-gonic/gin"
-	"github.com/jinzhu/gorm"
 	"github.com/rdumont/assistdog"
 	"github.com/rdumont/assistdog/defaults"
 )
@@ -53,22 +51,6 @@ func timeComparer(raw string, rawActual interface{}) error {
 	return nil
 }
 
-func cleanup(_ interface{}, _ error) {
-	err := withDatabase(func(db *gorm.DB) error {
-		for _, model := range []interface{}{Property{}, User{}, Account{}} {
-			err := db.Unscoped().Delete(model).Error
-			if err != nil {
-				return err
-			}
-		}
-		return nil
-	})
-
-	if err != nil {
-		log.Fatal(err.Error())
-	}
-}
-
 func itIsCurrently(timeExpr string) error {
 	t, err := time.Parse(timeFormat, timeExpr)
 	if err != nil {
@@ -84,7 +66,6 @@ func itIsCurrently(timeExpr string) error {
 
 func ApplicationContext(s *godog.Suite) {
 	s.BeforeSuite(setupApplication)
-	s.AfterScenario(cleanup)
 
 	s.Step(`^it is currently "([^"]*)"$`, itIsCurrently)
 }

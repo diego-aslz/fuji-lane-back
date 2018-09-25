@@ -96,7 +96,7 @@ func weShouldHaveTheFollowingUsers(table *gherkin.DataTable) error {
 		}
 
 		users := []*User{}
-		err = db.Find(&users).Error
+		err = db.Preload("Account").Find(&users).Error
 		if err != nil {
 			return err
 		}

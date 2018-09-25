@@ -45,7 +45,7 @@ func facebookRecognizesTheFollowingTokens(table *gherkin.DataTable) error {
 }
 
 func theFollowingUserSignsInViaFacebook(table *gherkin.DataTable) error {
-	return makePOSTRequest(facebookSignInPath, table)
+	return performPOSTWithTable(facebookSignInPath, table)
 }
 
 func SignInContext(s *godog.Suite) {

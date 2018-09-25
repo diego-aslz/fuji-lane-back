@@ -6,7 +6,7 @@ import (
 )
 
 func emailSignUp(table *gherkin.DataTable) error {
-	return makePOSTRequest(signUpPath, table)
+	return performPOSTWithTable(signUpPath, table)
 }
 
 func SignUpTestsContext(s *godog.Suite) {

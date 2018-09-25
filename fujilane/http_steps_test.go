@@ -37,16 +37,17 @@ func assertResponseStatusTextAndBody(status string, table *gherkin.DataTable) er
 		return err
 	}
 
-	actualBody := map[string]string{}
+	actualBody := map[string]interface{}{}
 	if err := json.Unmarshal([]byte(response.Body.String()), &actualBody); err != nil {
 		return fmt.Errorf("Unable to unmarshal %s: %s", response.Body.String(), err.Error())
 	}
 
 	for k, v := range expectedBody {
-		if actualBody[k] == v {
+		expected := fmt.Sprint(actualBody[k])
+		if expected == v {
 			continue
 		}
-		return fmt.Errorf("Expected %s to be %s, got %s", k, v, actualBody[k])
+		return fmt.Errorf("Expected %s to be %s, got %s", k, v, expected)
 	}
 
 	return nil
@@ -79,17 +80,27 @@ func assertResponseStatusTextAndErrors(status string, table *gherkin.DataTable) 
 	return nil
 }
 
-func makePOSTRequest(path string, table *gherkin.DataTable) error {
-	response = httptest.NewRecorder()
-
-	var jsonBody []byte
+func performPOSTWithTable(path string, table *gherkin.DataTable) error {
+	var body map[string]string
 
 	if len(table.Rows) > 0 {
-		body, err := assist.ParseMap(table)
+		var err error
+		body, err = assist.ParseMap(table)
 		if err != nil {
 			return err
 		}
+	}
 
+	return performPOST(path, body)
+}
+
+func performPOST(path string, body interface{}) error {
+	response = httptest.NewRecorder()
+
+	var jsonBody []byte
+	var err error
+
+	if body != nil {
 		jsonBody, err = json.Marshal(body)
 		if err != nil {
 			return err

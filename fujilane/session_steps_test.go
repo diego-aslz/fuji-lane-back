@@ -25,7 +25,7 @@ func iAmAuthenticatedWith(email string) error {
 }
 
 func iSignInWith(table *gherkin.DataTable) error {
-	return makePOSTRequest(signInPath, table)
+	return performPOSTWithTable(signInPath, table)
 }
 
 func theFollowingSession(table *gherkin.DataTable) error {

@@ -9,7 +9,7 @@ import (
 )
 
 func simulateAddProperty() error {
-	return makePOSTRequest(propertiesPath, &gherkin.DataTable{})
+	return performPOSTWithTable(propertiesPath, &gherkin.DataTable{})
 }
 
 type propertyRow struct {
@@ -63,6 +63,6 @@ func assertNoProperties() error {
 
 func PropertyContext(s *godog.Suite) {
 	s.Step(`^I add a new property$`, simulateAddProperty)
-	s.Step(`^I should have the following properties:$`, assertProperties)
-	s.Step(`^I should have no properties$`, assertNoProperties)
+	s.Step(`^we should have the following properties:$`, assertProperties)
+	s.Step(`^we should have no properties$`, assertNoProperties)
 }

@@ -3,7 +3,7 @@ Feature: Session
   Scenario: Accessing a protected resource without an authentication token
     When I add a new property
     Then the system should respond with "UNAUTHORIZED"
-    And I should have no properties
+    And we should have no properties
 
   Scenario: Accessing a protected resource with an authentication token for an invalid user
     Given it is currently "01 Jun 18 08:00"
@@ -15,7 +15,7 @@ Feature: Session
     When I add a new property
     Then the system should respond with "UNAUTHORIZED" and the following errors:
       | You need to sign in |
-    And I should have no properties
+    And we should have no properties
 
   Scenario: Accessing a protected resource with an expired session
     Given it is currently "01 Jun 18 08:00"
@@ -30,4 +30,4 @@ Feature: Session
     When I add a new property
     Then the system should respond with "UNAUTHORIZED" and the following errors:
       | Your session expired |
-    And I should have no properties
+    And we should have no properties
