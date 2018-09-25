@@ -10,10 +10,10 @@ var propertyStates map[int]string
 // Property contains address and can have multiple units that can be booked
 type Property struct {
 	gorm.Model
-	Name    string
-	StateID int `gorm:"column:state"`
-	UserID  int
-	User    *User
+	Name      string
+	StateID   int `gorm:"column:state"`
+	AccountID int
+	Account   *Account
 }
 
 // State returns the state name for the property's state ID

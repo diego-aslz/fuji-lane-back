@@ -14,14 +14,14 @@ func simulateAddProperty() error {
 
 type propertyRow struct {
 	*Property
-	User  string
-	State string
+	Account string
+	State   string
 }
 
 func assertProperties(table *gherkin.DataTable) error {
 	return withDatabase(func(db *gorm.DB) error {
 		properties := []*Property{}
-		err := db.Preload("User").Find(&properties).Error
+		err := db.Preload("Account").Find(&properties).Error
 		if err != nil {
 			return err
 		}
@@ -33,12 +33,12 @@ func assertProperties(table *gherkin.DataTable) error {
 
 		rows := []*propertyRow{}
 		for _, p := range properties {
-			userName := ""
-			if p.User != nil {
-				userName = p.User.Name
+			accountName := ""
+			if p.Account != nil {
+				accountName = p.Account.Name
 			}
 
-			rows = append(rows, &propertyRow{p, userName, p.State()})
+			rows = append(rows, &propertyRow{p, accountName, p.State()})
 		}
 
 		return assist.CompareToSlice(rows, table)

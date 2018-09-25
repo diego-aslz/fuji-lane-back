@@ -55,7 +55,7 @@ func timeComparer(raw string, rawActual interface{}) error {
 
 func cleanup(_ interface{}, _ error) {
 	err := withDatabase(func(db *gorm.DB) error {
-		for _, model := range []interface{}{Property{}, User{}} {
+		for _, model := range []interface{}{Property{}, User{}, Account{}} {
 			err := db.Unscoped().Delete(model).Error
 			if err != nil {
 				return err

@@ -12,6 +12,7 @@ import (
 type testUser struct {
 	User
 	Password string
+	Account  string
 }
 
 func theFollowingUsers(table *gherkin.DataTable) error {
@@ -28,6 +29,14 @@ func theFollowingUsers(table *gherkin.DataTable) error {
 
 			if tu.Password != "" {
 				tu.User.setPassword(tu.Password)
+			}
+
+			if tu.Account != "" {
+				tu.User.Account = &Account{}
+				err = db.Find(tu.User.Account, Account{Name: tu.Account}).Error
+				if err != nil {
+					return err
+				}
 			}
 
 			err = db.Create(&tu.User).Error

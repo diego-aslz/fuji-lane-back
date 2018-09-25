@@ -3,7 +3,7 @@ CREATE TABLE properties(
   created_at timestamp without time zone not null,
   updated_at timestamp without time zone not null,
   deleted_at timestamp without time zone,
-  user_id int not null references users,
+  account_id int not null references accounts,
   state smallint not null default 1,
   name varchar,
   address_1 varchar,
@@ -14,6 +14,6 @@ CREATE TABLE properties(
   country_id int references countries
 );
 
-CREATE INDEX properties_user_id_idx ON properties(user_id);
+CREATE INDEX properties_account_id_idx ON properties(account_id);
 CREATE INDEX properties_state_idx ON properties(state);
 CREATE INDEX properties_deleted_at ON properties(deleted_at);

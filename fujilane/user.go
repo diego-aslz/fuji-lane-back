@@ -11,6 +11,8 @@ import (
 // User of the system
 type User struct {
 	gorm.Model
+	AccountID         *int
+	Account           *Account
 	Name              string
 	Email             string
 	FacebookID        string
