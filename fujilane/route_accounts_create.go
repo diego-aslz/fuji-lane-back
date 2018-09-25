@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/jinzhu/gorm"
+	"github.com/nerde/fuji-lane-back/flentities"
 )
 
 type accountCreateBody struct {
@@ -52,8 +53,8 @@ func (a *accountCreateAction) perform(c *routeContext, db *gorm.DB) error {
 	return tx.Commit().Error
 }
 
-func (a *accountCreateAction) buildAccount() *Account {
-	account := &Account{Name: a.Name}
+func (a *accountCreateAction) buildAccount() *flentities.Account {
+	account := &flentities.Account{Name: a.Name}
 	if a.CountryID > 0 {
 		account.CountryID = &a.CountryID
 	}

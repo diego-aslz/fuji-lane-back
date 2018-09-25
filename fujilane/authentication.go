@@ -5,11 +5,13 @@ import (
 	"fmt"
 	"net/http"
 	"strings"
+
+	"github.com/nerde/fuji-lane-back/flentities"
 )
 
-func (c *routeContext) currentUser() *User {
+func (c *routeContext) currentUser() *flentities.User {
 	v, _ := c.context.Get("current-user")
-	return v.(*User)
+	return v.(*flentities.User)
 }
 
 func (c *routeContext) unauthorized() {

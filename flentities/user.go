@@ -1,4 +1,4 @@
-package fujilane
+package flentities
 
 import (
 	"fmt"
@@ -20,7 +20,8 @@ type User struct {
 	LastSignedIn      time.Time
 }
 
-func (u *User) setPassword(password string) error {
+// SetPassword calculates the encrypted hash and fills in EncryptedPassword
+func (u *User) SetPassword(password string) error {
 	passwordBytes, e := bcrypt.GenerateFromPassword([]byte(password), bcrypt.MinCost)
 	if e != nil {
 		return e
@@ -32,11 +33,13 @@ func (u *User) setPassword(password string) error {
 	return nil
 }
 
-func (u *User) validatePassword(password string) bool {
+// ValidatePassword returns true if the parameterized password is correct
+func (u *User) ValidatePassword(password string) bool {
 	return bcrypt.CompareHashAndPassword([]byte(*u.EncryptedPassword), []byte(password)) == nil
 }
 
-func (u *User) picture() string {
+// Picture returns an URL to the user's profile picture
+func (u *User) Picture() string {
 	if u.FacebookID != nil {
 		return fmt.Sprintf("https://graph.facebook.com/%s/picture?width=64&height=64", *u.FacebookID)
 	}

@@ -6,6 +6,7 @@ import (
 	"github.com/DATA-DOG/godog"
 	"github.com/DATA-DOG/godog/gherkin"
 	"github.com/jinzhu/gorm"
+	"github.com/nerde/fuji-lane-back/flentities"
 )
 
 func simulateAddProperty() error {
@@ -13,14 +14,14 @@ func simulateAddProperty() error {
 }
 
 type propertyRow struct {
-	*Property
+	*flentities.Property
 	Account string
 	State   string
 }
 
 func assertProperties(table *gherkin.DataTable) error {
 	return withDatabase(func(db *gorm.DB) error {
-		properties := []*Property{}
+		properties := []*flentities.Property{}
 		err := db.Preload("Account").Find(&properties).Error
 		if err != nil {
 			return err
@@ -33,12 +34,12 @@ func assertProperties(table *gherkin.DataTable) error {
 
 		rows := []*propertyRow{}
 		for _, p := range properties {
-			accountName := ""
+			row := &propertyRow{Property: p, State: p.State()}
 			if p.Account != nil {
-				accountName = p.Account.Name
+				row.Account = p.Account.Name
 			}
 
-			rows = append(rows, &propertyRow{p, accountName, p.State()})
+			rows = append(rows, row)
 		}
 
 		return assist.CompareToSlice(rows, table)
@@ -48,7 +49,7 @@ func assertProperties(table *gherkin.DataTable) error {
 func assertNoProperties() error {
 	return withDatabase(func(db *gorm.DB) error {
 		count := 0
-		err := db.Model(&Property{}).Count(&count).Error
+		err := db.Model(&flentities.Property{}).Count(&count).Error
 		if err != nil {
 			return err
 		}

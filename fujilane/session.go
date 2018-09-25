@@ -6,6 +6,7 @@ import (
 	"time"
 
 	jwt "github.com/dgrijalva/jwt-go"
+	"github.com/nerde/fuji-lane-back/flentities"
 )
 
 type session struct {
@@ -38,14 +39,14 @@ func (s session) filterSensitiveInformation() filterableLog {
 	return s
 }
 
-func newSession(user *User, timeFunc func() time.Time) *session {
+func newSession(user *flentities.User, timeFunc func() time.Time) *session {
 	now := timeFunc()
 	return &session{
 		Email:      user.Email,
 		IssuedAt:   now,
 		RenewAfter: now.Add(4 * 24 * time.Hour),
 		ExpiresAt:  now.Add(7 * 24 * time.Hour),
-		Picture:    user.picture(),
+		Picture:    user.Picture(),
 		secret:     appConfig.tokenSecret,
 	}
 }

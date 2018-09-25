@@ -37,7 +37,7 @@ func (a *Application) routeSignIn(c *routeContext) {
 		return
 	}
 
-	if !user.validatePassword(body.Password) {
+	if !user.ValidatePassword(body.Password) {
 		c.addLogQuoted("reason", "Password is invalid")
 		c.respondError(http.StatusUnauthorized, errors.New(authenticationFailedMessage))
 		return

@@ -6,16 +6,17 @@ import (
 	"github.com/DATA-DOG/godog"
 	"github.com/DATA-DOG/godog/gherkin"
 	"github.com/jinzhu/gorm"
+	"github.com/nerde/fuji-lane-back/flentities"
 )
 
 type accountRow struct {
-	Account
+	flentities.Account
 	Phone   string
 	Country string
 }
 
 func theFollowingAccounts(table *gherkin.DataTable) error {
-	return createFromTable(new(Account), table)
+	return createFromTable(new(flentities.Account), table)
 }
 
 func iCreateTheFollowingAccount(table *gherkin.DataTable) error {
@@ -25,9 +26,9 @@ func iCreateTheFollowingAccount(table *gherkin.DataTable) error {
 	}
 
 	return withDatabase(func(db *gorm.DB) error {
-		country := &Country{}
+		country := &flentities.Country{}
 
-		if err := db.Find(country, Country{Name: b["country"]}).Error; err != nil {
+		if err := db.Find(country, flentities.Country{Name: b["country"]}).Error; err != nil {
 			return err
 		}
 
@@ -43,7 +44,7 @@ func iCreateTheFollowingAccount(table *gherkin.DataTable) error {
 
 func iShouldHaveTheFollowingAccounts(table *gherkin.DataTable) error {
 	return withDatabase(func(db *gorm.DB) error {
-		accounts := []*Account{}
+		accounts := []*flentities.Account{}
 		err := db.Preload("Country").Find(&accounts).Error
 		if err != nil {
 			return err

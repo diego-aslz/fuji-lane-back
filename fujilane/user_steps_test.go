@@ -7,10 +7,11 @@ import (
 	"github.com/DATA-DOG/godog"
 	"github.com/DATA-DOG/godog/gherkin"
 	"github.com/jinzhu/gorm"
+	"github.com/nerde/fuji-lane-back/flentities"
 )
 
 type userRow struct {
-	User
+	flentities.User
 	Name       string
 	Password   string
 	Account    string
@@ -19,12 +20,12 @@ type userRow struct {
 
 func (row *userRow) save(db *gorm.DB) error {
 	if row.Password != "" {
-		row.User.setPassword(row.Password)
+		row.User.SetPassword(row.Password)
 	}
 
 	if row.Account != "" {
-		row.User.Account = &Account{}
-		err := db.Find(row.User.Account, Account{Name: row.Account}).Error
+		row.User.Account = &flentities.Account{}
+		err := db.Find(row.User.Account, flentities.Account{Name: row.Account}).Error
 		if err != nil {
 			return err
 		}
@@ -41,7 +42,7 @@ func (row *userRow) save(db *gorm.DB) error {
 	return db.Create(&row.User).Error
 }
 
-func newUserRow(u *User) (row *userRow) {
+func newUserRow(u *flentities.User) (row *userRow) {
 	row = &userRow{}
 	row.User = *u
 
@@ -85,7 +86,7 @@ func theFollowingUsers(table *gherkin.DataTable) error {
 func weShouldHaveTheFollowingUsers(table *gherkin.DataTable) error {
 	return withDatabase(func(db *gorm.DB) error {
 		count := 0
-		err := db.Model(&User{}).Count(&count).Error
+		err := db.Model(&flentities.User{}).Count(&count).Error
 		if err != nil {
 			return err
 		}
@@ -95,7 +96,7 @@ func weShouldHaveTheFollowingUsers(table *gherkin.DataTable) error {
 			return fmt.Errorf("Expected to have %d users in the DB, got %d", rowsCount, count)
 		}
 
-		users := []*User{}
+		users := []*flentities.User{}
 		err = db.Preload("Account").Find(&users).Error
 		if err != nil {
 			return err
@@ -113,7 +114,7 @@ func weShouldHaveTheFollowingUsers(table *gherkin.DataTable) error {
 func weShouldHaveNoUsers() error {
 	return withDatabase(func(db *gorm.DB) error {
 		count := 0
-		err := db.Model(&User{}).Count(&count).Error
+		err := db.Model(&flentities.User{}).Count(&count).Error
 		if err != nil {
 			return err
 		}

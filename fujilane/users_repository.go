@@ -2,14 +2,15 @@ package fujilane
 
 import (
 	"github.com/jinzhu/gorm"
+	"github.com/nerde/fuji-lane-back/flentities"
 )
 
 type usersRepository struct{}
 
-func (r *usersRepository) findForFacebookSignIn(facebookID, email string) (*User, error) {
-	user := &User{}
+func (r *usersRepository) findForFacebookSignIn(facebookID, email string) (*flentities.User, error) {
+	user := &flentities.User{}
 	return user, withDatabase(func(db *gorm.DB) error {
-		err := db.Where(User{FacebookID: &facebookID}).First(user).Error
+		err := db.Where(flentities.User{FacebookID: &facebookID}).First(user).Error
 
 		if gorm.IsRecordNotFoundError(err) {
 			user, err = r.findByEmail(email)
@@ -23,10 +24,10 @@ func (r *usersRepository) findForFacebookSignIn(facebookID, email string) (*User
 	})
 }
 
-func (r *usersRepository) findByEmail(email string) (*User, error) {
-	user := &User{}
+func (r *usersRepository) findByEmail(email string) (*flentities.User, error) {
+	user := &flentities.User{}
 	return user, withDatabase(func(db *gorm.DB) error {
-		err := db.Where(User{Email: email}).First(user).Error
+		err := db.Where(flentities.User{Email: email}).First(user).Error
 
 		if err != nil && !gorm.IsRecordNotFoundError(err) {
 			return err
@@ -36,16 +37,16 @@ func (r *usersRepository) findByEmail(email string) (*User, error) {
 	})
 }
 
-func (r *usersRepository) save(user *User) error {
+func (r *usersRepository) save(user *flentities.User) error {
 	return withDatabase(func(db *gorm.DB) error {
 		return db.Save(user).Error
 	})
 }
 
-func (r *usersRepository) signUp(email, password string) (u *User, err error) {
+func (r *usersRepository) signUp(email, password string) (u *flentities.User, err error) {
 	err = withDatabase(func(db *gorm.DB) error {
-		u = &User{Email: email}
-		if err := u.setPassword(password); err != nil {
+		u = &flentities.User{Email: email}
+		if err := u.SetPassword(password); err != nil {
 			return err
 		}
 

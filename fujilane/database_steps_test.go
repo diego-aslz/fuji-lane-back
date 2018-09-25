@@ -7,6 +7,7 @@ import (
 	"github.com/DATA-DOG/godog"
 	"github.com/DATA-DOG/godog/gherkin"
 	"github.com/jinzhu/gorm"
+	"github.com/nerde/fuji-lane-back/flentities"
 )
 
 func createFromTable(tp interface{}, table *gherkin.DataTable) error {
@@ -31,7 +32,7 @@ func createFromTable(tp interface{}, table *gherkin.DataTable) error {
 
 func cleanup(_ interface{}, _ error) {
 	err := withDatabase(func(db *gorm.DB) error {
-		for _, model := range []interface{}{Property{}, User{}, Account{}, Country{}} {
+		for _, model := range flentities.AllEntities() {
 			err := db.Unscoped().Delete(model).Error
 			if err != nil {
 				return err

@@ -3,10 +3,11 @@ package fujilane
 import (
 	"github.com/DATA-DOG/godog"
 	"github.com/DATA-DOG/godog/gherkin"
+	"github.com/nerde/fuji-lane-back/flentities"
 )
 
 func theFollowingCountries(table *gherkin.DataTable) error {
-	return createFromTable(new(Country), table)
+	return createFromTable(new(flentities.Country), table)
 }
 
 func FeatureContext(s *godog.Suite) {
