@@ -25,7 +25,8 @@ Feature: Signing In
     When I sign in with:
       | email    | diego@selzlein.com |
       | password | 123456789          |
-    Then the system should respond with "UNAUTHORIZED"
+    Then the system should respond with "UNAUTHORIZED" and the following errors:
+      | Invalid email or password |
     And we should have the following users:
       | Email              | Name                 | LastSignedIn         |
       | diego@selzlein.com | Diego Aguir Selzlein | 2018-05-01T08:00:00Z |
@@ -37,7 +38,8 @@ Feature: Signing In
     When I sign in with:
       | email    | dieg@selzlein.com |
       | password | 12345678          |
-    Then the system should respond with "UNAUTHORIZED"
+    Then the system should respond with "UNAUTHORIZED" and the following errors:
+      | Invalid email or password |
     And we should have the following users:
       | Email              | Name                 | LastSignedIn         |
       | diego@selzlein.com | Diego Aguir Selzlein | 2018-05-01T08:00:00Z |

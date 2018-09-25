@@ -27,32 +27,32 @@ func (a *Application) routeSignIn(c *routeContext) {
 
 	user, err := a.usersRepository.findByEmail(body.Email)
 	if err != nil {
-		c.fail(http.StatusInternalServerError, err)
+		c.fatal(err)
 		return
 	}
 
 	if user == nil || user.ID == 0 {
 		c.addLogQuoted("reason", "User not found")
-		c.respond(http.StatusUnauthorized, c.errorsBody([]error{errors.New(authenticationFailedMessage)}))
+		c.respondError(http.StatusUnauthorized, errors.New(authenticationFailedMessage))
 		return
 	}
 
 	if !user.validatePassword(body.Password) {
 		c.addLogQuoted("reason", "Password is invalid")
-		c.respond(http.StatusUnauthorized, c.errorsBody([]error{errors.New(authenticationFailedMessage)}))
+		c.respondError(http.StatusUnauthorized, errors.New(authenticationFailedMessage))
 		return
 	}
 
 	user.LastSignedIn = a.timeFunc()
 	err = a.usersRepository.save(user)
 	if err != nil {
-		c.fail(http.StatusInternalServerError, err)
+		c.fatal(err)
 		return
 	}
 
 	s := newSession(user, a.timeFunc)
 	if err = s.generateToken(); err != nil {
-		c.fail(http.StatusInternalServerError, err)
+		c.fatal(err)
 		return
 	}
 

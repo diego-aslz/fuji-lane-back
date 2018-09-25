@@ -7,7 +7,7 @@ import (
 func (a *Application) routePropertiesCreate(c *routeContext) {
 	property, err := a.propertiesRepository.create(c.currentUser())
 	if err != nil {
-		c.fail(http.StatusInternalServerError, err)
+		c.fatal(err)
 		return
 	}
 

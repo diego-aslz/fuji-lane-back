@@ -37,7 +37,7 @@ func (a *Application) routeSignUp(c *routeContext) {
 			c.addLogError(err)
 			c.respond(http.StatusUnprocessableEntity, c.errorsBody([]error{err}))
 		} else {
-			c.fail(http.StatusInternalServerError, err)
+			c.fatal(err)
 		}
 		return
 	}
@@ -46,13 +46,13 @@ func (a *Application) routeSignUp(c *routeContext) {
 
 	err = a.usersRepository.save(user)
 	if err != nil {
-		c.fail(http.StatusInternalServerError, err)
+		c.fatal(err)
 		return
 	}
 
 	s := newSession(user, a.timeFunc)
 	if err = s.generateToken(); err != nil {
-		c.fail(http.StatusInternalServerError, err)
+		c.fatal(err)
 		return
 	}
 

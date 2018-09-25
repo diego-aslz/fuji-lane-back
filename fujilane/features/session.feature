@@ -13,7 +13,8 @@ Feature: Session
       | RenewAfter | 2018-06-05T08:00:00Z |
       | ExpiresAt  | 2018-06-08T08:00:00Z |
     When I add a new property
-    Then the system should respond with "UNAUTHORIZED"
+    Then the system should respond with "UNAUTHORIZED" and the following errors:
+      | You need to sign in |
     And I should have no properties
 
   Scenario: Accessing a protected resource with an expired session
@@ -27,5 +28,6 @@ Feature: Session
       | RenewAfter | 2018-05-25T08:00:00Z |
       | ExpiresAt  | 2018-05-28T08:00:00Z |
     When I add a new property
-    Then the system should respond with "UNAUTHORIZED"
+    Then the system should respond with "UNAUTHORIZED" and the following errors:
+      | Your session expired |
     And I should have no properties

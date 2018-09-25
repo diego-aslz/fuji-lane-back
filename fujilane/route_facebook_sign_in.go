@@ -1,6 +1,7 @@
 package fujilane
 
 import (
+	"errors"
 	"net/http"
 )
 
@@ -26,13 +27,14 @@ func (a *Application) routeFacebookSignIn(c *routeContext) {
 
 	err := a.facebook.validate(body.AccessToken, body.ID)
 	if err != nil {
-		c.fail(http.StatusUnauthorized, err)
+		c.addLogError(err)
+		c.respondError(http.StatusUnauthorized, errors.New("You could not be authenticated"))
 		return
 	}
 
 	user, err := a.usersRepository.findForFacebookSignIn(body.ID, body.Email)
 	if err != nil {
-		c.fail(http.StatusInternalServerError, err)
+		c.fatal(err)
 		return
 	}
 
@@ -45,13 +47,13 @@ func (a *Application) routeFacebookSignIn(c *routeContext) {
 
 	err = a.usersRepository.save(user)
 	if err != nil {
-		c.fail(http.StatusInternalServerError, err)
+		c.fatal(err)
 		return
 	}
 
 	s := newSession(user, a.timeFunc)
 	if err = s.generateToken(); err != nil {
-		c.fail(http.StatusInternalServerError, err)
+		c.fatal(err)
 		return
 	}
 

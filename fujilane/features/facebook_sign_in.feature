@@ -92,7 +92,8 @@ Feature: Facebook Signing In
       | name        | Diego Selzlein     |
       | email       | diego@selzlein.com |
     Then we should have no users
-    And the system should respond with "UNAUTHORIZED" and no body
+    And the system should respond with "UNAUTHORIZED" and the following errors:
+      | You could not be authenticated |
 
   Scenario: Signing in with invalid token
     Given Facebook recognizes the following tokens:
@@ -104,4 +105,5 @@ Feature: Facebook Signing In
       | name        | Diego Selzlein     |
       | email       | diego@selzlein.com |
     Then we should have no users
-    And the system should respond with "UNAUTHORIZED" and no body
+    And the system should respond with "UNAUTHORIZED" and the following errors:
+      | You could not be authenticated |

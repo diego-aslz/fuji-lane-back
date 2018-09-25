@@ -1,6 +1,7 @@
 package fujilane
 
 import (
+	"errors"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -34,11 +35,16 @@ type routeContext struct {
 }
 
 // respond responds with the given status and body in JSON format
-func (a *routeContext) respond(status int, body interface{}) {
-	a.context.JSON(status, body)
+func (c *routeContext) respond(status int, body interface{}) {
+	c.context.JSON(status, body)
 }
 
-func (a *routeContext) errorsBody(errs []error) map[string]interface{} {
+func (c *routeContext) respondError(status int, err error) {
+	c.addLogQuoted("response_error", err.Error())
+	c.context.JSON(status, c.errorsBody([]error{err}))
+}
+
+func (c *routeContext) errorsBody(errs []error) map[string]interface{} {
 	messages := []string{}
 	for _, err := range errs {
 		messages = append(messages, err.Error())
@@ -47,19 +53,19 @@ func (a *routeContext) errorsBody(errs []error) map[string]interface{} {
 	return map[string]interface{}{"errors": messages}
 }
 
-func (a *routeContext) fail(status int, err error) {
-	a.addLogError(err)
-	a.context.AbortWithError(status, err)
+func (c *routeContext) fatal(err error) {
+	c.addLogError(err)
+	c.respondError(http.StatusInternalServerError, errors.New("Sorry, something went wrong"))
 }
 
-func (a *routeContext) parseBodyAndValidate(dst Validatable) bool {
-	return a.parseBodyOrFail(dst) && a.validate(dst)
+func (c *routeContext) parseBodyAndValidate(dst Validatable) bool {
+	return c.parseBodyOrFail(dst) && c.validate(dst)
 }
 
-func (a *routeContext) validate(v Validatable) bool {
+func (c *routeContext) validate(v Validatable) bool {
 	errs := v.Validate()
 	if len(errs) > 0 {
-		a.respond(http.StatusUnprocessableEntity, a.errorsBody(errs))
+		c.respond(http.StatusUnprocessableEntity, c.errorsBody(errs))
 		return false
 	}
 
@@ -67,24 +73,24 @@ func (a *routeContext) validate(v Validatable) bool {
 }
 
 // parseBodyOrFail will try to parse the body as JSON and fail with BAD_REQUEST if an error is returned
-func (a *routeContext) parseBodyOrFail(dst interface{}) bool {
-	err := a.context.BindJSON(dst)
+func (c *routeContext) parseBodyOrFail(dst interface{}) bool {
+	err := c.context.BindJSON(dst)
 	if err != nil {
-		a.fail(http.StatusBadRequest, err)
+		c.respondError(http.StatusBadRequest, err)
 	}
 	return err == nil
 }
 
-func (a *routeContext) getHeader(key string) string {
-	values := a.context.Request.Header[key]
+func (c *routeContext) getHeader(key string) string {
+	values := c.context.Request.Header[key]
 	if len(values) == 0 {
 		return ""
 	}
 	return values[0]
 }
 
-func (a *routeContext) set(key string, value interface{}) {
-	a.context.Set(key, value)
+func (c *routeContext) set(key string, value interface{}) {
+	c.context.Set(key, value)
 }
 
 // ginAdapt wraps an application route with a function that abstracts gin.Context out of the flow so our routes can
