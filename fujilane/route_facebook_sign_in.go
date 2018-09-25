@@ -41,8 +41,8 @@ func (a *Application) routeFacebookSignIn(c *routeContext) {
 	if user.Email == "" {
 		user.Email = body.Email
 	}
-	user.Name = body.Name
-	user.FacebookID = body.ID
+	user.Name = &body.Name
+	user.FacebookID = &body.ID
 	user.LastSignedIn = a.timeFunc()
 
 	err = a.usersRepository.save(user)

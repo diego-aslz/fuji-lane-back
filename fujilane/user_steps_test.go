@@ -9,14 +9,59 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
-type testUser struct {
+type userRow struct {
 	User
-	Password string
-	Account  string
+	Name       string
+	Password   string
+	Account    string
+	FacebookID string
+}
+
+func (row *userRow) save(db *gorm.DB) error {
+	if row.Password != "" {
+		row.User.setPassword(row.Password)
+	}
+
+	if row.Account != "" {
+		row.User.Account = &Account{}
+		err := db.Find(row.User.Account, Account{Name: row.Account}).Error
+		if err != nil {
+			return err
+		}
+	}
+
+	if row.Name != "" {
+		row.User.Name = &row.Name
+	}
+
+	if row.FacebookID != "" {
+		row.User.FacebookID = &row.FacebookID
+	}
+
+	return db.Create(&row.User).Error
+}
+
+func newUserRow(u *User) (row *userRow) {
+	row = &userRow{}
+	row.User = *u
+
+	if u.Name != nil {
+		row.Name = *u.Name
+	}
+
+	if u.FacebookID != nil {
+		row.FacebookID = *u.FacebookID
+	}
+
+	if u.Account != nil {
+		row.Account = u.Account.Name
+	}
+
+	return
 }
 
 func theFollowingUsers(table *gherkin.DataTable) error {
-	sliceInterface, err := assist.CreateSlice(new(testUser), table)
+	sliceInterface, err := assist.CreateSlice(new(userRow), table)
 	if err != nil {
 		return err
 	}
@@ -25,21 +70,9 @@ func theFollowingUsers(table *gherkin.DataTable) error {
 
 	return withDatabase(func(db *gorm.DB) error {
 		for i := 0; i < users.Len(); i++ {
-			tu, _ := users.Index(i).Interface().(*testUser)
+			row, _ := users.Index(i).Interface().(*userRow)
 
-			if tu.Password != "" {
-				tu.User.setPassword(tu.Password)
-			}
-
-			if tu.Account != "" {
-				tu.User.Account = &Account{}
-				err = db.Find(tu.User.Account, Account{Name: tu.Account}).Error
-				if err != nil {
-					return err
-				}
-			}
-
-			err = db.Create(&tu.User).Error
+			err = row.save(db)
 			if err != nil {
 				return err
 			}
@@ -63,8 +96,17 @@ func weShouldHaveTheFollowingUsers(table *gherkin.DataTable) error {
 		}
 
 		users := []*User{}
-		db.Find(&users)
-		return assist.CompareToSlice(users, table)
+		err = db.Find(&users).Error
+		if err != nil {
+			return err
+		}
+
+		rows := []*userRow{}
+		for _, user := range users {
+			rows = append(rows, newUserRow(user))
+		}
+
+		return assist.CompareToSlice(rows, table)
 	})
 }
 

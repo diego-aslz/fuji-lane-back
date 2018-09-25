@@ -9,7 +9,7 @@ type usersRepository struct{}
 func (r *usersRepository) findForFacebookSignIn(facebookID, email string) (*User, error) {
 	user := &User{}
 	return user, withDatabase(func(db *gorm.DB) error {
-		err := db.Where(User{FacebookID: facebookID}).First(user).Error
+		err := db.Where(User{FacebookID: &facebookID}).First(user).Error
 
 		if gorm.IsRecordNotFoundError(err) {
 			user, err = r.findByEmail(email)

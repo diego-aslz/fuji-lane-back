@@ -5,7 +5,7 @@ CREATE TABLE properties(
   deleted_at timestamp without time zone,
   account_id int not null references accounts,
   state smallint not null default 1,
-  name varchar,
+  name varchar unique,
   address_1 varchar,
   address_2 varchar,
   address_3 varchar,

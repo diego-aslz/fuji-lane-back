@@ -13,10 +13,10 @@ type User struct {
 	gorm.Model
 	AccountID         *int
 	Account           *Account
-	Name              string
+	Name              *string
 	Email             string
-	FacebookID        string
-	EncryptedPassword string
+	FacebookID        *string
+	EncryptedPassword *string
 	LastSignedIn      time.Time
 }
 
@@ -26,18 +26,19 @@ func (u *User) setPassword(password string) error {
 		return e
 	}
 
-	u.EncryptedPassword = string(passwordBytes)
+	str := string(passwordBytes)
+	u.EncryptedPassword = &str
 
 	return nil
 }
 
 func (u *User) validatePassword(password string) bool {
-	return bcrypt.CompareHashAndPassword([]byte(u.EncryptedPassword), []byte(password)) == nil
+	return bcrypt.CompareHashAndPassword([]byte(*u.EncryptedPassword), []byte(password)) == nil
 }
 
 func (u *User) picture() string {
-	if u.FacebookID != "" {
-		return fmt.Sprintf("https://graph.facebook.com/%s/picture?width=64&height=64", u.FacebookID)
+	if u.FacebookID != nil {
+		return fmt.Sprintf("https://graph.facebook.com/%s/picture?width=64&height=64", *u.FacebookID)
 	}
 
 	return ""
