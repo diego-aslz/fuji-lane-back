@@ -1,6 +1,7 @@
 package fujilane
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/jinzhu/gorm"
@@ -30,4 +31,12 @@ func (u *User) setPassword(password string) error {
 
 func (u *User) validatePassword(password string) bool {
 	return bcrypt.CompareHashAndPassword([]byte(u.EncryptedPassword), []byte(password)) == nil
+}
+
+func (u *User) picture() string {
+	if u.FacebookID != "" {
+		return fmt.Sprintf("https://graph.facebook.com/%s/picture?width=64&height=64", u.FacebookID)
+	}
+
+	return ""
 }
