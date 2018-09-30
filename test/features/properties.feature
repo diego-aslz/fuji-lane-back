@@ -35,7 +35,7 @@ Feature: Properties Management
       | ID | Account          | Name            |
       | 20 | Diego Apartments | ACME Skyscraper |
     And I am authenticated with "diego@selzlein.com"
-    When I request an URL to upload an image called "building.jpg" for property "ACME Skyscraper"
+    When I request an URL to upload an image called "build/ing.jpg" for property "ACME Skyscraper"
     Then the system should respond with "OK" and the following pre-signed URL:
       | bucket     | fujilane-test                            |
       | key        | public/properties/20/images/building.jpg |

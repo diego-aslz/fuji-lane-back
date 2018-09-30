@@ -3,6 +3,7 @@ package flactions
 import (
 	"errors"
 	"net/http"
+	"strings"
 
 	"github.com/jinzhu/gorm"
 	"github.com/nerde/fuji-lane-back/flentities"
@@ -43,7 +44,7 @@ func (a *PropertiesImagesNew) Perform(c Context) {
 		return
 	}
 
-	url, err := a.GenerateURLToUploadPublicFile("properties/" + id + "/images/" + fileName)
+	url, err := a.GenerateURLToUploadPublicFile("properties/" + id + "/images/" + strings.Replace(fileName, "/", "", -1))
 
 	if err != nil {
 		c.ServerError(err)
