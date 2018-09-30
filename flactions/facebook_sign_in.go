@@ -47,14 +47,15 @@ func (a *FacebookSignIn) Perform(c Context) {
 		return
 	}
 
+	now := c.Now()
 	if user.ID > 0 {
-		updates := flentities.User{Name: &a.Name, FacebookID: &a.ID, LastSignedIn: c.Now()}
+		updates := flentities.User{Name: &a.Name, FacebookID: &a.ID, LastSignedIn: &now}
 		err = c.Repository().Model(user).Updates(updates).Error
 	} else {
 		user.Email = a.Email
 		user.Name = &a.Name
 		user.FacebookID = &a.ID
-		user.LastSignedIn = c.Now()
+		user.LastSignedIn = &now
 		err = c.Repository().Create(user).Error
 	}
 

@@ -17,7 +17,7 @@ type User struct {
 	Email             string
 	FacebookID        *string
 	EncryptedPassword *string
-	LastSignedIn      time.Time
+	LastSignedIn      *time.Time
 }
 
 // SetPassword calculates the encrypted hash and fills in EncryptedPassword

@@ -3,6 +3,7 @@ package fujilane
 import (
 	"fmt"
 	"reflect"
+	"time"
 
 	"github.com/DATA-DOG/godog"
 	"github.com/DATA-DOG/godog/gherkin"
@@ -11,10 +12,11 @@ import (
 
 type userRow struct {
 	flentities.User
-	Name       string
-	Password   string
-	Account    string
-	FacebookID string
+	Name         string
+	Password     string
+	Account      string
+	FacebookID   string
+	LastSignedIn time.Time
 }
 
 func (row *userRow) save(r *flentities.Repository) error {
@@ -38,6 +40,10 @@ func (row *userRow) save(r *flentities.Repository) error {
 		row.User.FacebookID = &row.FacebookID
 	}
 
+	if !row.LastSignedIn.IsZero() {
+		row.User.LastSignedIn = &row.LastSignedIn
+	}
+
 	return r.Create(&row.User).Error
 }
 
@@ -55,6 +61,10 @@ func newUserRow(u *flentities.User) (row *userRow) {
 
 	if u.Account != nil {
 		row.Account = u.Account.Name
+	}
+
+	if u.LastSignedIn != nil {
+		row.LastSignedIn = *u.LastSignedIn
 	}
 
 	return
