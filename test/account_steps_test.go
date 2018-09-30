@@ -17,10 +17,10 @@ type accountRow struct {
 }
 
 func theFollowingAccounts(table *gherkin.DataTable) error {
-	return createFromTable(new(flentities.Account), table)
+	return createEntitiesFromTable(new(flentities.Account), table)
 }
 
-func iCreateTheFollowingAccount(table *gherkin.DataTable) error {
+func requestAccountsCreate(table *gherkin.DataTable) error {
 	b, err := assist.ParseMap(table)
 	if err != nil {
 		return err
@@ -43,7 +43,7 @@ func iCreateTheFollowingAccount(table *gherkin.DataTable) error {
 	})
 }
 
-func iShouldHaveTheFollowingAccounts(table *gherkin.DataTable) error {
+func assertAccounts(table *gherkin.DataTable) error {
 	return withRepository(func(r *flentities.Repository) error {
 		accounts := []*flentities.Account{}
 		err := r.Preload("Country").Find(&accounts).Error
@@ -77,6 +77,6 @@ func iShouldHaveTheFollowingAccounts(table *gherkin.DataTable) error {
 
 func AccountContext(s *godog.Suite) {
 	s.Step(`^the following accounts:$`, theFollowingAccounts)
-	s.Step(`^I create the following account:$`, iCreateTheFollowingAccount)
-	s.Step(`^we should have the following accounts:$`, iShouldHaveTheFollowingAccounts)
+	s.Step(`^I create the following account:$`, requestAccountsCreate)
+	s.Step(`^we should have the following accounts:$`, assertAccounts)
 }

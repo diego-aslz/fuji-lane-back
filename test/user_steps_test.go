@@ -2,7 +2,6 @@ package fujilane
 
 import (
 	"fmt"
-	"reflect"
 	"time"
 
 	"github.com/DATA-DOG/godog"
@@ -71,25 +70,7 @@ func newUserRow(u *flentities.User) (row *userRow) {
 }
 
 func theFollowingUsers(table *gherkin.DataTable) error {
-	sliceInterface, err := assist.CreateSlice(new(userRow), table)
-	if err != nil {
-		return err
-	}
-
-	users := reflect.ValueOf(sliceInterface)
-
-	return withRepository(func(r *flentities.Repository) error {
-		for i := 0; i < users.Len(); i++ {
-			row, _ := users.Index(i).Interface().(*userRow)
-
-			err = row.save(r)
-			if err != nil {
-				return err
-			}
-		}
-
-		return nil
-	})
+	return createRowEntitiesFromTable(new(userRow), table)
 }
 
 func weShouldHaveTheFollowingUsers(table *gherkin.DataTable) error {

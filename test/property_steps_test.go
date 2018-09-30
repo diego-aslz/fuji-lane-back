@@ -2,7 +2,6 @@ package fujilane
 
 import (
 	"fmt"
-	"reflect"
 	"strings"
 
 	"github.com/DATA-DOG/godog"
@@ -62,25 +61,7 @@ func (row *propertyRow) save(r *flentities.Repository) error {
 }
 
 func theFollowingProperties(table *gherkin.DataTable) error {
-	sliceInterface, err := assist.CreateSlice(new(propertyRow), table)
-	if err != nil {
-		return err
-	}
-
-	users := reflect.ValueOf(sliceInterface)
-
-	return withRepository(func(r *flentities.Repository) error {
-		for i := 0; i < users.Len(); i++ {
-			row, _ := users.Index(i).Interface().(*propertyRow)
-
-			err = row.save(r)
-			if err != nil {
-				return err
-			}
-		}
-
-		return nil
-	})
+	return createRowEntitiesFromTable(new(propertyRow), table)
 }
 
 func assertProperties(table *gherkin.DataTable) error {

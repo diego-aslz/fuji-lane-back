@@ -7,7 +7,7 @@ import (
 )
 
 func theFollowingCountries(table *gherkin.DataTable) error {
-	return createFromTable(new(flentities.Country), table)
+	return createEntitiesFromTable(new(flentities.Country), table)
 }
 
 func FeatureContext(s *godog.Suite) {
