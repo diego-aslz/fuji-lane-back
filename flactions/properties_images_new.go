@@ -16,8 +16,9 @@ type PropertiesImagesNew struct {
 
 // Perform executes the action
 func (a *PropertiesImagesNew) Perform(c Context) {
-	id := c.Param("id")
 	fileName := c.Query("name")
+
+	c.Diagnostics().AddQuoted("file_name", fileName)
 
 	if fileName == "" {
 		c.RespondError(http.StatusUnprocessableEntity, errors.New("Please provide a filename"))
@@ -30,6 +31,7 @@ func (a *PropertiesImagesNew) Perform(c Context) {
 		return
 	}
 
+	id := c.Param("id")
 	property := &flentities.Property{}
 	err := c.Repository().Find(property, map[string]interface{}{"id": id, "account_id": account.ID}).Error
 	if gorm.IsRecordNotFoundError(err) {
