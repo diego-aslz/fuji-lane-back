@@ -28,8 +28,3 @@ func (a *PropertiesCreate) Perform(c Context) {
 
 	c.Respond(http.StatusCreated, property)
 }
-
-// NewPropertiesCreate creates new PropertiesCreate instances
-func NewPropertiesCreate() Action {
-	return &PropertiesCreate{}
-}

@@ -67,8 +67,3 @@ func (a *AccountsCreate) buildAccount() *flentities.Account {
 
 	return account
 }
-
-// NewAccountsCreate creates new AccountsCreate instances
-func NewAccountsCreate() Action {
-	return &AccountsCreate{}
-}

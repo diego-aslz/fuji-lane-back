@@ -4,6 +4,3 @@ package flactions
 type Action interface {
 	Perform(Context)
 }
-
-// ActionCreator creates new instances of actions
-type ActionCreator func() Action

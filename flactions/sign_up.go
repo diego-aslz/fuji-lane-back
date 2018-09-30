@@ -65,8 +65,3 @@ func (a *SignUp) Perform(c Context) {
 
 	c.Respond(http.StatusCreated, s)
 }
-
-// NewSignUp creates a new SignUp instance
-func NewSignUp() Action {
-	return &SignUp{}
-}
