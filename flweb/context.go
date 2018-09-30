@@ -57,10 +57,6 @@ func (c *Context) ServerError(err error) {
 	c.RespondError(http.StatusInternalServerError, errors.New("Sorry, something went wrong"))
 }
 
-func (c *Context) parseBodyAndValidate(dst flentities.Validatable) bool {
-	return c.parseBodyOrFail(dst) && c.validate(dst)
-}
-
 func (c *Context) validate(v flentities.Validatable) bool {
 	errs := v.Validate()
 	if len(errs) > 0 {
