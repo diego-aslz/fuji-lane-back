@@ -49,10 +49,7 @@ func (a *SignUp) Perform(c Context) {
 		return
 	}
 
-	user.LastSignedIn = c.Now()
-
-	err = c.Repository().Save(user).Error
-	if err != nil {
+	if err = c.Repository().Model(user).Updates(flentities.User{LastSignedIn: c.Now()}).Error; err != nil {
 		c.ServerError(err)
 		return
 	}
