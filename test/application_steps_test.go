@@ -7,8 +7,8 @@ import (
 
 	"github.com/DATA-DOG/godog"
 	"github.com/gin-gonic/gin"
-	"github.com/nerde/fuji-lane-back/flactions"
 	"github.com/nerde/fuji-lane-back/flconfig"
+	"github.com/nerde/fuji-lane-back/flservices"
 	"github.com/nerde/fuji-lane-back/flweb"
 	"github.com/rdumont/assistdog"
 	"github.com/rdumont/assistdog/defaults"
@@ -29,7 +29,7 @@ func setupApplication() {
 	assist = assistdog.NewDefault()
 	assist.RegisterComparer(time.Time{}, timeComparer)
 
-	facebookClient = &mockedFacebookClient{tokens: map[string]flactions.FacebookTokenDetails{}}
+	facebookClient = &mockedFacebookClient{tokens: map[string]flservices.FacebookTokenDetails{}}
 	application = flweb.NewApplication(facebookClient)
 
 	application.TimeFunc = func() time.Time {

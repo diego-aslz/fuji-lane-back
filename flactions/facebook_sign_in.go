@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/nerde/fuji-lane-back/fldiagnostics"
+	"github.com/nerde/fuji-lane-back/flservices"
 
 	"github.com/nerde/fuji-lane-back/flentities"
 )
@@ -26,14 +27,14 @@ func (b FacebookSignInBody) FilterSensitiveInformation() fldiagnostics.Sensitive
 // FacebookSignIn signs the user in via Facebook authentication
 type FacebookSignIn struct {
 	FacebookSignInBody
-	facebook *facebook
+	facebook *flservices.Facebook
 }
 
 // Perform the action
 func (a *FacebookSignIn) Perform(c Context) {
 	c.Diagnostics().AddSensitive("params", a)
 
-	err := a.facebook.validate(a.AccessToken, a.ID)
+	err := a.facebook.Validate(a.AccessToken, a.ID)
 	if err != nil {
 		c.Diagnostics().AddError(err)
 		c.RespondError(http.StatusUnauthorized, errors.New("You could not be authenticated"))
@@ -69,6 +70,6 @@ func (a *FacebookSignIn) Perform(c Context) {
 }
 
 // NewFacebookSignIn creates a new FacebookSignIn instance
-func NewFacebookSignIn(client FacebookClient) Action {
-	return &FacebookSignIn{facebook: newFacebook(client)}
+func NewFacebookSignIn(client flservices.FacebookClient) Action {
+	return &FacebookSignIn{facebook: flservices.NewFacebook(client)}
 }

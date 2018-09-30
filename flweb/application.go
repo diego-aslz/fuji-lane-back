@@ -4,12 +4,12 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/nerde/fuji-lane-back/flactions"
+	"github.com/nerde/fuji-lane-back/flservices"
 )
 
 // Application is the struct that represents a Fuji Lane app
 type Application struct {
-	facebookClient flactions.FacebookClient
+	facebookClient flservices.FacebookClient
 	TimeFunc       func() time.Time
 }
 
@@ -28,7 +28,7 @@ func (a *Application) CreateRouter() *gin.Engine {
 }
 
 // NewApplication with the injected dependencies
-func NewApplication(facebookClient flactions.FacebookClient) *Application {
+func NewApplication(facebookClient flservices.FacebookClient) *Application {
 	return &Application{
 		facebookClient: facebookClient,
 		TimeFunc:       time.Now,

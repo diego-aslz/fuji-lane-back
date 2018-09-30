@@ -1,4 +1,4 @@
-package flactions
+package flservices
 
 import (
 	"encoding/json"
@@ -23,12 +23,14 @@ type FacebookClient interface {
 	Debug(string) (FacebookTokenDetails, error)
 }
 
-type facebook struct {
+// Facebook is an abstraction layer for accessing Facebook features
+type Facebook struct {
 	appID  string
 	client FacebookClient
 }
 
-func (f *facebook) validate(token string, userID string) error {
+// Validate checks if the given token is valid for the user
+func (f *Facebook) Validate(token string, userID string) error {
 	details, err := f.client.Debug(token)
 	if err != nil {
 		return err
@@ -49,8 +51,9 @@ func (f *facebook) validate(token string, userID string) error {
 	return nil
 }
 
-func newFacebook(client FacebookClient) *facebook {
-	return &facebook{
+// NewFacebook returns a new Facebook service instance
+func NewFacebook(client FacebookClient) *Facebook {
+	return &Facebook{
 		client: client,
 		appID:  flconfig.Config.FacebookAppID,
 	}
