@@ -1,4 +1,4 @@
-package fujilane
+package flweb
 
 import (
 	"time"
@@ -10,7 +10,7 @@ import (
 // Application is the struct that represents a Fuji Lane app
 type Application struct {
 	facebookClient flactions.FacebookClient
-	timeFunc       func() time.Time
+	TimeFunc       func() time.Time
 }
 
 // Start listening to requests
@@ -31,6 +31,6 @@ func (a *Application) CreateRouter() *gin.Engine {
 func NewApplication(facebookClient flactions.FacebookClient) *Application {
 	return &Application{
 		facebookClient: facebookClient,
-		timeFunc:       time.Now,
+		TimeFunc:       time.Now,
 	}
 }

@@ -6,6 +6,7 @@ import (
 	"github.com/DATA-DOG/godog"
 	"github.com/DATA-DOG/godog/gherkin"
 	"github.com/nerde/fuji-lane-back/flactions"
+	"github.com/nerde/fuji-lane-back/flweb"
 )
 
 var facebookClient *mockedFacebookClient
@@ -46,7 +47,7 @@ func facebookRecognizesTheFollowingTokens(table *gherkin.DataTable) error {
 }
 
 func theFollowingUserSignsInViaFacebook(table *gherkin.DataTable) error {
-	return performPOSTWithTable(facebookSignInPath, table)
+	return performPOSTWithTable(flweb.FacebookSignInPath, table)
 }
 
 func SignInContext(s *godog.Suite) {

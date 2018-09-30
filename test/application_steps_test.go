@@ -9,11 +9,12 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/nerde/fuji-lane-back/flactions"
 	"github.com/nerde/fuji-lane-back/flconfig"
+	"github.com/nerde/fuji-lane-back/flweb"
 	"github.com/rdumont/assistdog"
 	"github.com/rdumont/assistdog/defaults"
 )
 
-var application *Application
+var application *flweb.Application
 var router *gin.Engine
 var assist *assistdog.Assist
 var appTime time.Time
@@ -29,9 +30,9 @@ func setupApplication() {
 	assist.RegisterComparer(time.Time{}, timeComparer)
 
 	facebookClient = &mockedFacebookClient{tokens: map[string]flactions.FacebookTokenDetails{}}
-	application = NewApplication(facebookClient)
+	application = flweb.NewApplication(facebookClient)
 
-	application.timeFunc = func() time.Time {
+	application.TimeFunc = func() time.Time {
 		return appTime
 	}
 

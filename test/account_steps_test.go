@@ -7,6 +7,7 @@ import (
 	"github.com/DATA-DOG/godog/gherkin"
 	"github.com/nerde/fuji-lane-back/flactions"
 	"github.com/nerde/fuji-lane-back/flentities"
+	"github.com/nerde/fuji-lane-back/flweb"
 )
 
 type accountRow struct {
@@ -38,7 +39,7 @@ func iCreateTheFollowingAccount(table *gherkin.DataTable) error {
 		body.UserName = b["user_name"]
 		body.CountryID = int(country.ID)
 
-		return performPOST(accountsPath, body)
+		return performPOST(flweb.AccountsPath, body)
 	})
 }
 

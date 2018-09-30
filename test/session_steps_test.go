@@ -7,6 +7,7 @@ import (
 	"github.com/DATA-DOG/godog/gherkin"
 	"github.com/nerde/fuji-lane-back/flconfig"
 	"github.com/nerde/fuji-lane-back/flentities"
+	"github.com/nerde/fuji-lane-back/flweb"
 )
 
 var currentSession *flentities.Session
@@ -21,7 +22,7 @@ func iAmAuthenticatedWith(email string) error {
 			return fmt.Errorf("User not found: %s", email)
 		}
 
-		currentSession = flentities.NewSession(user, application.timeFunc)
+		currentSession = flentities.NewSession(user, application.TimeFunc)
 		currentSession.GenerateToken()
 
 		return nil
@@ -29,7 +30,7 @@ func iAmAuthenticatedWith(email string) error {
 }
 
 func iSignInWith(table *gherkin.DataTable) error {
-	return performPOSTWithTable(signInPath, table)
+	return performPOSTWithTable(flweb.SignInPath, table)
 }
 
 func theFollowingSession(table *gherkin.DataTable) error {

@@ -1,4 +1,4 @@
-package fujilane
+package flweb
 
 import (
 	"log"

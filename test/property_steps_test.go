@@ -6,10 +6,11 @@ import (
 	"github.com/DATA-DOG/godog"
 	"github.com/DATA-DOG/godog/gherkin"
 	"github.com/nerde/fuji-lane-back/flentities"
+	"github.com/nerde/fuji-lane-back/flweb"
 )
 
 func simulateAddProperty() error {
-	return performPOSTWithTable(propertiesPath, &gherkin.DataTable{})
+	return performPOSTWithTable(flweb.PropertiesPath, &gherkin.DataTable{})
 }
 
 type propertyRow struct {

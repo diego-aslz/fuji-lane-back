@@ -1,4 +1,4 @@
-package fujilane
+package flweb
 
 import (
 	"github.com/nerde/fuji-lane-back/flconfig"
@@ -10,33 +10,39 @@ import (
 )
 
 const (
-	statusPath = "/status"
+	// StatusPath path for health check
+	StatusPath = "/status"
 
-	signUpPath         = "/sign_up"
-	signInPath         = "/sign_in"
-	facebookSignInPath = "/sign_in/facebook"
+	// SignUpPath for email sign up
+	SignUpPath = "/sign_up"
+	// SignInPath for email sign in
+	SignInPath = "/sign_in"
+	// FacebookSignInPath for Facebook sign in
+	FacebookSignInPath = "/sign_in/facebook"
 
-	accountsPath   = "/accounts"
-	propertiesPath = "/properties"
+	// AccountsPath for accounts management
+	AccountsPath = "/accounts"
+	// PropertiesPath for properties management
+	PropertiesPath = "/properties"
 )
 
 // AddRoutes to a Gin Engine
 func (a *Application) AddRoutes(e *gin.Engine) {
-	a.route(e.GET, statusPath, a.status)
+	a.route(e.GET, StatusPath, a.status)
 
-	a.route(e.POST, signUpPath, a.signUp)
-	a.route(e.POST, signInPath, a.signIn)
-	a.route(e.POST, facebookSignInPath, a.facebookSignIn)
+	a.route(e.POST, SignUpPath, a.signUp)
+	a.route(e.POST, SignInPath, a.signIn)
+	a.route(e.POST, FacebookSignInPath, a.facebookSignIn)
 
-	a.route(e.POST, accountsPath, a.accountsCreate)
-	a.route(e.POST, propertiesPath, a.propertiesCreate)
+	a.route(e.POST, AccountsPath, a.accountsCreate)
+	a.route(e.POST, PropertiesPath, a.propertiesCreate)
 }
 
 type ginMethod func(string, ...gin.HandlerFunc) gin.IRoutes
 
 func (a *Application) route(method ginMethod, path string, next func(*Context)) {
 	method(path, func(c *gin.Context) {
-		next(&Context{context: c, now: a.timeFunc})
+		next(&Context{context: c, now: a.TimeFunc})
 	})
 }
 

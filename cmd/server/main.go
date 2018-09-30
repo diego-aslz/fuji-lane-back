@@ -3,10 +3,10 @@ package main
 import (
 	"github.com/nerde/fuji-lane-back/flactions"
 	"github.com/nerde/fuji-lane-back/flconfig"
-	fujilane "github.com/nerde/fuji-lane-back/fujilane"
+	"github.com/nerde/fuji-lane-back/flweb"
 )
 
 func main() {
 	flconfig.LoadConfiguration()
-	fujilane.NewApplication(flactions.NewFacebookHTTPClient()).Start()
+	flweb.NewApplication(flactions.NewFacebookHTTPClient()).Start()
 }
