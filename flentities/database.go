@@ -14,14 +14,17 @@ import (
 
 // WithDatabase gets a database connection and calls the callback with it, taking care of connection errors
 func WithDatabase(config *flconfig.Configuration, callback func(*gorm.DB) error) error {
-	url := config.DatabaseURL
-	db, err := gorm.Open("postgres", url)
+	db, err := gorm.Open("postgres", config.DatabaseURL)
 	if err != nil {
-		return fmt.Errorf("Unable to connect to %s: %s", url, err.Error())
+		return fmt.Errorf("Unable to connect to %s: %s", config.DatabaseURL, err.Error())
 	}
+
 	defer db.Close()
-	db.LogMode(config.DatabaseLogs)
-	return callback(db)
+
+	return callback(db.
+		LogMode(config.DatabaseLogs).
+		Set("gorm:association_autocreate", false).
+		Set("gorm:association_autoupdate", false))
 }
 
 // Migrate the database
