@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"strconv"
 	"strings"
 
 	"github.com/nerde/fuji-lane-back/flentities"
@@ -79,6 +80,12 @@ func authenticateUser(next func(*Context)) func(*Context) {
 		}
 
 		c.Diagnostics().Add("user", user.Email).Add("user_id", fmt.Sprint(user.ID))
+		if user.AccountID != nil {
+			c.Diagnostics().Add("account_id", strconv.Itoa(*user.AccountID))
+		} else {
+			c.Diagnostics().Add("account_id", "")
+		}
+
 		c.set("current-user", user)
 
 		next(c)
