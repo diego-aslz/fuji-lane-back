@@ -3,9 +3,11 @@ package fujilane
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"reflect"
+	"regexp"
 	"strings"
 
 	"github.com/DATA-DOG/godog"
@@ -95,29 +97,74 @@ func performPOSTWithTable(path string, table *gherkin.DataTable) error {
 }
 
 func performPOST(path string, body interface{}) error {
-	response = httptest.NewRecorder()
-
-	var jsonBody []byte
-	var err error
+	var bodyIO io.Reader
 
 	if body != nil {
-		jsonBody, err = json.Marshal(body)
+		jsonBody, err := json.Marshal(body)
 		if err != nil {
 			return err
 		}
+
+		bodyIO = strings.NewReader(string(jsonBody))
 	}
 
-	req, err := http.NewRequest("POST", path, strings.NewReader(string(jsonBody)))
+	return perform("POST", path, bodyIO)
+}
 
-	if currentSession != nil {
-		req.Header["Authorization"] = []string{fmt.Sprintf("Bearer %s", currentSession.Token)}
-	}
+func performGET(path string) error {
+	return perform("GET", path, nil)
+}
+
+func perform(method, path string, body io.Reader) error {
+	response = httptest.NewRecorder()
+
+	req, err := http.NewRequest(method, path, body)
 
 	if err != nil {
 		return err
 	}
 
+	if currentSession != nil {
+		req.Header["Authorization"] = []string{fmt.Sprintf("Bearer %s", currentSession.Token)}
+	}
+
 	router.ServeHTTP(response, req)
+
+	return nil
+}
+
+func assertResponseStatusTextAndPresignedURL(status string, table *gherkin.DataTable) error {
+	if err := assertResponseStatusText(status); err != nil {
+		return err
+	}
+
+	expectedDetails, err := assist.ParseMap(table)
+	if err != nil {
+		return err
+	}
+
+	body := map[string]string{}
+	if err := json.Unmarshal([]byte(response.Body.String()), &body); err != nil {
+		return fmt.Errorf("Unable to unmarshal %s: %s", response.Body.String(), err.Error())
+	}
+
+	url := body["url"]
+	reg := regexp.MustCompile("\\/\\/(.*)\\.s3\\.amazonaws\\.com\\/(.*)\\?.*X-Amz-Expires=(\\d+)")
+	groups := reg.FindStringSubmatch(url)
+
+	actualDetails := map[string]string{
+		"bucket":     groups[1],
+		"key":        groups[2],
+		"expiration": groups[3],
+	}
+
+	for k, v := range expectedDetails {
+		expected := actualDetails[k]
+		if expected == v {
+			continue
+		}
+		return fmt.Errorf("Expected %s to be %s, got %s", k, v, expected)
+	}
 
 	return nil
 }
@@ -128,12 +175,16 @@ func assertResponseStatusText(status string) error {
 	}
 
 	switch status {
-	case "OK":
-		return assertResponseStatus(http.StatusOK)
-	case "UNAUTHORIZED":
-		return assertResponseStatus(http.StatusUnauthorized)
 	case "CREATED":
 		return assertResponseStatus(http.StatusCreated)
+	case "NOT FOUND":
+		return assertResponseStatus(http.StatusNotFound)
+	case "OK":
+		return assertResponseStatus(http.StatusOK)
+	case "PRECONDITION REQUIRED":
+		return assertResponseStatus(http.StatusPreconditionRequired)
+	case "UNAUTHORIZED":
+		return assertResponseStatus(http.StatusUnauthorized)
 	case "UNPROCESSABLE ENTITY":
 		return assertResponseStatus(http.StatusUnprocessableEntity)
 	default:
@@ -152,5 +203,6 @@ func HTTPContext(s *godog.Suite) {
 	s.Step(`^the system should respond with "([^"]*)" and the following body:$`, assertResponseStatusTextAndBody)
 	s.Step(`^the system should respond with "([^"]*)" and no body$`, assertResponseStatusTextAndNoBody)
 	s.Step(`^the system should respond with "([^"]*)" and the following errors:$`, assertResponseStatusTextAndErrors)
+	s.Step(`^the system should respond with "([^"]*)" and the following pre-signed URL:$`, assertResponseStatusTextAndPresignedURL)
 	s.Step(`^the system should respond with "([^"]*)"$`, assertResponseStatusText)
 }

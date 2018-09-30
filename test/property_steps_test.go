@@ -2,6 +2,8 @@ package fujilane
 
 import (
 	"fmt"
+	"reflect"
+	"strings"
 
 	"github.com/DATA-DOG/godog"
 	"github.com/DATA-DOG/godog/gherkin"
@@ -9,14 +11,76 @@ import (
 	"github.com/nerde/fuji-lane-back/flweb"
 )
 
-func simulateAddProperty() error {
-	return performPOSTWithTable(flweb.PropertiesPath, &gherkin.DataTable{})
+func requestPropertiesCreate() error {
+	return performPOST(flweb.PropertiesPath, nil)
+}
+
+func requestPropertiesImagesNew(fileName, propertyName string) error {
+	return withRepository(func(r *flentities.Repository) error {
+		property := &flentities.Property{}
+		if err := r.Find(property, map[string]interface{}{"name": propertyName}).Error; err != nil {
+			return err
+		}
+
+		url := strings.Replace(flweb.PropertiesImagesNewPath, ":id", fmt.Sprint(property.ID), 1)
+
+		return performGET(url + "?name=" + fileName)
+	})
 }
 
 type propertyRow struct {
-	*flentities.Property
+	flentities.Property
+	ID      int
 	Account string
 	State   string
+	Name    string
+}
+
+func (row *propertyRow) save(r *flentities.Repository) error {
+	if row.Account != "" {
+		row.Property.Account = &flentities.Account{}
+		err := r.Find(row.Property.Account, flentities.Account{Name: row.Account}).Error
+		if err != nil {
+			return err
+		}
+	}
+
+	if row.Name != "" {
+		row.Property.Name = &row.Name
+	}
+
+	if row.ID > 0 {
+		row.Property.ID = uint(row.ID)
+	}
+
+	switch row.State {
+	default:
+		row.Property.StateID = flentities.PropertyStateDraft
+	}
+
+	return r.Create(&row.Property).Error
+}
+
+func theFollowingProperties(table *gherkin.DataTable) error {
+	sliceInterface, err := assist.CreateSlice(new(propertyRow), table)
+	if err != nil {
+		return err
+	}
+
+	users := reflect.ValueOf(sliceInterface)
+
+	return withRepository(func(r *flentities.Repository) error {
+		for i := 0; i < users.Len(); i++ {
+			row, _ := users.Index(i).Interface().(*propertyRow)
+
+			err = row.save(r)
+			if err != nil {
+				return err
+			}
+		}
+
+		return nil
+	})
 }
 
 func assertProperties(table *gherkin.DataTable) error {
@@ -34,7 +98,7 @@ func assertProperties(table *gherkin.DataTable) error {
 
 		rows := []*propertyRow{}
 		for _, p := range properties {
-			row := &propertyRow{Property: p, State: p.State()}
+			row := &propertyRow{Property: *p, State: p.State()}
 			if p.Account != nil {
 				row.Account = p.Account.Name
 			}
@@ -63,7 +127,9 @@ func assertNoProperties() error {
 }
 
 func PropertyContext(s *godog.Suite) {
-	s.Step(`^I add a new property$`, simulateAddProperty)
+	s.Step(`^I add a new property$`, requestPropertiesCreate)
+	s.Step(`^I request an URL to upload an image called "([^"]*)" for property "([^"]*)"$`, requestPropertiesImagesNew)
+	s.Step(`^the following properties:$`, theFollowingProperties)
 	s.Step(`^we should have the following properties:$`, assertProperties)
 	s.Step(`^we should have no properties$`, assertNoProperties)
 }

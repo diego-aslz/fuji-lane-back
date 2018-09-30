@@ -9,9 +9,28 @@ import (
 	"github.com/nerde/fuji-lane-back/flentities"
 )
 
+// CurrentAccount returns the account for the currently authenticated user
+func (c *Context) CurrentAccount() *flentities.Account {
+	user := c.CurrentUser()
+	if user == nil || user.AccountID == nil {
+		return nil
+	}
+
+	if user.Account == nil {
+		user.Account = &flentities.Account{}
+		if err := c.Repository().First(user.Account, *user.AccountID).Error; err != nil {
+			c.Diagnostics().Add("current_account_load_error",
+				fmt.Sprintf("Unable to load Account %d: %s", *user.AccountID, err.Error()))
+			user.Account = nil
+		}
+	}
+
+	return user.Account
+}
+
 // CurrentUser returns the currently authenticated user
 func (c *Context) CurrentUser() *flentities.User {
-	v, ok := c.context.Get("current-user")
+	v, ok := c.Get("current-user")
 	if !ok {
 		return nil
 	}

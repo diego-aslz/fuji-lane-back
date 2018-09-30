@@ -10,6 +10,8 @@ import (
 
 // Configuration contains global system configuration details
 type Configuration struct {
+	AWSRegion           string
+	AWSBucket           string
 	DatabaseLogs        bool
 	DatabaseURL         string
 	FacebookAppID       string
@@ -32,6 +34,8 @@ func LoadConfiguration() {
 	}
 
 	Config = &Configuration{
+		AWSRegion:           os.Getenv("AWS_REGION"),
+		AWSBucket:           os.Getenv("AWS_BUCKET"),
 		DatabaseLogs:        os.Getenv("DATABASE_LOGS") == "true",
 		DatabaseURL:         os.Getenv("DATABASE_URL"),
 		FacebookAppID:       os.Getenv("FACEBOOK_APP_ID"),

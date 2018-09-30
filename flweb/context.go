@@ -14,7 +14,7 @@ import (
 // Context is a thin abstraction layer around gin.Context so our routes don't directly depend on it and we can
 // switch web libraries with less pain if we ever need to
 type Context struct {
-	context    *gin.Context
+	*gin.Context
 	repository *flentities.Repository
 	now        func() time.Time
 	action     flactions.Action
@@ -22,7 +22,7 @@ type Context struct {
 
 // Diagnostics returns the Diagnostics object being used for reporting execution details
 func (c *Context) Diagnostics() *fldiagnostics.Diagnostics {
-	d, _ := c.context.Get("diagnostics")
+	d, _ := c.Get("diagnostics")
 	return d.(*fldiagnostics.Diagnostics)
 }
 
@@ -33,13 +33,13 @@ func (c *Context) Now() time.Time {
 
 // Respond responds with the given status and body in JSON format
 func (c *Context) Respond(status int, body interface{}) {
-	c.context.JSON(status, body)
+	c.JSON(status, body)
 }
 
 // RespondError creates an error response with the given error
 func (c *Context) RespondError(status int, err error) {
 	c.Diagnostics().AddQuoted("response_error", err.Error())
-	c.context.JSON(status, c.errorsBody([]error{err}))
+	c.JSON(status, c.errorsBody([]error{err}))
 }
 
 func (c *Context) errorsBody(errs []error) map[string]interface{} {
@@ -69,7 +69,7 @@ func (c *Context) validate(v flentities.Validatable) bool {
 
 // parseBodyOrFail will try to parse the body as JSON and fail with BAD_REQUEST if an error is returned
 func (c *Context) parseBodyOrFail(dst interface{}) bool {
-	err := c.context.BindJSON(dst)
+	err := c.BindJSON(dst)
 	if err != nil {
 		c.RespondError(http.StatusBadRequest, err)
 	}
@@ -77,7 +77,7 @@ func (c *Context) parseBodyOrFail(dst interface{}) bool {
 }
 
 func (c *Context) getHeader(key string) string {
-	values := c.context.Request.Header[key]
+	values := c.Request.Header[key]
 	if len(values) == 0 {
 		return ""
 	}
@@ -85,7 +85,7 @@ func (c *Context) getHeader(key string) string {
 }
 
 func (c *Context) set(key string, value interface{}) {
-	c.context.Set(key, value)
+	c.Set(key, value)
 }
 
 // Repository returns the current Repository for database access

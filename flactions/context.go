@@ -12,7 +12,11 @@ type Context interface {
 	Diagnostics() *fldiagnostics.Diagnostics
 	Now() time.Time
 
+	CurrentAccount() *flentities.Account
 	CurrentUser() *flentities.User
+
+	Param(string) string
+	Query(string) string
 
 	Repository() *flentities.Repository
 

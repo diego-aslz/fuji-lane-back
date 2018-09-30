@@ -20,6 +20,8 @@ const (
 	AccountsPath = "/accounts"
 	// PropertiesPath for properties management
 	PropertiesPath = "/properties"
+	// PropertiesImagesNewPath for obtaining pre-signed upload URLs
+	PropertiesImagesNewPath = "/properties/:id/images/new"
 )
 
 // AddRoutes to a Gin Engine
@@ -32,13 +34,14 @@ func (a *Application) AddRoutes(e *gin.Engine) {
 
 	a.route(e.POST, AccountsPath, a.accountsCreate)
 	a.route(e.POST, PropertiesPath, a.propertiesCreate)
+	a.route(e.GET, PropertiesImagesNewPath, a.propertiesImagesNew)
 }
 
 type ginMethod func(string, ...gin.HandlerFunc) gin.IRoutes
 
 func (a *Application) route(method ginMethod, path string, next func(*Context)) {
 	method(path, func(c *gin.Context) {
-		next(&Context{context: c, now: a.TimeFunc})
+		next(&Context{Context: c, now: a.TimeFunc})
 	})
 }
 
@@ -69,5 +72,10 @@ func (a *Application) accountsCreate(c *Context) {
 
 func (a *Application) propertiesCreate(c *Context) {
 	c.action = &flactions.PropertiesCreate{}
+	withRepository(authenticateUser(performAction))(c)
+}
+
+func (a *Application) propertiesImagesNew(c *Context) {
+	c.action = flactions.NewPropertiesImagesNew()
 	withRepository(authenticateUser(performAction))(c)
 }
