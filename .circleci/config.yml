@@ -27,7 +27,7 @@ jobs:
             - vendor
 
       - run: make migrate
-      - run: make test
+      - run: make feature
 
     environment:
       STAGE: test

@@ -7,7 +7,7 @@ dependencies:
 migrate:
 	go run cmd/migrate/main.go
 
-test:
+feature:
 	cd test && godog
 
 server:
