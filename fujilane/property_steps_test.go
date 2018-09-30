@@ -5,7 +5,6 @@ import (
 
 	"github.com/DATA-DOG/godog"
 	"github.com/DATA-DOG/godog/gherkin"
-	"github.com/jinzhu/gorm"
 	"github.com/nerde/fuji-lane-back/flentities"
 )
 
@@ -20,9 +19,9 @@ type propertyRow struct {
 }
 
 func assertProperties(table *gherkin.DataTable) error {
-	return withDatabase(func(db *gorm.DB) error {
+	return withRepository(func(r *flentities.Repository) error {
 		properties := []*flentities.Property{}
-		err := db.Preload("Account").Find(&properties).Error
+		err := r.Preload("Account").Find(&properties).Error
 		if err != nil {
 			return err
 		}
@@ -47,9 +46,9 @@ func assertProperties(table *gherkin.DataTable) error {
 }
 
 func assertNoProperties() error {
-	return withDatabase(func(db *gorm.DB) error {
+	return withRepository(func(r *flentities.Repository) error {
 		count := 0
-		err := db.Model(&flentities.Property{}).Count(&count).Error
+		err := r.Model(&flentities.Property{}).Count(&count).Error
 		if err != nil {
 			return err
 		}

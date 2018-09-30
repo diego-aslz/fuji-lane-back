@@ -1,10 +1,12 @@
 package main
 
 import (
+	"github.com/nerde/fuji-lane-back/flactions"
+	"github.com/nerde/fuji-lane-back/flconfig"
 	fujilane "github.com/nerde/fuji-lane-back/fujilane"
 )
 
 func main() {
-	fujilane.LoadConfiguration()
-	fujilane.NewApplication(fujilane.NewFacebookHTTPClient()).Start()
+	flconfig.LoadConfiguration()
+	fujilane.NewApplication(flactions.NewFacebookHTTPClient()).Start()
 }

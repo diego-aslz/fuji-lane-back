@@ -6,7 +6,6 @@ import (
 
 	"github.com/DATA-DOG/godog"
 	"github.com/DATA-DOG/godog/gherkin"
-	"github.com/jinzhu/gorm"
 	"github.com/nerde/fuji-lane-back/flentities"
 )
 
@@ -18,14 +17,14 @@ type userRow struct {
 	FacebookID string
 }
 
-func (row *userRow) save(db *gorm.DB) error {
+func (row *userRow) save(r *flentities.Repository) error {
 	if row.Password != "" {
 		row.User.SetPassword(row.Password)
 	}
 
 	if row.Account != "" {
 		row.User.Account = &flentities.Account{}
-		err := db.Find(row.User.Account, flentities.Account{Name: row.Account}).Error
+		err := r.Find(row.User.Account, flentities.Account{Name: row.Account}).Error
 		if err != nil {
 			return err
 		}
@@ -39,7 +38,7 @@ func (row *userRow) save(db *gorm.DB) error {
 		row.User.FacebookID = &row.FacebookID
 	}
 
-	return db.Create(&row.User).Error
+	return r.Create(&row.User).Error
 }
 
 func newUserRow(u *flentities.User) (row *userRow) {
@@ -69,11 +68,11 @@ func theFollowingUsers(table *gherkin.DataTable) error {
 
 	users := reflect.ValueOf(sliceInterface)
 
-	return withDatabase(func(db *gorm.DB) error {
+	return withRepository(func(r *flentities.Repository) error {
 		for i := 0; i < users.Len(); i++ {
 			row, _ := users.Index(i).Interface().(*userRow)
 
-			err = row.save(db)
+			err = row.save(r)
 			if err != nil {
 				return err
 			}
@@ -84,9 +83,9 @@ func theFollowingUsers(table *gherkin.DataTable) error {
 }
 
 func weShouldHaveTheFollowingUsers(table *gherkin.DataTable) error {
-	return withDatabase(func(db *gorm.DB) error {
+	return withRepository(func(r *flentities.Repository) error {
 		count := 0
-		err := db.Model(&flentities.User{}).Count(&count).Error
+		err := r.Model(&flentities.User{}).Count(&count).Error
 		if err != nil {
 			return err
 		}
@@ -97,7 +96,7 @@ func weShouldHaveTheFollowingUsers(table *gherkin.DataTable) error {
 		}
 
 		users := []*flentities.User{}
-		err = db.Preload("Account").Find(&users).Error
+		err = r.Preload("Account").Find(&users).Error
 		if err != nil {
 			return err
 		}
@@ -112,9 +111,9 @@ func weShouldHaveTheFollowingUsers(table *gherkin.DataTable) error {
 }
 
 func weShouldHaveNoUsers() error {
-	return withDatabase(func(db *gorm.DB) error {
+	return withRepository(func(r *flentities.Repository) error {
 		count := 0
-		err := db.Model(&flentities.User{}).Count(&count).Error
+		err := r.Model(&flentities.User{}).Count(&count).Error
 		if err != nil {
 			return err
 		}

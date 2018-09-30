@@ -5,23 +5,24 @@ import (
 
 	"github.com/DATA-DOG/godog"
 	"github.com/DATA-DOG/godog/gherkin"
+	"github.com/nerde/fuji-lane-back/flactions"
 )
 
 var facebookClient *mockedFacebookClient
 
 type mockedFacebookClient struct {
-	tokens map[string]facebookTokenDetails
+	tokens map[string]flactions.FacebookTokenDetails
 }
 
-func (c *mockedFacebookClient) mock(token string, details facebookTokenDetails) {
+func (c *mockedFacebookClient) mock(token string, details flactions.FacebookTokenDetails) {
 	c.tokens[token] = details
 }
 
-func (c *mockedFacebookClient) debug(token string) (facebookTokenDetails, error) {
+func (c *mockedFacebookClient) Debug(token string) (flactions.FacebookTokenDetails, error) {
 	details, ok := c.tokens[token]
 
 	if !ok {
-		return facebookTokenDetails{}, fmt.Errorf("Could not find details for token %s", token)
+		return flactions.FacebookTokenDetails{}, fmt.Errorf("Could not find details for token %s", token)
 	}
 
 	return details, nil
@@ -34,7 +35,7 @@ func facebookRecognizesTheFollowingTokens(table *gherkin.DataTable) error {
 	}
 
 	for _, row := range detailRows {
-		facebookClient.mock(row["accessToken"], facebookTokenDetails{
+		facebookClient.mock(row["accessToken"], flactions.FacebookTokenDetails{
 			AppID:   row["AppID"],
 			IsValid: row["IsValid"] == "true",
 			UserID:  row["UserID"],

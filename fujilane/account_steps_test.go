@@ -5,7 +5,7 @@ import (
 
 	"github.com/DATA-DOG/godog"
 	"github.com/DATA-DOG/godog/gherkin"
-	"github.com/jinzhu/gorm"
+	"github.com/nerde/fuji-lane-back/flactions"
 	"github.com/nerde/fuji-lane-back/flentities"
 )
 
@@ -25,14 +25,14 @@ func iCreateTheFollowingAccount(table *gherkin.DataTable) error {
 		return err
 	}
 
-	return withDatabase(func(db *gorm.DB) error {
+	return withRepository(func(r *flentities.Repository) error {
 		country := &flentities.Country{}
 
-		if err := db.Find(country, flentities.Country{Name: b["country"]}).Error; err != nil {
+		if err := r.Find(country, flentities.Country{Name: b["country"]}).Error; err != nil {
 			return err
 		}
 
-		body := accountCreateBody{}
+		body := flactions.AccountsCreateBody{}
 		body.Name = b["name"]
 		body.Phone = b["phone"]
 		body.UserName = b["user_name"]
@@ -43,9 +43,9 @@ func iCreateTheFollowingAccount(table *gherkin.DataTable) error {
 }
 
 func iShouldHaveTheFollowingAccounts(table *gherkin.DataTable) error {
-	return withDatabase(func(db *gorm.DB) error {
+	return withRepository(func(r *flentities.Repository) error {
 		accounts := []*flentities.Account{}
-		err := db.Preload("Country").Find(&accounts).Error
+		err := r.Preload("Country").Find(&accounts).Error
 		if err != nil {
 			return err
 		}

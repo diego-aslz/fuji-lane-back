@@ -7,6 +7,8 @@ import (
 
 	"github.com/DATA-DOG/godog"
 	"github.com/gin-gonic/gin"
+	"github.com/nerde/fuji-lane-back/flactions"
+	"github.com/nerde/fuji-lane-back/flconfig"
 	"github.com/rdumont/assistdog"
 	"github.com/rdumont/assistdog/defaults"
 )
@@ -14,19 +16,24 @@ import (
 var application *Application
 var router *gin.Engine
 var assist *assistdog.Assist
+var appTime time.Time
 
 const timeFormat = "02 Jan 06 15:04"
 
 func setupApplication() {
 	os.Setenv("STAGE", "test")
 
-	LoadConfiguration()
+	flconfig.LoadConfiguration()
 
 	assist = assistdog.NewDefault()
 	assist.RegisterComparer(time.Time{}, timeComparer)
 
-	facebookClient = &mockedFacebookClient{tokens: map[string]facebookTokenDetails{}}
+	facebookClient = &mockedFacebookClient{tokens: map[string]flactions.FacebookTokenDetails{}}
 	application = NewApplication(facebookClient)
+
+	application.timeFunc = func() time.Time {
+		return appTime
+	}
 
 	router = application.CreateRouter()
 }
@@ -51,21 +58,20 @@ func timeComparer(raw string, rawActual interface{}) error {
 	return nil
 }
 
-func itIsCurrently(timeExpr string) error {
-	t, err := time.Parse(timeFormat, timeExpr)
+func itIsCurrently(timeExpr string) (err error) {
+	appTime, err = time.Parse(timeFormat, timeExpr)
 	if err != nil {
-		return err
+		return
 	}
 
-	application.timeFunc = func() time.Time {
-		return t
-	}
-
-	return nil
+	return
 }
 
 func ApplicationContext(s *godog.Suite) {
 	s.BeforeSuite(setupApplication)
+	s.BeforeScenario(func(_ interface{}) {
+		appTime = time.Now()
+	})
 
 	s.Step(`^it is currently "([^"]*)"$`, itIsCurrently)
 }

@@ -5,23 +5,27 @@ import (
 
 	"github.com/DATA-DOG/godog"
 	"github.com/DATA-DOG/godog/gherkin"
+	"github.com/nerde/fuji-lane-back/flconfig"
+	"github.com/nerde/fuji-lane-back/flentities"
 )
 
-var currentSession *session
+var currentSession *flentities.Session
 
 func iAmAuthenticatedWith(email string) error {
-	user, err := application.usersRepository.findByEmail(email)
-	if err != nil {
-		return err
-	}
-	if user.ID == 0 {
-		return fmt.Errorf("User not found: %s", email)
-	}
+	return withRepository(func(r *flentities.Repository) error {
+		user, err := r.FindUserByEmail(email)
+		if err != nil {
+			return err
+		}
+		if user.ID == 0 {
+			return fmt.Errorf("User not found: %s", email)
+		}
 
-	currentSession = newSession(user, application.timeFunc)
-	currentSession.generateToken()
+		currentSession = flentities.NewSession(user, application.timeFunc)
+		currentSession.GenerateToken()
 
-	return nil
+		return nil
+	})
 }
 
 func iSignInWith(table *gherkin.DataTable) error {
@@ -29,15 +33,15 @@ func iSignInWith(table *gherkin.DataTable) error {
 }
 
 func theFollowingSession(table *gherkin.DataTable) error {
-	s, err := assist.CreateInstance(new(session), table)
+	s, err := assist.CreateInstance(new(flentities.Session), table)
 
 	if err != nil {
 		return err
 	}
 
-	currentSession = s.(*session)
-	currentSession.secret = appConfig.tokenSecret
-	currentSession.generateToken()
+	currentSession = s.(*flentities.Session)
+	currentSession.Secret = flconfig.Config.TokenSecret
+	currentSession.GenerateToken()
 
 	return nil
 }

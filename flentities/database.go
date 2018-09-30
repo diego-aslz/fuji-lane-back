@@ -1,4 +1,4 @@
-package fujilane
+package flentities
 
 import (
 	"fmt"
@@ -9,22 +9,24 @@ import (
 	_ "github.com/golang-migrate/migrate/source/file" // File migrations
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/postgres" // Postgres driver
+	"github.com/nerde/fuji-lane-back/flconfig"
 )
 
-func withDatabase(callback func(*gorm.DB) error) error {
-	url := appConfig.databaseURL
+// WithDatabase gets a database connection and calls the callback with it, taking care of connection errors
+func WithDatabase(config *flconfig.Configuration, callback func(*gorm.DB) error) error {
+	url := config.DatabaseURL
 	db, err := gorm.Open("postgres", url)
 	if err != nil {
 		return fmt.Errorf("Unable to connect to %s: %s", url, err.Error())
 	}
 	defer db.Close()
-	db.LogMode(appConfig.databaseLogs)
+	db.LogMode(config.DatabaseLogs)
 	return callback(db)
 }
 
 // Migrate the database
-func Migrate() error {
-	return withDatabase(func(db *gorm.DB) error {
+func Migrate(config *flconfig.Configuration) error {
+	return WithDatabase(config, func(db *gorm.DB) error {
 		driver, err := postgres.WithInstance(db.DB(), &postgres.Config{})
 		if err != nil {
 			return err
@@ -43,6 +45,7 @@ func Migrate() error {
 	})
 }
 
-func isUniqueConstraintViolation(err error) bool {
+// IsUniqueConstraintViolation returns true if the error is a unique constraint violation
+func IsUniqueConstraintViolation(err error) bool {
 	return strings.Contains(err.Error(), "violates unique constraint")
 }

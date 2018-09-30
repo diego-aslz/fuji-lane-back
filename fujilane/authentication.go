@@ -9,56 +9,57 @@ import (
 	"github.com/nerde/fuji-lane-back/flentities"
 )
 
-func (c *routeContext) currentUser() *flentities.User {
-	v, _ := c.context.Get("current-user")
+// CurrentUser returns the currently authenticated user
+func (c *routeContext) CurrentUser() *flentities.User {
+	v, ok := c.context.Get("current-user")
+	if !ok {
+		return nil
+	}
+
 	return v.(*flentities.User)
 }
 
 func (c *routeContext) unauthorized() {
-	c.respondError(http.StatusUnauthorized, errors.New("You need to sign in"))
+	c.RespondError(http.StatusUnauthorized, errors.New("You need to sign in"))
 }
 
-func (a *Application) authenticateUser(next func(*routeContext)) func(*routeContext) {
+func authenticateUser(next func(*routeContext)) func(*routeContext) {
 	return func(c *routeContext) {
 		auth := c.getHeader("Authorization")
 		if auth == "" {
-			c.addLogQuoted("reason", "Missing authentication token")
+			c.Diagnostics().AddQuoted("reason", "Missing authentication token")
 			c.unauthorized()
 			return
 		}
 
 		auth = strings.TrimPrefix(auth, "Bearer ")
-		session, err := loadSession(auth)
+		session, err := flentities.LoadSession(auth)
 		if err != nil {
-			c.addLogJSON("token", auth)
-			c.addLogQuoted("reason", "Unable to load session from token")
-			c.fatal(err)
+			c.Diagnostics().AddJSON("token", auth).AddQuoted("reason", "Unable to load session from token")
+			c.ServerError(err)
 			return
 		}
 
-		if session.ExpiresAt.Before(a.timeFunc()) {
-			c.addLogFiltered("session", session)
-			c.respondError(http.StatusUnauthorized, errors.New("Your session expired"))
+		if session.ExpiresAt.Before(c.Now()) {
+			c.Diagnostics().AddSensitive("session", session)
+			c.RespondError(http.StatusUnauthorized, errors.New("Your session expired"))
 			return
 		}
 
-		user, err := a.usersRepository.findByEmail(session.Email)
+		user, err := c.repository.FindUserByEmail(session.Email)
 		if err != nil {
-			c.addLogFiltered("session", session)
-			c.addLogQuoted("reason", "Unable to load user")
-			c.fatal(err)
+			c.Diagnostics().AddSensitive("session", session).AddQuoted("reason", "Unable to load user")
+			c.ServerError(err)
 			return
 		}
 
 		if user == nil || user.ID == 0 {
-			c.addLogFiltered("session", session)
-			c.addLogQuoted("reason", "User not found")
+			c.Diagnostics().AddSensitive("session", session).AddQuoted("reason", "User not found")
 			c.unauthorized()
 			return
 		}
 
-		c.addLog("user", user.Email)
-		c.addLog("user_id", fmt.Sprint(user.ID))
+		c.Diagnostics().Add("user", user.Email).Add("user_id", fmt.Sprint(user.ID))
 		c.set("current-user", user)
 
 		next(c)

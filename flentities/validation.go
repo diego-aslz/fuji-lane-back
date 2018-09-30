@@ -1,4 +1,4 @@
-package fujilane
+package flentities
 
 import (
 	"fmt"

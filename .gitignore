@@ -12,5 +12,5 @@
 
 vendor
 
-config/development.yml
+flconfig/development.yml
 .DS_Store

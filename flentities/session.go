@@ -1,31 +1,35 @@
-package fujilane
+package flentities
 
 import (
 	"errors"
 	"fmt"
 	"time"
 
+	"github.com/nerde/fuji-lane-back/fldiagnostics"
+
 	jwt "github.com/dgrijalva/jwt-go"
-	"github.com/nerde/fuji-lane-back/flentities"
+	"github.com/nerde/fuji-lane-back/flconfig"
 )
 
-type session struct {
+// Session contains authentication information
+type Session struct {
 	Email      string    `json:"email"`
 	Token      string    `json:"token"`
 	IssuedAt   time.Time `json:"issued_at"`
 	ExpiresAt  time.Time `json:"expires_at"`
 	RenewAfter time.Time `json:"renew_after"`
 	Picture    string    `json:"picture"`
-	secret     string
+	Secret     string    `json:"-"`
 }
 
-func (s *session) generateToken() (err error) {
+// GenerateToken generates a signed token for this session
+func (s *Session) GenerateToken() (err error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, s.claims())
-	s.Token, err = token.SignedString([]byte(s.secret))
+	s.Token, err = token.SignedString([]byte(s.Secret))
 	return
 }
 
-func (s *session) claims() jwt.MapClaims {
+func (s *Session) claims() jwt.MapClaims {
 	return jwt.MapClaims{
 		"Email":      s.Email,
 		"IssuedAt":   s.IssuedAt.Unix(),
@@ -34,30 +38,30 @@ func (s *session) claims() jwt.MapClaims {
 	}
 }
 
-func (s session) filterSensitiveInformation() filterableLog {
+func (s Session) FilterSensitiveInformation() fldiagnostics.SensitivePayload {
 	s.Token = "[FILTERED]"
 	return s
 }
 
-func newSession(user *flentities.User, timeFunc func() time.Time) *session {
+func NewSession(user *User, timeFunc func() time.Time) *Session {
 	now := timeFunc()
-	return &session{
+	return &Session{
 		Email:      user.Email,
 		IssuedAt:   now,
 		RenewAfter: now.Add(4 * 24 * time.Hour),
 		ExpiresAt:  now.Add(7 * 24 * time.Hour),
 		Picture:    user.Picture(),
-		secret:     appConfig.tokenSecret,
+		Secret:     flconfig.Config.TokenSecret,
 	}
 }
 
-func loadSession(tokenStr string) (*session, error) {
+func LoadSession(tokenStr string) (*Session, error) {
 	token, err := jwt.Parse(tokenStr, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
 		}
 
-		return []byte(appConfig.tokenSecret), nil
+		return []byte(flconfig.Config.TokenSecret), nil
 	})
 
 	if err != nil {
@@ -69,12 +73,12 @@ func loadSession(tokenStr string) (*session, error) {
 	}
 
 	if claims, ok := token.Claims.(jwt.MapClaims); ok {
-		return &session{
+		return &Session{
 			Email:      claims["Email"].(string),
 			IssuedAt:   time.Unix(int64(claims["IssuedAt"].(float64)), 0),
 			RenewAfter: time.Unix(int64(claims["RenewAfter"].(float64)), 0),
 			ExpiresAt:  time.Unix(int64(claims["ExpiresAt"].(float64)), 0),
-			secret:     appConfig.tokenSecret,
+			Secret:     flconfig.Config.TokenSecret,
 		}, nil
 	}
 
