@@ -2,10 +2,12 @@ package flweb
 
 import (
 	"log"
+	"reflect"
 	"strconv"
 	"time"
 
 	"github.com/jinzhu/gorm"
+	"github.com/nerde/fuji-lane-back/flactions"
 	"github.com/nerde/fuji-lane-back/flconfig"
 	"github.com/nerde/fuji-lane-back/fldiagnostics"
 	"github.com/nerde/fuji-lane-back/flentities"
@@ -66,6 +68,15 @@ func withRepository(next func(*Context)) func(*Context) {
 		if err != nil {
 			c.ServerError(err)
 		}
+	}
+}
+
+func withAction(a flactions.Action, next func(c *Context)) func(c *Context) {
+	return func(c *Context) {
+		c.action = a
+		c.Diagnostics().Add("action", reflect.TypeOf(a).Elem().Name())
+
+		next(c)
 	}
 }
 

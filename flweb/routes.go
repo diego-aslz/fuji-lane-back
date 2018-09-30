@@ -46,36 +46,49 @@ func (a *Application) route(method ginMethod, path string, next func(*Context)) 
 }
 
 func (a *Application) status(c *Context) {
-	c.action = &flactions.Status{}
-	performAction(c)
+	withAction(&flactions.Status{}, performAction)(c)
 }
 
 func (a *Application) signUp(c *Context) {
-	c.action = &flactions.SignUp{}
-	withRepository(loadActionBody(validateActionBody(performAction)))(c)
+	withAction(&flactions.SignUp{},
+		withRepository(
+			loadActionBody(
+				validateActionBody(
+					performAction))))(c)
 }
 
 func (a *Application) signIn(c *Context) {
-	c.action = &flactions.SignIn{}
-	withRepository(loadActionBody(performAction))(c)
+	withAction(&flactions.SignIn{},
+		withRepository(
+			loadActionBody(
+				performAction)))(c)
 }
 
 func (a *Application) facebookSignIn(c *Context) {
-	c.action = flactions.NewFacebookSignIn(a.facebookClient)
-	withRepository(loadActionBody(performAction))(c)
+	withAction(flactions.NewFacebookSignIn(a.facebookClient),
+		withRepository(
+			loadActionBody(
+				performAction)))(c)
 }
 
 func (a *Application) accountsCreate(c *Context) {
-	c.action = &flactions.AccountsCreate{}
-	withRepository(authenticateUser(loadActionBody(performAction)))(c)
+	withAction(&flactions.AccountsCreate{},
+		withRepository(
+			authenticateUser(
+				loadActionBody(
+					performAction))))(c)
 }
 
 func (a *Application) propertiesCreate(c *Context) {
-	c.action = &flactions.PropertiesCreate{}
-	withRepository(authenticateUser(performAction))(c)
+	withAction(&flactions.PropertiesCreate{},
+		withRepository(
+			authenticateUser(
+				performAction)))(c)
 }
 
 func (a *Application) propertiesImagesNew(c *Context) {
-	c.action = flactions.NewPropertiesImagesNew()
-	withRepository(authenticateUser(performAction))(c)
+	withAction(flactions.NewPropertiesImagesNew(),
+		withRepository(
+			authenticateUser(
+				performAction)))(c)
 }
