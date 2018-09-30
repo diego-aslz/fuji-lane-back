@@ -1,12 +1,8 @@
 package flweb
 
 import (
-	"github.com/nerde/fuji-lane-back/flconfig"
-
 	"github.com/gin-gonic/gin"
-	"github.com/jinzhu/gorm"
 	"github.com/nerde/fuji-lane-back/flactions"
-	"github.com/nerde/fuji-lane-back/flentities"
 )
 
 const (
@@ -53,63 +49,25 @@ func (a *Application) status(c *Context) {
 
 func (a *Application) signUp(c *Context) {
 	c.action = &flactions.SignUp{}
-	routeWithRepository(loadActionBody(validateActionBody(performAction)))(c)
+	withRepository(loadActionBody(validateActionBody(performAction)))(c)
 }
 
 func (a *Application) signIn(c *Context) {
 	c.action = &flactions.SignIn{}
-	routeWithRepository(loadActionBody(performAction))(c)
+	withRepository(loadActionBody(performAction))(c)
 }
 
 func (a *Application) facebookSignIn(c *Context) {
 	c.action = flactions.NewFacebookSignIn(a.facebookClient)
-	routeWithRepository(loadActionBody(performAction))(c)
+	withRepository(loadActionBody(performAction))(c)
 }
 
 func (a *Application) accountsCreate(c *Context) {
 	c.action = &flactions.AccountsCreate{}
-	routeWithRepository(authenticateUser(loadActionBody(performAction)))(c)
+	withRepository(authenticateUser(loadActionBody(performAction)))(c)
 }
 
 func (a *Application) propertiesCreate(c *Context) {
 	c.action = &flactions.PropertiesCreate{}
-	routeWithRepository(authenticateUser(performAction))(c)
-}
-
-func loadActionBody(next func(*Context)) func(*Context) {
-	return func(c *Context) {
-		if !c.parseBodyOrFail(c.action) {
-			return
-		}
-
-		next(c)
-	}
-}
-
-func validateActionBody(next func(*Context)) func(*Context) {
-	return func(c *Context) {
-		if !c.validate(c.action.(flentities.Validatable)) {
-			return
-		}
-
-		next(c)
-	}
-}
-
-func routeWithRepository(next func(*Context)) func(*Context) {
-	return func(c *Context) {
-		err := flentities.WithDatabase(flconfig.Config, func(db *gorm.DB) error {
-			c.repository = &flentities.Repository{DB: db}
-			next(c)
-			return nil
-		})
-
-		if err != nil {
-			c.ServerError(err)
-		}
-	}
-}
-
-func performAction(c *Context) {
-	c.action.Perform(c)
+	withRepository(authenticateUser(performAction))(c)
 }

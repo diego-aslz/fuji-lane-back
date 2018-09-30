@@ -21,7 +21,7 @@ func (a *Application) Start() {
 // CreateRouter with all the recognized paths and their handlers
 func (a *Application) CreateRouter() *gin.Engine {
 	r := gin.New()
-	r.Use(a.logMiddleware)
+	r.Use(withDiagnostics)
 	r.Use(gin.Recovery())
 	a.AddRoutes(r)
 	return r
