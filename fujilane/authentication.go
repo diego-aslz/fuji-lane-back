@@ -10,7 +10,7 @@ import (
 )
 
 // CurrentUser returns the currently authenticated user
-func (c *routeContext) CurrentUser() *flentities.User {
+func (c *Context) CurrentUser() *flentities.User {
 	v, ok := c.context.Get("current-user")
 	if !ok {
 		return nil
@@ -19,12 +19,12 @@ func (c *routeContext) CurrentUser() *flentities.User {
 	return v.(*flentities.User)
 }
 
-func (c *routeContext) unauthorized() {
+func (c *Context) unauthorized() {
 	c.RespondError(http.StatusUnauthorized, errors.New("You need to sign in"))
 }
 
-func authenticateUser(next func(*routeContext)) func(*routeContext) {
-	return func(c *routeContext) {
+func authenticateUser(next func(*Context)) func(*Context) {
+	return func(c *Context) {
 		auth := c.getHeader("Authorization")
 		if auth == "" {
 			c.Diagnostics().AddQuoted("reason", "Missing authentication token")

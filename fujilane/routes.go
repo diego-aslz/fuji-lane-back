@@ -41,9 +41,9 @@ func (a *Application) AddRoutes(e *gin.Engine) {
 
 // ginAdapt wraps an application route with a function that abstracts gin.Context out of the flow so our routes can
 // use the routeContext abstraction
-func (a *Application) ginAdapt(route func(*routeContext)) func(*gin.Context) {
+func (a *Application) ginAdapt(route func(*Context)) func(*gin.Context) {
 	return func(c *gin.Context) {
-		route(&routeContext{
+		route(&Context{
 			context: c,
 			now:     a.timeFunc,
 		})
@@ -54,35 +54,37 @@ func (a *Application) createFacebookSignIn() flactions.Action {
 	return flactions.NewFacebookSignIn(a.facebookClient)
 }
 
-// routeContext is a thin abstraction layer around gin.Context so our routes don't directly depend on it and we can
+// Context is a thin abstraction layer around gin.Context so our routes don't directly depend on it and we can
 // switch web libraries with less pain if we ever need to
-type routeContext struct {
+type Context struct {
 	context    *gin.Context
 	repository *flentities.Repository
 	now        func() time.Time
 }
 
-func (c *routeContext) Diagnostics() *fldiagnostics.Diagnostics {
+// Diagnostics returns the Diagnostics object being used for reporting execution details
+func (c *Context) Diagnostics() *fldiagnostics.Diagnostics {
 	d, _ := c.context.Get("diagnostics")
 	return d.(*fldiagnostics.Diagnostics)
 }
 
-func (c *routeContext) Now() time.Time {
+// Now returns the current time and can be injected
+func (c *Context) Now() time.Time {
 	return c.now()
 }
 
 // Respond responds with the given status and body in JSON format
-func (c *routeContext) Respond(status int, body interface{}) {
+func (c *Context) Respond(status int, body interface{}) {
 	c.context.JSON(status, body)
 }
 
 // RespondError creates an error response with the given error
-func (c *routeContext) RespondError(status int, err error) {
+func (c *Context) RespondError(status int, err error) {
 	c.Diagnostics().AddQuoted("response_error", err.Error())
 	c.context.JSON(status, c.errorsBody([]error{err}))
 }
 
-func (c *routeContext) errorsBody(errs []error) map[string]interface{} {
+func (c *Context) errorsBody(errs []error) map[string]interface{} {
 	messages := []string{}
 	for _, err := range errs {
 		messages = append(messages, err.Error())
@@ -91,16 +93,17 @@ func (c *routeContext) errorsBody(errs []error) map[string]interface{} {
 	return map[string]interface{}{"errors": messages}
 }
 
-func (c *routeContext) ServerError(err error) {
+// ServerError adds the error to Diagnostics and responds with 500 status and a generic error message
+func (c *Context) ServerError(err error) {
 	c.Diagnostics().AddError(err)
 	c.RespondError(http.StatusInternalServerError, errors.New("Sorry, something went wrong"))
 }
 
-func (c *routeContext) parseBodyAndValidate(dst flentities.Validatable) bool {
+func (c *Context) parseBodyAndValidate(dst flentities.Validatable) bool {
 	return c.parseBodyOrFail(dst) && c.validate(dst)
 }
 
-func (c *routeContext) validate(v flentities.Validatable) bool {
+func (c *Context) validate(v flentities.Validatable) bool {
 	errs := v.Validate()
 	if len(errs) > 0 {
 		c.Respond(http.StatusUnprocessableEntity, c.errorsBody(errs))
@@ -111,7 +114,7 @@ func (c *routeContext) validate(v flentities.Validatable) bool {
 }
 
 // parseBodyOrFail will try to parse the body as JSON and fail with BAD_REQUEST if an error is returned
-func (c *routeContext) parseBodyOrFail(dst interface{}) bool {
+func (c *Context) parseBodyOrFail(dst interface{}) bool {
 	err := c.context.BindJSON(dst)
 	if err != nil {
 		c.RespondError(http.StatusBadRequest, err)
@@ -119,7 +122,7 @@ func (c *routeContext) parseBodyOrFail(dst interface{}) bool {
 	return err == nil
 }
 
-func (c *routeContext) getHeader(key string) string {
+func (c *Context) getHeader(key string) string {
 	values := c.context.Request.Header[key]
 	if len(values) == 0 {
 		return ""
@@ -127,16 +130,17 @@ func (c *routeContext) getHeader(key string) string {
 	return values[0]
 }
 
-func (c *routeContext) set(key string, value interface{}) {
+func (c *Context) set(key string, value interface{}) {
 	c.context.Set(key, value)
 }
 
-func (c *routeContext) Repository() *flentities.Repository {
+// Repository returns the current Repository for database access
+func (c *Context) Repository() *flentities.Repository {
 	return c.repository
 }
 
-func routeActionWithBody(creator flactions.ActionCreator) func(*routeContext) {
-	return func(c *routeContext) {
+func routeActionWithBody(creator flactions.ActionCreator) func(*Context) {
+	return func(c *Context) {
 		action := creator()
 		if !c.parseBodyOrFail(action) {
 			return
@@ -146,8 +150,8 @@ func routeActionWithBody(creator flactions.ActionCreator) func(*routeContext) {
 	}
 }
 
-func routeActionWithValidatableBody(creator flactions.ActionCreator) func(*routeContext) {
-	return func(c *routeContext) {
+func routeActionWithValidatableBody(creator flactions.ActionCreator) func(*Context) {
+	return func(c *Context) {
 		action := creator()
 		if !c.parseBodyAndValidate(action.(flentities.Validatable)) {
 			return
@@ -157,14 +161,14 @@ func routeActionWithValidatableBody(creator flactions.ActionCreator) func(*route
 	}
 }
 
-func routeAction(creator flactions.ActionCreator) func(*routeContext) {
-	return func(c *routeContext) {
+func routeAction(creator flactions.ActionCreator) func(*Context) {
+	return func(c *Context) {
 		creator().Perform(c)
 	}
 }
 
-func routeWithRepository(next func(*routeContext)) func(*routeContext) {
-	return func(c *routeContext) {
+func routeWithRepository(next func(*Context)) func(*Context) {
+	return func(c *Context) {
 		err := flentities.WithDatabase(flconfig.Config, func(db *gorm.DB) error {
 			c.repository = &flentities.Repository{DB: db}
 			next(c)
