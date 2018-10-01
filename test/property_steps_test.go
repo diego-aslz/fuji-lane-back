@@ -15,7 +15,7 @@ func requestPropertiesCreate() error {
 }
 
 func requestPropertiesImagesNew(fileName, propertyName string) error {
-	return withRepository(func(r *flentities.Repository) error {
+	return flentities.WithRepository(func(r *flentities.Repository) error {
 		property := &flentities.Property{}
 		if err := r.Find(property, map[string]interface{}{"name": propertyName}).Error; err != nil {
 			return err
@@ -65,7 +65,7 @@ func theFollowingProperties(table *gherkin.DataTable) error {
 }
 
 func assertProperties(table *gherkin.DataTable) error {
-	return withRepository(func(r *flentities.Repository) error {
+	return flentities.WithRepository(func(r *flentities.Repository) error {
 		properties := []*flentities.Property{}
 		err := r.Preload("Account").Find(&properties).Error
 		if err != nil {
@@ -92,7 +92,7 @@ func assertProperties(table *gherkin.DataTable) error {
 }
 
 func assertNoProperties() error {
-	return withRepository(func(r *flentities.Repository) error {
+	return flentities.WithRepository(func(r *flentities.Repository) error {
 		count := 0
 		err := r.Model(&flentities.Property{}).Count(&count).Error
 		if err != nil {

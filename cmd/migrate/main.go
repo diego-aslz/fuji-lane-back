@@ -9,7 +9,7 @@ import (
 
 func main() {
 	flconfig.LoadConfiguration()
-	if err := flentities.Migrate(flconfig.Config); err != nil {
+	if err := flentities.Migrate(); err != nil {
 		log.Fatal(err.Error())
 	}
 }

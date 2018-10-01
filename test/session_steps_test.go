@@ -13,7 +13,7 @@ import (
 var currentSession *flentities.Session
 
 func iAmAuthenticatedWith(email string) error {
-	return withRepository(func(r *flentities.Repository) error {
+	return flentities.WithRepository(func(r *flentities.Repository) error {
 		user, err := r.FindUserByEmail(email)
 		if err != nil {
 			return err

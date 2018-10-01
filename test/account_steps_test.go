@@ -26,7 +26,7 @@ func requestAccountsCreate(table *gherkin.DataTable) error {
 		return err
 	}
 
-	return withRepository(func(r *flentities.Repository) error {
+	return flentities.WithRepository(func(r *flentities.Repository) error {
 		country := &flentities.Country{}
 
 		if err := r.Find(country, flentities.Country{Name: b["country"]}).Error; err != nil {
@@ -44,7 +44,7 @@ func requestAccountsCreate(table *gherkin.DataTable) error {
 }
 
 func assertAccounts(table *gherkin.DataTable) error {
-	return withRepository(func(r *flentities.Repository) error {
+	return flentities.WithRepository(func(r *flentities.Repository) error {
 		accounts := []*flentities.Account{}
 		err := r.Preload("Country").Find(&accounts).Error
 		if err != nil {

@@ -6,9 +6,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/jinzhu/gorm"
 	"github.com/nerde/fuji-lane-back/flactions"
-	"github.com/nerde/fuji-lane-back/flconfig"
 	"github.com/nerde/fuji-lane-back/fldiagnostics"
 	"github.com/nerde/fuji-lane-back/flentities"
 
@@ -59,8 +57,8 @@ func validateActionBody(next func(*Context)) func(*Context) {
 
 func withRepository(next func(*Context)) func(*Context) {
 	return func(c *Context) {
-		err := flentities.WithDatabase(flconfig.Config, func(db *gorm.DB) error {
-			c.repository = &flentities.Repository{DB: db}
+		err := flentities.WithRepository(func(r *flentities.Repository) error {
+			c.repository = r
 			next(c)
 			return nil
 		})

@@ -74,7 +74,7 @@ func theFollowingUsers(table *gherkin.DataTable) error {
 }
 
 func weShouldHaveTheFollowingUsers(table *gherkin.DataTable) error {
-	return withRepository(func(r *flentities.Repository) error {
+	return flentities.WithRepository(func(r *flentities.Repository) error {
 		count := 0
 		err := r.Model(&flentities.User{}).Count(&count).Error
 		if err != nil {
@@ -102,7 +102,7 @@ func weShouldHaveTheFollowingUsers(table *gherkin.DataTable) error {
 }
 
 func weShouldHaveNoUsers() error {
-	return withRepository(func(r *flentities.Repository) error {
+	return flentities.WithRepository(func(r *flentities.Repository) error {
 		count := 0
 		err := r.Model(&flentities.User{}).Count(&count).Error
 		if err != nil {

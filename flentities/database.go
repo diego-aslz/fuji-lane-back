@@ -12,25 +12,26 @@ import (
 	"github.com/nerde/fuji-lane-back/flconfig"
 )
 
-// WithDatabase gets a database connection and calls the callback with it, taking care of connection errors
-func WithDatabase(config *flconfig.Configuration, callback func(*gorm.DB) error) error {
-	db, err := gorm.Open("postgres", config.DatabaseURL)
+// WithRepository gets a database connection and calls the callback with a connected Repository, returning any
+// connection errors
+func WithRepository(callback func(*Repository) error) error {
+	db, err := gorm.Open("postgres", flconfig.Config.DatabaseURL)
 	if err != nil {
-		return fmt.Errorf("Unable to connect to %s: %s", config.DatabaseURL, err.Error())
+		return fmt.Errorf("Unable to connect to %s: %s", flconfig.Config.DatabaseURL, err.Error())
 	}
 
 	defer db.Close()
 
-	return callback(db.
-		LogMode(config.DatabaseLogs).
+	return callback(&Repository{db.
+		LogMode(flconfig.Config.DatabaseLogs).
 		Set("gorm:association_autocreate", false).
-		Set("gorm:association_autoupdate", false))
+		Set("gorm:association_autoupdate", false)})
 }
 
 // Migrate the database
-func Migrate(config *flconfig.Configuration) error {
-	return WithDatabase(config, func(db *gorm.DB) error {
-		driver, err := postgres.WithInstance(db.DB(), &postgres.Config{})
+func Migrate() error {
+	return WithRepository(func(r *Repository) error {
+		driver, err := postgres.WithInstance(r.DB.DB(), &postgres.Config{})
 		if err != nil {
 			return err
 		}
