@@ -29,7 +29,6 @@ func requestPropertiesImagesNew(fileName, propertyName string) error {
 
 type propertyRow struct {
 	flentities.Property
-	ID      int
 	Account string
 	State   string
 	Name    string
@@ -46,10 +45,6 @@ func (row *propertyRow) save(r *flentities.Repository) error {
 
 	if row.Name != "" {
 		row.Property.Name = &row.Name
-	}
-
-	if row.ID > 0 {
-		row.Property.ID = uint(row.ID)
 	}
 
 	switch row.State {

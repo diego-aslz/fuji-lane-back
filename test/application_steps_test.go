@@ -3,6 +3,7 @@ package fujilane
 import (
 	"fmt"
 	"os"
+	"strconv"
 	"time"
 
 	"github.com/DATA-DOG/godog"
@@ -28,6 +29,8 @@ func setupApplication() {
 
 	assist = assistdog.NewDefault()
 	assist.RegisterComparer(time.Time{}, timeComparer)
+	assist.RegisterComparer(uint(0), uintComparer)
+	assist.RegisterParser(uint(0), uintParser)
 
 	facebookClient = &mockedFacebookClient{tokens: map[string]flservices.FacebookTokenDetails{}}
 	application = flweb.NewApplication(facebookClient)
@@ -57,6 +60,28 @@ func timeComparer(raw string, rawActual interface{}) error {
 	}
 
 	return nil
+}
+
+func uintComparer(raw string, rawActual interface{}) error {
+	rawInt, err := strconv.Atoi(raw)
+	if err != nil {
+		return err
+	}
+
+	if uint(rawInt) == rawActual.(uint) {
+		return nil
+	}
+
+	return fmt.Errorf("Expected %d, but got %d", rawInt, rawActual)
+}
+
+func uintParser(raw string) (interface{}, error) {
+	i, err := strconv.Atoi(raw)
+	if err != nil {
+		return nil, err
+	}
+
+	return uint(i), nil
 }
 
 func itIsCurrently(timeExpr string) (err error) {
