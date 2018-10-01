@@ -49,6 +49,42 @@ func Migrate() error {
 	})
 }
 
+// Seed the database
+func Seed() error {
+	return WithRepository(func(r *Repository) error {
+		findOrCreate := [][]interface{}{
+			[]interface{}{
+				Country{Model: gorm.Model{ID: 1}},
+				&Country{Model: gorm.Model{ID: 1}, Name: "China"},
+			},
+			[]interface{}{
+				Country{Model: gorm.Model{ID: 2}},
+				&Country{Model: gorm.Model{ID: 2}, Name: "Hong Kong"},
+			},
+			[]interface{}{
+				Country{Model: gorm.Model{ID: 3}},
+				&Country{Model: gorm.Model{ID: 3}, Name: "Japan"},
+			},
+			[]interface{}{
+				Country{Model: gorm.Model{ID: 4}},
+				&Country{Model: gorm.Model{ID: 4}, Name: "Singapore"},
+			},
+			[]interface{}{
+				Country{Model: gorm.Model{ID: 5}},
+				&Country{Model: gorm.Model{ID: 5}, Name: "Vietnam"},
+			},
+		}
+
+		for _, pairs := range findOrCreate {
+			if err := r.Where(pairs[0]).FirstOrCreate(pairs[1]).Error; err != nil {
+				return err
+			}
+		}
+
+		return nil
+	})
+}
+
 // IsUniqueConstraintViolation returns true if the error is a unique constraint violation
 func IsUniqueConstraintViolation(err error) bool {
 	return strings.Contains(err.Error(), "violates unique constraint")

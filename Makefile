@@ -7,6 +7,9 @@ dependencies:
 migrate:
 	go run cmd/migrate/main.go
 
+seed:
+	go run cmd/seed/main.go
+
 feature:
 	cd test && godog
 

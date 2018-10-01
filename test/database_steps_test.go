@@ -60,6 +60,11 @@ func cleanup(_ interface{}, _ error) {
 	}
 }
 
+func databaseDefaultsAreLoaded() error {
+	return flentities.Seed()
+}
+
 func DatabaseContext(s *godog.Suite) {
+	s.Step(`^database defaults are loaded$`, databaseDefaultsAreLoaded)
 	s.AfterScenario(cleanup)
 }

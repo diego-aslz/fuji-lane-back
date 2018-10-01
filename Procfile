@@ -1,2 +1,2 @@
-release: migrate
+release: migrate && seed
 web: server
