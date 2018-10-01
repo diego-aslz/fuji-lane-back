@@ -18,6 +18,8 @@ const (
 
 	// AccountsPath for accounts management
 	AccountsPath = "/accounts"
+	// CountriesPath for listing countries
+	CountriesPath = "/countries"
 	// PropertiesPath for properties management
 	PropertiesPath = "/properties"
 	// PropertiesImagesNewPath for obtaining pre-signed upload URLs
@@ -33,6 +35,7 @@ func (a *Application) AddRoutes(e *gin.Engine) {
 	a.route(e.POST, FacebookSignInPath, a.facebookSignIn)
 
 	a.route(e.POST, AccountsPath, a.accountsCreate)
+	a.route(e.GET, CountriesPath, a.countriesList)
 	a.route(e.POST, PropertiesPath, a.propertiesCreate)
 	a.route(e.GET, PropertiesImagesNewPath, a.propertiesImagesNew)
 }
@@ -77,6 +80,12 @@ func (a *Application) accountsCreate(c *Context) {
 			authenticateUser(
 				loadActionBody(
 					performAction))))(c)
+}
+
+func (a *Application) countriesList(c *Context) {
+	withAction(&flactions.CountriesList{},
+		withRepository(
+			performAction))(c)
 }
 
 func (a *Application) propertiesCreate(c *Context) {

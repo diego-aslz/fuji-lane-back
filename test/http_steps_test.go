@@ -10,6 +10,8 @@ import (
 	"regexp"
 	"strings"
 
+	"github.com/nerde/fuji-lane-back/flentities"
+
 	"github.com/DATA-DOG/godog"
 	"github.com/DATA-DOG/godog/gherkin"
 )
@@ -80,6 +82,19 @@ func assertResponseStatusTextAndErrors(status string, table *gherkin.DataTable) 
 	}
 
 	return nil
+}
+
+func assertResponseStatusAndCountries(status string, table *gherkin.DataTable) error {
+	if err := assertResponseStatusText(status); err != nil {
+		return err
+	}
+
+	countries := []*flentities.Country{}
+	if err := json.Unmarshal([]byte(response.Body.String()), &countries); err != nil {
+		return fmt.Errorf("Unable to unmarshal %s: %s", response.Body.String(), err.Error())
+	}
+
+	return assist.CompareToSlice(countries, table)
 }
 
 func performPOSTWithTable(path string, table *gherkin.DataTable) error {
@@ -204,5 +219,6 @@ func HTTPContext(s *godog.Suite) {
 	s.Step(`^the system should respond with "([^"]*)" and no body$`, assertResponseStatusTextAndNoBody)
 	s.Step(`^the system should respond with "([^"]*)" and the following errors:$`, assertResponseStatusTextAndErrors)
 	s.Step(`^the system should respond with "([^"]*)" and the following pre-signed URL:$`, assertResponseStatusTextAndPresignedURL)
+	s.Step(`^the system should respond with "([^"]*)" and the following countries:$`, assertResponseStatusAndCountries)
 	s.Step(`^the system should respond with "([^"]*)"$`, assertResponseStatusText)
 }

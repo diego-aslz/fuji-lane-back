@@ -6,6 +6,7 @@ import (
 	"github.com/DATA-DOG/godog"
 	"github.com/DATA-DOG/godog/gherkin"
 	"github.com/nerde/fuji-lane-back/flentities"
+	"github.com/nerde/fuji-lane-back/flweb"
 )
 
 func theFollowingCountries(table *gherkin.DataTable) error {
@@ -35,7 +36,12 @@ func assertCountries(table *gherkin.DataTable) error {
 	})
 }
 
+func requestCountries() error {
+	return performGET(flweb.CountriesPath)
+}
+
 func FeatureContext(s *godog.Suite) {
 	s.Step(`^the following countries:$`, theFollowingCountries)
 	s.Step(`^we should have the following countries:$`, assertCountries)
+	s.Step(`^I list countries$`, requestCountries)
 }
