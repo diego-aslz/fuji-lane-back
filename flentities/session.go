@@ -38,11 +38,13 @@ func (s *Session) claims() jwt.MapClaims {
 	}
 }
 
+// FilterSensitiveInformation hides the Token
 func (s Session) FilterSensitiveInformation() fldiagnostics.SensitivePayload {
 	s.Token = "[FILTERED]"
 	return s
 }
 
+// NewSession returns a new Session for the given user and calculates expiration time with the given time function
 func NewSession(user *User, timeFunc func() time.Time) *Session {
 	now := timeFunc()
 	return &Session{
@@ -55,6 +57,7 @@ func NewSession(user *User, timeFunc func() time.Time) *Session {
 	}
 }
 
+// LoadSession returns a Session loaded from the given token
 func LoadSession(tokenStr string) (*Session, error) {
 	token, err := jwt.Parse(tokenStr, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
