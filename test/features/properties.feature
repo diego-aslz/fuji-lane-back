@@ -12,7 +12,7 @@ Feature: Properties Management
     Then the system should respond with "CREATED"
     And we should have the following properties:
       | Account          | State |
-      | Diego Apartments | Draft |
+      | Diego Apartments | draft |
 
   Scenario: Adding a new property without having an Account
     Given the following users:
