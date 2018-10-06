@@ -18,8 +18,8 @@ import (
 
 var response *httptest.ResponseRecorder
 
-func assertResponseStatusTextAndNoBody(status string) error {
-	if err := assertResponseStatusText(status); err != nil {
+func assertResponseStatusAndNoBody(status string) error {
+	if err := assertResponseStatus(status); err != nil {
 		return err
 	}
 
@@ -31,8 +31,8 @@ func assertResponseStatusTextAndNoBody(status string) error {
 	return nil
 }
 
-func assertResponseStatusTextAndBody(status string, table *gherkin.DataTable) error {
-	if err := assertResponseStatusText(status); err != nil {
+func assertResponseStatusAndBody(status string, table *gherkin.DataTable) error {
+	if err := assertResponseStatus(status); err != nil {
 		return err
 	}
 
@@ -57,8 +57,32 @@ func assertResponseStatusTextAndBody(status string, table *gherkin.DataTable) er
 	return nil
 }
 
-func assertResponseStatusTextAndErrors(status string, table *gherkin.DataTable) error {
-	if err := assertResponseStatusText(status); err != nil {
+func assertResponseStatusAndJSON(status string, rawJSON *gherkin.DocString) error {
+	if err := assertResponseStatus(status); err != nil {
+		return err
+	}
+
+	expectedBody := map[string]interface{}{}
+	err := json.Unmarshal([]byte(rawJSON.Content), &expectedBody)
+	if err != nil {
+		return err
+	}
+
+	actualBody := map[string]interface{}{}
+	if err := json.Unmarshal([]byte(response.Body.String()), &actualBody); err != nil {
+		return fmt.Errorf("Unable to unmarshal %s: %s", response.Body.String(), err.Error())
+	}
+
+	if !reflect.DeepEqual(expectedBody, actualBody) {
+		return fmt.Errorf("Response body does not match:\nResponse: %s\nExpected: %s", response.Body.String(),
+			rawJSON.Content)
+	}
+
+	return nil
+}
+
+func assertResponseStatusAndErrors(status string, table *gherkin.DataTable) error {
+	if err := assertResponseStatus(status); err != nil {
 		return err
 	}
 
@@ -85,7 +109,7 @@ func assertResponseStatusTextAndErrors(status string, table *gherkin.DataTable) 
 }
 
 func assertResponseStatusAndCountries(status string, table *gherkin.DataTable) error {
-	if err := assertResponseStatusText(status); err != nil {
+	if err := assertResponseStatus(status); err != nil {
 		return err
 	}
 
@@ -148,8 +172,8 @@ func perform(method, path string, body io.Reader) error {
 	return nil
 }
 
-func assertResponseStatusTextAndPresignedURL(status string, table *gherkin.DataTable) error {
-	if err := assertResponseStatusText(status); err != nil {
+func assertResponseStatusAndPresignedURL(status string, table *gherkin.DataTable) error {
+	if err := assertResponseStatus(status); err != nil {
 		return err
 	}
 
@@ -184,30 +208,30 @@ func assertResponseStatusTextAndPresignedURL(status string, table *gherkin.DataT
 	return nil
 }
 
-func assertResponseStatusText(status string) error {
+func assertResponseStatus(status string) error {
 	if response == nil {
 		return fmt.Errorf("Response is nil, are you sure you made any HTTP request?")
 	}
 
 	switch status {
 	case "CREATED":
-		return assertResponseStatus(http.StatusCreated)
+		return assertResponseStatusCode(http.StatusCreated)
 	case "NOT FOUND":
-		return assertResponseStatus(http.StatusNotFound)
+		return assertResponseStatusCode(http.StatusNotFound)
 	case "OK":
-		return assertResponseStatus(http.StatusOK)
+		return assertResponseStatusCode(http.StatusOK)
 	case "PRECONDITION REQUIRED":
-		return assertResponseStatus(http.StatusPreconditionRequired)
+		return assertResponseStatusCode(http.StatusPreconditionRequired)
 	case "UNAUTHORIZED":
-		return assertResponseStatus(http.StatusUnauthorized)
+		return assertResponseStatusCode(http.StatusUnauthorized)
 	case "UNPROCESSABLE ENTITY":
-		return assertResponseStatus(http.StatusUnprocessableEntity)
+		return assertResponseStatusCode(http.StatusUnprocessableEntity)
 	default:
 		return fmt.Errorf("Unhandled status: %s", status)
 	}
 }
 
-func assertResponseStatus(expected int) error {
+func assertResponseStatusCode(expected int) error {
 	if response.Code != expected {
 		return fmt.Errorf("Expected response to be status %d, got %d", expected, response.Code)
 	}
@@ -215,10 +239,11 @@ func assertResponseStatus(expected int) error {
 }
 
 func HTTPContext(s *godog.Suite) {
-	s.Step(`^the system should respond with "([^"]*)" and the following body:$`, assertResponseStatusTextAndBody)
-	s.Step(`^the system should respond with "([^"]*)" and no body$`, assertResponseStatusTextAndNoBody)
-	s.Step(`^the system should respond with "([^"]*)" and the following errors:$`, assertResponseStatusTextAndErrors)
-	s.Step(`^the system should respond with "([^"]*)" and the following pre-signed URL:$`, assertResponseStatusTextAndPresignedURL)
+	s.Step(`^the system should respond with "([^"]*)" and no body$`, assertResponseStatusAndNoBody)
+	s.Step(`^the system should respond with "([^"]*)" and the following body:$`, assertResponseStatusAndBody)
+	s.Step(`^the system should respond with "([^"]*)" and the following JSON:$`, assertResponseStatusAndJSON)
+	s.Step(`^the system should respond with "([^"]*)" and the following errors:$`, assertResponseStatusAndErrors)
+	s.Step(`^the system should respond with "([^"]*)" and the following pre-signed URL:$`, assertResponseStatusAndPresignedURL)
 	s.Step(`^the system should respond with "([^"]*)" and the following countries:$`, assertResponseStatusAndCountries)
-	s.Step(`^the system should respond with "([^"]*)"$`, assertResponseStatusText)
+	s.Step(`^the system should respond with "([^"]*)"$`, assertResponseStatus)
 }

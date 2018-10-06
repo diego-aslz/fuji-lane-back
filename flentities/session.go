@@ -18,7 +18,8 @@ type Session struct {
 	IssuedAt   time.Time `json:"issued_at"`
 	ExpiresAt  time.Time `json:"expires_at"`
 	RenewAfter time.Time `json:"renew_after"`
-	Picture    string    `json:"picture"`
+	User       *User     `json:"user"`
+	Account    *Account  `json:"account"`
 	Secret     string    `json:"-"`
 }
 
@@ -52,7 +53,8 @@ func NewSession(user *User, timeFunc func() time.Time) *Session {
 		IssuedAt:   now,
 		RenewAfter: now.Add(4 * 24 * time.Hour),
 		ExpiresAt:  now.Add(7 * 24 * time.Hour),
-		Picture:    user.Picture(),
+		User:       user,
+		Account:    user.Account,
 		Secret:     flconfig.Config.TokenSecret,
 	}
 }

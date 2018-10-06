@@ -14,8 +14,8 @@ Feature: Accounts Management
       | phone     | +55 44 99999-9999 |
       | country   | Japan             |
     Then the system should respond with "CREATED" and the following body:
-      | Name  | Diego Apartments  |
-      | Phone | +55 44 99999-9999 |
+      | name  | Diego Apartments  |
+      | phone | +55 44 99999-9999 |
     And we should have the following accounts:
       | Name             | Phone             | Country |
       | Diego Apartments | +55 44 99999-9999 | Japan   |

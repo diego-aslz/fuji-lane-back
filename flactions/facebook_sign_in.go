@@ -64,13 +64,7 @@ func (a *FacebookSignIn) Perform(c Context) {
 		return
 	}
 
-	s := flentities.NewSession(user, c.Now)
-	if err = s.GenerateToken(); err != nil {
-		c.ServerError(err)
-		return
-	}
-
-	c.Respond(http.StatusOK, s)
+	createSession(c, user)
 }
 
 // NewFacebookSignIn creates a new FacebookSignIn instance

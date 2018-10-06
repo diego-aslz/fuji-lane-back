@@ -1,6 +1,7 @@
 package flentities
 
 import (
+	"encoding/json"
 	"fmt"
 	"time"
 
@@ -10,14 +11,14 @@ import (
 
 // User of the system
 type User struct {
-	gorm.Model
-	AccountID         *int
-	Account           *Account
-	Name              *string
-	Email             string
-	FacebookID        *string
-	EncryptedPassword *string
-	LastSignedIn      *time.Time
+	gorm.Model        `json:"-"`
+	AccountID         *int       `json:"-"`
+	Account           *Account   `json:"-"`
+	Name              *string    `json:"name"`
+	Email             string     `json:"email"`
+	FacebookID        *string    `json:"-"`
+	EncryptedPassword *string    `json:"-"`
+	LastSignedIn      *time.Time `json:"-"`
 }
 
 // SetPassword calculates the encrypted hash and fills in EncryptedPassword
@@ -39,10 +40,26 @@ func (u *User) ValidatePassword(password string) bool {
 }
 
 // Picture returns an URL to the user's profile picture
-func (u *User) Picture() string {
+func (u *User) Picture() *string {
 	if u.FacebookID != nil {
-		return fmt.Sprintf("https://graph.facebook.com/%s/picture?width=64&height=64", *u.FacebookID)
+		str := fmt.Sprintf("https://graph.facebook.com/%s/picture?width=64&height=64", *u.FacebookID)
+		return &str
 	}
 
-	return ""
+	return nil
+}
+
+type userAlias User
+
+type userUI struct {
+	Picture *string `json:"picture"`
+	*userAlias
+}
+
+// MarshalJSON returns JSON bytes for a User
+func (u *User) MarshalJSON() ([]byte, error) {
+	return json.Marshal(userUI{
+		Picture:   u.Picture(),
+		userAlias: (*userAlias)(u),
+	})
 }

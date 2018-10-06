@@ -16,12 +16,10 @@ Feature: Facebook Signing In
       | Email              | Name           | FacebookID | LastSignedIn         |
       | diego@selzlein.com | Diego Selzlein | 123        | 2018-06-01T08:00:00Z |
     And the system should respond with "OK" and the following body:
-      | email       | diego@selzlein.com                                                                                                                                                                                                    |
-      | issued_at   | 2018-06-01T08:00:00Z                                                                                                                                                                                                  |
-      | renew_after | 2018-06-05T08:00:00Z                                                                                                                                                                                                  |
-      | expires_at  | 2018-06-08T08:00:00Z                                                                                                                                                                                                  |
-      | picture     | https://graph.facebook.com/123/picture?width=64&height=64                                                                                                                                                             |
-      | token       | eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJFbWFpbCI6ImRpZWdvQHNlbHpsZWluLmNvbSIsIkV4cGlyZXNBdCI6MTUyODQ0NDgwMCwiSXNzdWVkQXQiOjE1Mjc4NDAwMDAsIlJlbmV3QWZ0ZXIiOjE1MjgxODU2MDB9.k1dEBzwNMxYFsaBjMzkJFHctUk6Y-txk_GfrR6NX1Vk |
+      | email       | diego@selzlein.com   |
+      | issued_at   | 2018-06-01T08:00:00Z |
+      | renew_after | 2018-06-05T08:00:00Z |
+      | expires_at  | 2018-06-08T08:00:00Z |
 
   Scenario: Signing in for a second time updating attributes
     Given the following users:
@@ -39,11 +37,10 @@ Feature: Facebook Signing In
       | Email              | Name           | FacebookID | LastSignedIn         |
       | diego@selzlein.com | Diego Selzlein | 123        | 2018-06-01T08:00:00Z |
     And the system should respond with "OK" and the following body:
-      | email       | diego@selzlein.com                                        |
-      | issued_at   | 2018-06-01T08:00:00Z                                      |
-      | renew_after | 2018-06-05T08:00:00Z                                      |
-      | expires_at  | 2018-06-08T08:00:00Z                                      |
-      | picture     | https://graph.facebook.com/123/picture?width=64&height=64 |
+      | email       | diego@selzlein.com   |
+      | issued_at   | 2018-06-01T08:00:00Z |
+      | renew_after | 2018-06-05T08:00:00Z |
+      | expires_at  | 2018-06-08T08:00:00Z |
 
   Scenario: Signing in when user already exists, but didn't come from Facebook
     Given the following users:
@@ -61,11 +58,10 @@ Feature: Facebook Signing In
       | Email              | Name           | FacebookID | LastSignedIn         |
       | diego@selzlein.com | Diego Selzlein | 123        | 2018-06-01T08:00:00Z |
     And the system should respond with "OK" and the following body:
-      | email       | diego@selzlein.com                                        |
-      | issued_at   | 2018-06-01T08:00:00Z                                      |
-      | renew_after | 2018-06-05T08:00:00Z                                      |
-      | expires_at  | 2018-06-08T08:00:00Z                                      |
-      | picture     | https://graph.facebook.com/123/picture?width=64&height=64 |
+      | email       | diego@selzlein.com   |
+      | issued_at   | 2018-06-01T08:00:00Z |
+      | renew_after | 2018-06-05T08:00:00Z |
+      | expires_at  | 2018-06-08T08:00:00Z |
 
   Scenario: Signing in when user already exists, but Facebook email changed
     Given the following users:
@@ -83,11 +79,10 @@ Feature: Facebook Signing In
       | Email                    | Name           | FacebookID | LastSignedIn         |
       | diego+other@selzlein.com | Diego Selzlein | 123        | 2018-06-01T08:00:00Z |
     And the system should respond with "OK" and the following body:
-      | email       | diego+other@selzlein.com                                  |
-      | issued_at   | 2018-06-01T08:00:00Z                                      |
-      | renew_after | 2018-06-05T08:00:00Z                                      |
-      | expires_at  | 2018-06-08T08:00:00Z                                      |
-      | picture     | https://graph.facebook.com/123/picture?width=64&height=64 |
+      | email       | diego+other@selzlein.com |
+      | issued_at   | 2018-06-01T08:00:00Z     |
+      | renew_after | 2018-06-05T08:00:00Z     |
+      | expires_at  | 2018-06-08T08:00:00Z     |
 
   Scenario: Signing in with unrecognized token
     When the following user signs in via Facebook:

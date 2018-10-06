@@ -16,8 +16,24 @@ type accountRow struct {
 	Country string
 }
 
+func (row *accountRow) save(r *flentities.Repository) error {
+	if row.Country != "" {
+		row.Account.Country = &flentities.Country{}
+		err := r.Find(row.Account.Country, flentities.Country{Name: row.Country}).Error
+		if err != nil {
+			return err
+		}
+	}
+
+	if row.Phone != "" {
+		row.Account.Phone = &row.Phone
+	}
+
+	return r.Create(&row.Account).Error
+}
+
 func theFollowingAccounts(table *gherkin.DataTable) error {
-	return createEntitiesFromTable(new(flentities.Account), table)
+	return createRowEntitiesFromTable(new(accountRow), table)
 }
 
 func requestAccountsCreate(table *gherkin.DataTable) error {
