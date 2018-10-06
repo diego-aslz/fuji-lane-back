@@ -15,9 +15,9 @@ import (
 type Session struct {
 	Email      string    `json:"-"`
 	Token      string    `json:"token"`
-	IssuedAt   time.Time `json:"issued_at"`
-	ExpiresAt  time.Time `json:"expires_at"`
-	RenewAfter time.Time `json:"renew_after"`
+	IssuedAt   time.Time `json:"issuedAt"`
+	ExpiresAt  time.Time `json:"expiresAt"`
+	RenewAfter time.Time `json:"renewAfter"`
 	User       *User     `json:"user"`
 	Account    *Account  `json:"account"`
 	Secret     string    `json:"-"`

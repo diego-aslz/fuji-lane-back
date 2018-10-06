@@ -48,9 +48,9 @@ Feature: Session
       """
       {
         "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJFbWFpbCI6ImRpZWdvQHNlbHpsZWluLmNvbSIsIkV4cGlyZXNBdCI6MTUyODQ0NDgwMCwiSXNzdWVkQXQiOjE1Mjc4NDAwMDAsIlJlbmV3QWZ0ZXIiOjE1MjgxODU2MDB9.k1dEBzwNMxYFsaBjMzkJFHctUk6Y-txk_GfrR6NX1Vk",
-        "issued_at": "2018-06-01T08:00:00Z",
-        "expires_at": "2018-06-08T08:00:00Z",
-        "renew_after": "2018-06-05T08:00:00Z",
+        "issuedAt": "2018-06-01T08:00:00Z",
+        "expiresAt": "2018-06-08T08:00:00Z",
+        "renewAfter": "2018-06-05T08:00:00Z",
         "user": {
           "picture": "https://graph.facebook.com/12345/picture?width=64&height=64",
           "name":"Diego Aguir Selzlein",
@@ -59,7 +59,7 @@ Feature: Session
         "account": {
           "name": "Diego Apartments",
           "phone": "555 555",
-          "country_id": 1
+          "countryID": 1
         }
       }
       """

@@ -9,10 +9,10 @@ import (
 
 // AccountsCreateBody is the expected payload for AccountsCreate
 type AccountsCreateBody struct {
-	UserName  string `json:"user_name"`
+	UserName  string `json:"userName"`
 	Name      string `json:"name"`
 	Phone     string `json:"phone"`
-	CountryID int    `json:"country_id"`
+	CountryID int    `json:"countryID"`
 }
 
 // AccountsCreate is reponsible for creating new accounts

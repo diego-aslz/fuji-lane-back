@@ -9,10 +9,10 @@ Feature: Accounts Management
       | Japan |
     And I am authenticated with "diego@selzlein.com"
     When I create the following account:
-      | user_name | Diego Selzlein    |
-      | name      | Diego Apartments  |
-      | phone     | +55 44 99999-9999 |
-      | country   | Japan             |
+      | userName | Diego Selzlein    |
+      | name     | Diego Apartments  |
+      | phone    | +55 44 99999-9999 |
+      | country  | Japan             |
     Then the system should respond with "CREATED" and the following body:
       | name  | Diego Apartments  |
       | phone | +55 44 99999-9999 |

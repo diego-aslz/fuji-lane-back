@@ -52,7 +52,7 @@ func requestAccountsCreate(table *gherkin.DataTable) error {
 		body := flactions.AccountsCreateBody{}
 		body.Name = b["name"]
 		body.Phone = b["phone"]
-		body.UserName = b["user_name"]
+		body.UserName = b["userName"]
 		body.CountryID = int(country.ID)
 
 		return performPOST(flweb.AccountsPath, body)

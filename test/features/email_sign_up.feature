@@ -8,9 +8,9 @@ Feature: Email Sign Up
       | email    | diego@selzlein.com |
       | password | 12345678           |
     Then the system should respond with "CREATED" and the following body:
-      | issued_at   | 2018-06-01T08:00:00Z |
-      | renew_after | 2018-06-05T08:00:00Z |
-      | expires_at  | 2018-06-08T08:00:00Z |
+      | issuedAt   | 2018-06-01T08:00:00Z |
+      | renewAfter | 2018-06-05T08:00:00Z |
+      | expiresAt  | 2018-06-08T08:00:00Z |
     And we should have the following users:
       | Email              | LastSignedIn         |
       | diego@selzlein.com | 2018-06-01T08:00:00Z |
