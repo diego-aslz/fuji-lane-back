@@ -8,7 +8,6 @@ Feature: Session
   Scenario: Accessing a protected resource with an authentication token for an invalid user
     Given it is currently "01 Jun 18 08:00"
     And the following session:
-      | Email      | diego@selzlein.com   |
       | IssuedAt   | 2018-06-01T08:00:00Z |
       | RenewAfter | 2018-06-05T08:00:00Z |
       | ExpiresAt  | 2018-06-08T08:00:00Z |
@@ -23,7 +22,6 @@ Feature: Session
       | Email              | Name                 |
       | diego@selzlein.com | Diego Aguir Selzlein |
     And the following session:
-      | Email      | diego@selzlein.com   |
       | IssuedAt   | 2018-05-21T08:00:00Z |
       | RenewAfter | 2018-05-25T08:00:00Z |
       | ExpiresAt  | 2018-05-28T08:00:00Z |
@@ -49,7 +47,6 @@ Feature: Session
     And the system should respond with "OK" and the following JSON:
       """
       {
-        "email": "diego@selzlein.com",
         "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJFbWFpbCI6ImRpZWdvQHNlbHpsZWluLmNvbSIsIkV4cGlyZXNBdCI6MTUyODQ0NDgwMCwiSXNzdWVkQXQiOjE1Mjc4NDAwMDAsIlJlbmV3QWZ0ZXIiOjE1MjgxODU2MDB9.k1dEBzwNMxYFsaBjMzkJFHctUk6Y-txk_GfrR6NX1Vk",
         "issued_at": "2018-06-01T08:00:00Z",
         "expires_at": "2018-06-08T08:00:00Z",

@@ -13,7 +13,7 @@ import (
 
 // Session contains authentication information
 type Session struct {
-	Email      string    `json:"email"`
+	Email      string    `json:"-"`
 	Token      string    `json:"token"`
 	IssuedAt   time.Time `json:"issued_at"`
 	ExpiresAt  time.Time `json:"expires_at"`

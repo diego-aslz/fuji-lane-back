@@ -16,7 +16,6 @@ Feature: Facebook Signing In
       | Email              | Name           | FacebookID | LastSignedIn         |
       | diego@selzlein.com | Diego Selzlein | 123        | 2018-06-01T08:00:00Z |
     And the system should respond with "OK" and the following body:
-      | email       | diego@selzlein.com   |
       | issued_at   | 2018-06-01T08:00:00Z |
       | renew_after | 2018-06-05T08:00:00Z |
       | expires_at  | 2018-06-08T08:00:00Z |
@@ -37,7 +36,6 @@ Feature: Facebook Signing In
       | Email              | Name           | FacebookID | LastSignedIn         |
       | diego@selzlein.com | Diego Selzlein | 123        | 2018-06-01T08:00:00Z |
     And the system should respond with "OK" and the following body:
-      | email       | diego@selzlein.com   |
       | issued_at   | 2018-06-01T08:00:00Z |
       | renew_after | 2018-06-05T08:00:00Z |
       | expires_at  | 2018-06-08T08:00:00Z |
@@ -58,7 +56,6 @@ Feature: Facebook Signing In
       | Email              | Name           | FacebookID | LastSignedIn         |
       | diego@selzlein.com | Diego Selzlein | 123        | 2018-06-01T08:00:00Z |
     And the system should respond with "OK" and the following body:
-      | email       | diego@selzlein.com   |
       | issued_at   | 2018-06-01T08:00:00Z |
       | renew_after | 2018-06-05T08:00:00Z |
       | expires_at  | 2018-06-08T08:00:00Z |
@@ -79,7 +76,6 @@ Feature: Facebook Signing In
       | Email                    | Name           | FacebookID | LastSignedIn         |
       | diego+other@selzlein.com | Diego Selzlein | 123        | 2018-06-01T08:00:00Z |
     And the system should respond with "OK" and the following body:
-      | email       | diego+other@selzlein.com |
       | issued_at   | 2018-06-01T08:00:00Z     |
       | renew_after | 2018-06-05T08:00:00Z     |
       | expires_at  | 2018-06-08T08:00:00Z     |
