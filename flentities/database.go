@@ -30,6 +30,41 @@ func WithRepository(callback func(*Repository) error) error {
 
 // Migrate the database
 func Migrate() error {
+	return withMigrations(func(r *Repository, m *migrate.Migrate) error {
+		if err := m.Up(); err != migrate.ErrNoChange {
+			return err
+		}
+
+		return nil
+	})
+}
+
+// Reset the database, redoing all migrations
+func Reset() error {
+	err := withMigrations(func(r *Repository, m *migrate.Migrate) error {
+		if err := m.Down(); err != migrate.ErrNoChange {
+			return err
+		}
+
+		return nil
+	})
+
+	if err != nil {
+		return err
+	}
+
+	// We have to call withMigrations because otherwise Up() won't take effect because migrate.NewWithDatabaseInstance
+	// loads the current database version once
+	return withMigrations(func(r *Repository, m *migrate.Migrate) error {
+		if err := m.Up(); err != migrate.ErrNoChange {
+			return err
+		}
+
+		return nil
+	})
+}
+
+func withMigrations(fn func(*Repository, *migrate.Migrate) error) error {
 	return WithRepository(func(r *Repository) error {
 		driver, err := postgres.WithInstance(r.DB.DB(), &postgres.Config{})
 		if err != nil {
@@ -41,11 +76,7 @@ func Migrate() error {
 			return err
 		}
 
-		if err = m.Up(); err == migrate.ErrNoChange {
-			err = nil
-		}
-
-		return err
+		return fn(r, m)
 	})
 }
 
