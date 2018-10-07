@@ -6,9 +6,9 @@ CREATE TABLE properties(
   account_id int not null references accounts,
   state smallint not null default 1,
   name varchar unique,
-  address_1 varchar,
-  address_2 varchar,
-  address_3 varchar,
+  address1 varchar,
+  address2 varchar,
+  address3 varchar,
   city_id int references cities,
   postal_code varchar,
   country_id int references countries

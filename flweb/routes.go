@@ -22,6 +22,8 @@ const (
 	CountriesPath = "/countries"
 	// PropertiesPath for properties management
 	PropertiesPath = "/properties"
+	// PropertiesShowPath to show property details
+	PropertiesShowPath = "/properties/:id"
 	// PropertiesImagesNewPath for obtaining pre-signed upload URLs
 	PropertiesImagesNewPath = "/properties/:id/images/new"
 )
@@ -37,6 +39,7 @@ func (a *Application) AddRoutes(e *gin.Engine) {
 	a.route(e.POST, AccountsPath, a.accountsCreate)
 	a.route(e.GET, CountriesPath, a.countriesList)
 	a.route(e.POST, PropertiesPath, a.propertiesCreate)
+	a.route(e.GET, PropertiesShowPath, a.propertiesShow)
 	a.route(e.GET, PropertiesImagesNewPath, a.propertiesImagesNew)
 }
 
@@ -90,6 +93,13 @@ func (a *Application) countriesList(c *Context) {
 
 func (a *Application) propertiesCreate(c *Context) {
 	withAction(&flactions.PropertiesCreate{},
+		withRepository(
+			authenticateUser(
+				performAction)))(c)
+}
+
+func (a *Application) propertiesShow(c *Context) {
+	withAction(&flactions.PropertiesShow{},
 		withRepository(
 			authenticateUser(
 				performAction)))(c)

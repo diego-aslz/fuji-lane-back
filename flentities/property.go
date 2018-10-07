@@ -18,6 +18,14 @@ type Property struct {
 	StateID    int      `gorm:"column:state" json:"-"`
 	AccountID  int      `json:"-"`
 	Account    *Account `json:"-"`
+	Address1   *string  `json:"address1"`
+	Address2   *string  `json:"address2"`
+	Address3   *string  `json:"address3"`
+	PostalCode *string  `json:"postalCode"`
+	CityID     *int     `json:"cityID"`
+	City       *City    `json:"-"`
+	CountryID  *int     `json:"countryID"`
+	Country    *Country `json:"-"`
 }
 
 // State returns the state name for the property's state ID

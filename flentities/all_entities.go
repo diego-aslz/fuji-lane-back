@@ -6,6 +6,7 @@ func AllEntities() []interface{} {
 		Property{},
 		User{},
 		Account{},
+		City{},
 		Country{},
 	}
 }

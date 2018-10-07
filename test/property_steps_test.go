@@ -14,10 +14,10 @@ func requestPropertiesCreate() error {
 	return performPOST(flweb.PropertiesPath, nil)
 }
 
-func requestPropertiesImagesNew(fileName, propertyName string) error {
+func requestPropertiesImagesNew(fileName, name string) error {
 	return flentities.WithRepository(func(r *flentities.Repository) error {
 		property := &flentities.Property{}
-		if err := r.Find(property, map[string]interface{}{"name": propertyName}).Error; err != nil {
+		if err := r.Find(property, map[string]interface{}{"name": name}).Error; err != nil {
 			return err
 		}
 
@@ -27,11 +27,30 @@ func requestPropertiesImagesNew(fileName, propertyName string) error {
 	})
 }
 
+func requestPropertiesShow(name string) error {
+	return flentities.WithRepository(func(r *flentities.Repository) error {
+		property := &flentities.Property{}
+		if err := r.Find(property, map[string]interface{}{"name": name}).Error; err != nil {
+			return err
+		}
+
+		url := strings.Replace(flweb.PropertiesShowPath, ":id", fmt.Sprint(property.ID), 1)
+
+		return performGET(url)
+	})
+}
+
 type propertyRow struct {
 	flentities.Property
-	Account string
-	State   string
-	Name    string
+	Account    string
+	State      string
+	Name       string
+	Address1   string
+	Address2   string
+	Address3   string
+	PostalCode string
+	City       string
+	Country    string
 }
 
 func (row *propertyRow) save(r *flentities.Repository) error {
@@ -43,8 +62,40 @@ func (row *propertyRow) save(r *flentities.Repository) error {
 		}
 	}
 
+	if row.City != "" {
+		row.Property.City = &flentities.City{}
+		err := r.Find(row.Property.City, flentities.City{Name: row.City}).Error
+		if err != nil {
+			return err
+		}
+	}
+
+	if row.Country != "" {
+		row.Property.Country = &flentities.Country{}
+		err := r.Find(row.Property.Country, flentities.Country{Name: row.Country}).Error
+		if err != nil {
+			return err
+		}
+	}
+
 	if row.Name != "" {
 		row.Property.Name = &row.Name
+	}
+
+	if row.Address1 != "" {
+		row.Property.Address1 = &row.Address1
+	}
+
+	if row.Address2 != "" {
+		row.Property.Address2 = &row.Address2
+	}
+
+	if row.Address3 != "" {
+		row.Property.Address3 = &row.Address3
+	}
+
+	if row.PostalCode != "" {
+		row.Property.PostalCode = &row.PostalCode
 	}
 
 	switch row.State {
@@ -108,4 +159,5 @@ func PropertyContext(s *godog.Suite) {
 	s.Step(`^the following properties:$`, theFollowingProperties)
 	s.Step(`^we should have the following properties:$`, assertProperties)
 	s.Step(`^we should have no properties$`, assertNoProperties)
+	s.Step(`^I get details for property "([^"]*)"$`, requestPropertiesShow)
 }

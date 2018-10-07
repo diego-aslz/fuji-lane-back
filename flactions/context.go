@@ -23,6 +23,9 @@ type Context interface {
 	// Respond sets the HTTP response status and body with the given parameters
 	Respond(status int, body interface{})
 
+	// RespondNotFound returns a default Not Found error with Not Found status code
+	RespondNotFound()
+
 	// RespondError sets the HTTP response status with the given parameter and generates an error response. The client
 	// will be sent the error message
 	RespondError(status int, err error)

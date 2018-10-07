@@ -36,6 +36,11 @@ func (c *Context) Respond(status int, body interface{}) {
 	c.JSON(status, body)
 }
 
+// RespondNotFound returns a default Not Found error with Not Found status code
+func (c *Context) RespondNotFound() {
+	c.RespondError(http.StatusNotFound, errors.New("Not Found"))
+}
+
 // RespondError creates an error response with the given error
 func (c *Context) RespondError(status int, err error) {
 	c.Diagnostics().AddQuoted("response_error", err.Error())
