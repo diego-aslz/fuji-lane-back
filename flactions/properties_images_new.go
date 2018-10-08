@@ -37,7 +37,7 @@ func (a *PropertiesImagesNew) Perform(c Context) {
 	property := &flentities.Property{}
 	err := c.Repository().Find(property, map[string]interface{}{"id": id, "account_id": account.ID}).Error
 	if gorm.IsRecordNotFoundError(err) {
-		c.RespondError(http.StatusNotFound, errors.New("Not found"))
+		c.RespondNotFound()
 		return
 	}
 	if err != nil {

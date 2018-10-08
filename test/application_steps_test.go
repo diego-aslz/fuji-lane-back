@@ -41,6 +41,7 @@ func setupApplication() {
 	assist.RegisterComparer(true, boolComparer)
 	assist.RegisterComparer(uint(0), uintComparer)
 	assist.RegisterParser(uint(0), uintParser)
+	assist.RegisterParser(true, boolParser)
 
 	facebookClient = &mockedFacebookClient{tokens: map[string]flservices.FacebookTokenDetails{}}
 	application = flweb.NewApplication(facebookClient)
@@ -102,6 +103,14 @@ func uintParser(raw string) (interface{}, error) {
 	}
 
 	return uint(i), nil
+}
+
+func boolParser(raw string) (interface{}, error) {
+	if raw != "true" && raw != "false" {
+		return nil, fmt.Errorf("Don't know how to parse \"%s\" to bool", raw)
+	}
+
+	return raw == "true", nil
 }
 
 func itIsCurrently(timeExpr string) (err error) {

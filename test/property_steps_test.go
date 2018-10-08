@@ -14,19 +14,6 @@ func requestPropertiesCreate() error {
 	return performPOST(flweb.PropertiesPath, nil)
 }
 
-func requestPropertiesImagesNew(fileName, name string) error {
-	return flentities.WithRepository(func(r *flentities.Repository) error {
-		property := &flentities.Property{}
-		if err := r.Find(property, map[string]interface{}{"name": name}).Error; err != nil {
-			return err
-		}
-
-		url := strings.Replace(flweb.PropertiesImagesNewPath, ":id", fmt.Sprint(property.ID), 1)
-
-		return performGET(url + "?name=" + fileName)
-	})
-}
-
 func requestPropertiesShow(name string) error {
 	return flentities.WithRepository(func(r *flentities.Repository) error {
 		property := &flentities.Property{}
@@ -155,7 +142,6 @@ func assertNoProperties() error {
 
 func PropertyContext(s *godog.Suite) {
 	s.Step(`^I add a new property$`, requestPropertiesCreate)
-	s.Step(`^I request an URL to upload an image called "([^"]*)" for property "([^"]*)"$`, requestPropertiesImagesNew)
 	s.Step(`^the following properties:$`, theFollowingProperties)
 	s.Step(`^we should have the following properties:$`, assertProperties)
 	s.Step(`^we should have no properties$`, assertNoProperties)
