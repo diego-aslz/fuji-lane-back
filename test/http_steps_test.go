@@ -172,40 +172,24 @@ func perform(method, path string, body io.Reader) error {
 	return nil
 }
 
-func assertResponseStatusAndPresignedURL(status string, table *gherkin.DataTable) error {
+func assertResponseStatusAndImage(status string, table *gherkin.DataTable) error {
 	if err := assertResponseStatus(status); err != nil {
 		return err
 	}
 
-	expectedDetails, err := assist.ParseMap(table)
-	if err != nil {
-		return err
-	}
-
-	body := map[string]string{}
-	if err := json.Unmarshal([]byte(response.Body.String()), &body); err != nil {
+	image := &flentities.Image{}
+	if err := json.Unmarshal([]byte(response.Body.String()), image); err != nil {
 		return fmt.Errorf("Unable to unmarshal %s: %s", response.Body.String(), err.Error())
 	}
 
-	url := body["url"]
-	reg := regexp.MustCompile("\\/\\/(.*)\\.s3\\.amazonaws\\.com\\/(.*)\\?.*X-Amz-Expires=(\\d+)")
-	groups := reg.FindStringSubmatch(url)
-
-	actualDetails := map[string]string{
-		"bucket":     groups[1],
-		"key":        groups[2],
-		"expiration": groups[3],
+	// Discarding signature and date because they cannot be asserted
+	reps := map[string]string{"Amz-Signature": "TEST_SIGNATURE", "Amz-Date": "TEST_DATE"}
+	for key, replacement := range reps {
+		reg := regexp.MustCompile(key + "=\\w+")
+		image.URL = string(reg.ReplaceAll([]byte(image.URL), []byte(key+"="+replacement)))
 	}
 
-	for k, v := range expectedDetails {
-		expected := actualDetails[k]
-		if expected == v {
-			continue
-		}
-		return fmt.Errorf("Expected %s to be %s, got %s", k, v, expected)
-	}
-
-	return nil
+	return assist.CompareToInstance(image, table)
 }
 
 func assertResponseStatus(status string) error {
@@ -243,7 +227,7 @@ func HTTPContext(s *godog.Suite) {
 	s.Step(`^the system should respond with "([^"]*)" and the following body:$`, assertResponseStatusAndBody)
 	s.Step(`^the system should respond with "([^"]*)" and the following JSON:$`, assertResponseStatusAndJSON)
 	s.Step(`^the system should respond with "([^"]*)" and the following errors:$`, assertResponseStatusAndErrors)
-	s.Step(`^the system should respond with "([^"]*)" and the following pre-signed URL:$`, assertResponseStatusAndPresignedURL)
+	s.Step(`^the system should respond with "([^"]*)" and the following image:$`, assertResponseStatusAndImage)
 	s.Step(`^the system should respond with "([^"]*)" and the following countries:$`, assertResponseStatusAndCountries)
 	s.Step(`^the system should respond with "([^"]*)"$`, assertResponseStatus)
 }

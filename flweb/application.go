@@ -1,7 +1,10 @@
 package flweb
 
 import (
+	"math/rand"
 	"time"
+
+	"github.com/nerde/fuji-lane-back/flutils"
 
 	"github.com/gin-gonic/gin"
 	"github.com/nerde/fuji-lane-back/flservices"
@@ -11,6 +14,7 @@ import (
 type Application struct {
 	facebookClient flservices.FacebookClient
 	TimeFunc       func() time.Time
+	RandSource     rand.Source
 }
 
 // Start listening to requests
@@ -32,5 +36,6 @@ func NewApplication(facebookClient flservices.FacebookClient) *Application {
 	return &Application{
 		facebookClient: facebookClient,
 		TimeFunc:       time.Now,
+		RandSource:     flutils.NewRandomSource(),
 	}
 }

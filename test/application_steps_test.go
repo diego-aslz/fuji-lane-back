@@ -22,6 +22,15 @@ var appTime time.Time
 
 const timeFormat = "02 Jan 06 15:04"
 
+type fakeRandSource struct{}
+
+func (f fakeRandSource) Int63() int64 {
+	return 0
+}
+
+func (f fakeRandSource) Seed(int64) {
+}
+
 func setupApplication() {
 	os.Setenv("STAGE", "test")
 
@@ -29,11 +38,13 @@ func setupApplication() {
 
 	assist = assistdog.NewDefault()
 	assist.RegisterComparer(time.Time{}, timeComparer)
+	assist.RegisterComparer(true, boolComparer)
 	assist.RegisterComparer(uint(0), uintComparer)
 	assist.RegisterParser(uint(0), uintParser)
 
 	facebookClient = &mockedFacebookClient{tokens: map[string]flservices.FacebookTokenDetails{}}
 	application = flweb.NewApplication(facebookClient)
+	application.RandSource = fakeRandSource{}
 
 	application.TimeFunc = func() time.Time {
 		return appTime
@@ -73,6 +84,15 @@ func uintComparer(raw string, rawActual interface{}) error {
 	}
 
 	return fmt.Errorf("Expected %d, but got %d", rawInt, rawActual)
+}
+
+func boolComparer(raw string, rawActual interface{}) error {
+	actual := fmt.Sprint(rawActual)
+	if raw == actual {
+		return nil
+	}
+
+	return fmt.Errorf("Expected %s, but got %s", raw, actual)
 }
 
 func uintParser(raw string) (interface{}, error) {

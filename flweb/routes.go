@@ -47,7 +47,7 @@ type ginMethod func(string, ...gin.HandlerFunc) gin.IRoutes
 
 func (a *Application) route(method ginMethod, path string, next func(*Context)) {
 	method(path, func(c *gin.Context) {
-		next(&Context{Context: c, now: a.TimeFunc})
+		next(&Context{Context: c, now: a.TimeFunc, randSource: a.RandSource})
 	})
 }
 

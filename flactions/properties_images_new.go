@@ -8,6 +8,7 @@ import (
 	"github.com/jinzhu/gorm"
 	"github.com/nerde/fuji-lane-back/flentities"
 	"github.com/nerde/fuji-lane-back/flservices"
+	"github.com/nerde/fuji-lane-back/flutils"
 )
 
 // PropertiesImagesNew returns a pre-signed URL for clients to upload images directly to S3
@@ -44,14 +45,24 @@ func (a *PropertiesImagesNew) Perform(c Context) {
 		return
 	}
 
-	url, err := a.GenerateURLToUploadPublicFile("properties/" + id + "/images/" + strings.Replace(fileName, "/", "", -1))
+	key := flutils.GenerateRandomString(30, c.RandomSource())
+	url, err := a.GenerateURLToUploadPublicFile("properties/" + id + "/images/" + key)
 
 	if err != nil {
 		c.ServerError(err)
 		return
 	}
 
-	c.Respond(http.StatusOK, map[string]string{"url": url})
+	fileName = strings.Replace(fileName, "/", "", -1)
+	image := &flentities.Image{Name: fileName, URL: strings.Split(url, "?")[0], PropertyID: int(property.ID)}
+	if err = c.Repository().Save(image).Error; err != nil {
+		c.ServerError(err)
+		return
+	}
+
+	image.URL = url
+
+	c.Respond(http.StatusOK, image)
 }
 
 // NewPropertiesImagesNew returns a new instance of the PropertiesImagesNew action

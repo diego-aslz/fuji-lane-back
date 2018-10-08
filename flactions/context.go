@@ -1,6 +1,7 @@
 package flactions
 
 import (
+	"math/rand"
 	"time"
 
 	"github.com/nerde/fuji-lane-back/fldiagnostics"
@@ -17,6 +18,8 @@ type Context interface {
 
 	Param(string) string
 	Query(string) string
+
+	RandomSource() rand.Source
 
 	Repository() *flentities.Repository
 

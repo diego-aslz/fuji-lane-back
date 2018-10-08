@@ -2,6 +2,7 @@ package flweb
 
 import (
 	"errors"
+	"math/rand"
 	"net/http"
 	"time"
 
@@ -15,6 +16,7 @@ import (
 // switch web libraries with less pain if we ever need to
 type Context struct {
 	*gin.Context
+	randSource rand.Source
 	repository *flentities.Repository
 	now        func() time.Time
 	action     flactions.Action
@@ -29,6 +31,11 @@ func (c *Context) Diagnostics() *fldiagnostics.Diagnostics {
 // Now returns the current time and can be injected
 func (c *Context) Now() time.Time {
 	return c.now()
+}
+
+// RandomSource returns the current source for randomness
+func (c *Context) RandomSource() rand.Source {
+	return c.randSource
 }
 
 // Respond responds with the given status and body in JSON format
