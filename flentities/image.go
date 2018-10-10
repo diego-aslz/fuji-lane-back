@@ -11,7 +11,7 @@ type Image struct {
 	UpdatedAt  time.Time `json:"-"`
 	Name       string    `json:"name"`
 	URL        string    `json:"url"`
-	Uploaded   bool      `json:"-"`
-	PropertyID int       `json:"-"`
+	Uploaded   bool      `json:"uploaded"`
+	PropertyID int       `json:"propertyID"`
 	Property   Property  `json:"-"`
 }

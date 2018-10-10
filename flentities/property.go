@@ -26,6 +26,7 @@ type Property struct {
 	City       *City    `json:"-"`
 	CountryID  *int     `json:"countryID"`
 	Country    *Country `json:"-"`
+	Images     []*Image `json:"images"`
 }
 
 // State returns the state name for the property's state ID

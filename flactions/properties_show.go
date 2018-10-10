@@ -24,7 +24,7 @@ func (a *PropertiesShow) Perform(c Context) {
 	property := &flentities.Property{AccountID: *user.AccountID}
 	property.ID = uint(id)
 
-	err = c.Repository().First(property, *property).Error
+	err = c.Repository().Preload("Images", flentities.Image{Uploaded: true}).First(property, *property).Error
 
 	if err != nil {
 		if gorm.IsRecordNotFoundError(err) {

@@ -28,6 +28,7 @@ Feature: Properties Management
     Given the following accounts:
       | Name             |
       | Diego Apartments |
+      | Other            |
     And the following users:
       | Account          | Email              | Name                 |
       | Diego Apartments | diego@selzlein.com | Diego Aguir Selzlein |
@@ -38,19 +39,40 @@ Feature: Properties Management
       | ID | Country | Name  |
       | 3  | Japan   | Osaka |
     And the following properties:
-      | Account          | State | Name          | Address1 | Address2 | Address3   | City  | PostalCode | Country |
-      | Diego Apartments | Draft | ACME Downtown | Add. One | Add. Two | Add. Three | Osaka | 223344     | Japan   |
+      | ID | Account          | State | Name          | Address1 | Address2 | Address3   | City  | PostalCode | Country |
+      | 1  | Diego Apartments | Draft | ACME Downtown | Add. One | Add. Two | Add. Three | Osaka | 223344     | Japan   |
+      | 2  | Other            | Draft | Other Prop    | Add. One | Add. Two | Add. Three | Osaka | 223344     | Japan   |
+    And the following images:
+      | ID | Property      | Uploaded | Name      | URL                                |
+      | 1  | ACME Downtown | true     | front.jpg | https://s3.amazonaws.com/front.jpg |
+      | 2  | ACME Downtown | false    | back.jpg  | https://s3.amazonaws.com/back.jpg  |
+      | 3  | Other Prop    | true     | front.jpg | https://s3.amazonaws.com/front.jpg |
     And I am authenticated with "diego@selzlein.com"
     When I get details for property "ACME Downtown"
-    Then the system should respond with "OK" and the following body:
-      | state      | draft         |
-      | name       | ACME Downtown |
-      | address1   | Add. One      |
-      | address2   | Add. Two      |
-      | address3   | Add. Three    |
-      | cityID     | 3             |
-      | postalCode | 223344        |
-      | countryID  | 2             |
+    Then the system should respond with "OK" and the following JSON:
+      """
+      {
+        "id": 1,
+        "state": "draft",
+        "name": "ACME Downtown",
+        "address1": "Add. One",
+        "address2": "Add. Two",
+        "address3": "Add. Three",
+        "postalCode": "223344",
+        "cityID": 3,
+        "postalCode": "223344",
+        "countryID":  2,
+        "images": [
+          {
+            "id": 1,
+            "name": "front.jpg",
+            "url": "https://s3.amazonaws.com/front.jpg",
+            "uploaded":true,
+            "propertyID":1
+          }
+        ]
+      }
+      """
 
   Scenario: Getting property details for a property the user does not have access to
     Given the following accounts:
