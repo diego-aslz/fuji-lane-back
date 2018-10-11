@@ -1,7 +1,7 @@
 [metadata.heroku]
   root-package = "github.com/nerde/fuji-lane-back"
   install = ["./cmd/..."]
-  go-version = "go1.10"
+  go-version = "go1.11"
 
 [[constraint]]
   name = "github.com/gin-gonic/gin"
