@@ -28,6 +28,8 @@ const (
 	PropertiesImagesPath = "/properties/:id/images"
 	// PropertiesImagesUploadedPath for marking an image as uploaded
 	PropertiesImagesUploadedPath = "/properties/:property_id/images/:id/uploaded"
+	// PropertiesImagePath for accessing a specific image
+	PropertiesImagePath = "/properties/:property_id/images/:id"
 )
 
 // AddRoutes to a Gin Engine
@@ -44,6 +46,7 @@ func (a *Application) AddRoutes(e *gin.Engine) {
 	a.route(e.GET, PropertiesShowPath, a.propertiesShow)
 	a.route(e.POST, PropertiesImagesPath, a.propertiesImagesNew)
 	a.route(e.PUT, PropertiesImagesUploadedPath, a.propertiesImagesUploaded)
+	a.route(e.DELETE, PropertiesImagePath, a.propertiesImagesDestroy)
 }
 
 type ginMethod func(string, ...gin.HandlerFunc) gin.IRoutes
@@ -117,6 +120,13 @@ func (a *Application) propertiesImagesNew(c *Context) {
 
 func (a *Application) propertiesImagesUploaded(c *Context) {
 	withAction(&flactions.PropertiesImagesUploaded{},
+		withRepository(
+			authenticateUser(
+				performAction)))(c)
+}
+
+func (a *Application) propertiesImagesDestroy(c *Context) {
+	withAction(&flactions.PropertiesImagesDestroy{},
 		withRepository(
 			authenticateUser(
 				performAction)))(c)

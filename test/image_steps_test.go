@@ -104,10 +104,42 @@ func requestPropertiesImagesUploaded(name string) error {
 	})
 }
 
+func requestPropertiesImagesDestroy(name string) error {
+	return flentities.WithRepository(func(r *flentities.Repository) error {
+		image := &flentities.Image{}
+		if err := r.Find(image, map[string]interface{}{"name": name}).Error; err != nil {
+			return err
+		}
+
+		path := strings.Replace(flweb.PropertiesImagePath, ":property_id", fmt.Sprint(image.PropertyID), 1)
+		path = strings.Replace(path, ":id", fmt.Sprint(image.ID), 1)
+
+		return perform("DELETE", path, nil)
+	})
+}
+
+func assertNoImages() error {
+	return flentities.WithRepository(func(r *flentities.Repository) error {
+		count := 0
+		err := r.Model(&flentities.Image{}).Count(&count).Error
+		if err != nil {
+			return err
+		}
+
+		if count != 0 {
+			return fmt.Errorf("Expected to have %d images in the DB, got %d", 0, count)
+		}
+
+		return nil
+	})
+}
+
 func ImageContext(s *godog.Suite) {
 	s.Step(`^I should have the following images:$`, assertImages)
 	s.Step(`^the following images:$`, createImages)
 	s.Step(`^I request an URL to upload an image called "([^"]*)" for property "([^"]*)"$`, requestPropertiesImagesNew)
 	s.Step(`^I mark image "([^"]*)" as uploaded$`, requestPropertiesImagesUploaded)
 	s.Step(`^I request an URL to upload the following image:$`, requestPropertiesImagesNew)
+	s.Step(`^I remove the image "([^"]*)"$`, requestPropertiesImagesDestroy)
+	s.Step(`^I should have no images$`, assertNoImages)
 }

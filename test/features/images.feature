@@ -101,6 +101,46 @@ Feature: Images Management
       | ACME Skyscraper | building.jpg | https://fujilane-test.s3.amazonaws.com/public/properties/20/images/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa | false    |
     And I am authenticated with "diego@selzlein.com"
     When I mark image "building.jpg" as uploaded
+    Then the system should respond with "OK"
     And I should have the following images:
       | Name         | Uploaded |
       | building.jpg | true     |
+
+  Scenario: Removing an image
+    Given the following accounts:
+      | Name             |
+      | Diego Apartments |
+    And the following users:
+      | Account          | Email              | Name                 |
+      | Diego Apartments | diego@selzlein.com | Diego Aguir Selzlein |
+    And the following properties:
+      | Account          | Name            |
+      | Diego Apartments | ACME Skyscraper |
+    And the following images:
+      | Property        | Name         | URL                                                                                               |
+      | ACME Skyscraper | building.jpg | https://fujilane-test.s3.amazonaws.com/public/properties/20/images/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa |
+    And I am authenticated with "diego@selzlein.com"
+    When I remove the image "building.jpg"
+    Then the system should respond with "OK"
+    And I should have no images
+
+  Scenario: Removing an image that does not belong to me
+    Given the following accounts:
+      | Name             |
+      | Diego Apartments |
+      | Other Acc        |
+    And the following users:
+      | Account          | Email              | Name                 |
+      | Diego Apartments | diego@selzlein.com | Diego Aguir Selzlein |
+    And the following properties:
+      | Account   | Name            |
+      | Other Acc | ACME Skyscraper |
+    And the following images:
+      | Property        | Name         | URL                                                                                               |
+      | ACME Skyscraper | building.jpg | https://fujilane-test.s3.amazonaws.com/public/properties/20/images/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa |
+    And I am authenticated with "diego@selzlein.com"
+    When I remove the image "building.jpg"
+    Then the system should respond with "NOT FOUND"
+    And I should have the following images:
+      | Name         |
+      | building.jpg |
