@@ -44,9 +44,9 @@ Feature: Images Management
       | Type     | text/csv        |
       | Property | ACME Skyscraper |
     Then the system should respond with "UNPROCESSABLE ENTITY" and the following errors:
-      | Invalid name: cannot be blank      |
-      | Invalid size: maximum is 20971520  |
-      | Invalid type: needs to be an image |
+      | Invalid name: cannot be blank              |
+      | Invalid size: maximum is 20971520          |
+      | Invalid type: needs to be JPEG, PNG or GIF |
 
   Scenario: Obtaining a signed URL to upload a property image without having an account
     Given the following accounts:

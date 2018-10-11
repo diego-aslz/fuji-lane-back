@@ -108,7 +108,7 @@ func (v FieldValidation) Max(max int) FieldValidation {
 // Image adds an error if the value is not an image type
 func (v FieldValidation) Image() FieldValidation {
 	if _, ok := allowedImageTypes[v.Value]; !ok {
-		v.Errors = append(v.Errors, fmt.Errorf("Invalid %s: needs to be an image", v.Name))
+		v.Errors = append(v.Errors, fmt.Errorf("Invalid %s: needs to be JPEG, PNG or GIF", v.Name))
 	}
 
 	return v
