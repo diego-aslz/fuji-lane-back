@@ -35,8 +35,6 @@ type SignUp struct {
 
 // Perform executes the action
 func (a *SignUp) Perform(c Context) {
-	c.Diagnostics().AddSensitive("params", a)
-
 	user, err := c.Repository().SignUp(a.Email, a.Password)
 	if err != nil {
 		if flentities.IsUniqueConstraintViolation(err) {

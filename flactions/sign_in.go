@@ -29,8 +29,6 @@ const authenticationFailedMessage = "Invalid email or password"
 
 // Perform executes the action
 func (a *SignIn) Perform(c Context) {
-	c.Diagnostics().AddSensitive("params", a)
-
 	user, err := c.Repository().FindUserByEmail(a.Email)
 	if err != nil {
 		c.ServerError(err)

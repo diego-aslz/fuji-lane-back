@@ -1,6 +1,8 @@
 package fldiagnostics
 
-import "encoding/json"
+import (
+	"encoding/json"
+)
 
 // Diagnostics is used to store information relevant for logging and debugging
 type Diagnostics struct {
@@ -27,16 +29,18 @@ func (d *Diagnostics) AddError(err error) *Diagnostics {
 
 // AddJSON converts the value to JSON and adds it
 func (d *Diagnostics) AddJSON(key string, value interface{}) *Diagnostics {
+	if sensitive, ok := value.(SensitivePayload); ok {
+		value = sensitive.FilterSensitiveInformation()
+	}
+
 	jsonObj, err := json.Marshal(value)
 	if err == nil {
 		d.Add(key, string(jsonObj))
+	} else {
+		d.AddQuoted("json_parsing_error", err.Error())
 	}
-	return d
-}
 
-// AddSensitive filters out sensitive information before adding as JSON
-func (d *Diagnostics) AddSensitive(key string, value SensitivePayload) *Diagnostics {
-	return d.AddJSON(key, value.FilterSensitiveInformation())
+	return d
 }
 
 // Concat adds all keys and values from other Diagnostics into this one

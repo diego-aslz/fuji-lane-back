@@ -72,6 +72,7 @@ func (c *Context) ServerError(err error) {
 func (c *Context) validate(v flentities.Validatable) bool {
 	errs := v.Validate()
 	if len(errs) > 0 {
+		c.Diagnostics().AddJSON("validation_errors", c.errorsBody(errs))
 		c.Respond(http.StatusUnprocessableEntity, c.errorsBody(errs))
 		return false
 	}

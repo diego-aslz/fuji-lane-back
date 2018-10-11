@@ -19,7 +19,7 @@ type S3 struct {
 // use the following CURL command:
 //
 //   curl -H 'x-amz-acl: public-read' -X PUT -F file=@<path/to/file> <presigned_url>
-func (s S3) GenerateURLToUploadPublicFile(key string) (string, error) {
+func (s S3) GenerateURLToUploadPublicFile(key, cType string, size int) (string, error) {
 	sess, err := session.NewSession(s.config)
 
 	if err != nil {
@@ -29,9 +29,11 @@ func (s S3) GenerateURLToUploadPublicFile(key string) (string, error) {
 	svc := s3.New(sess)
 
 	req, _ := svc.PutObjectRequest(&s3.PutObjectInput{
-		Bucket: aws.String(flconfig.Config.AWSBucket),
-		Key:    aws.String("public/" + key),
-		ACL:    aws.String(s3.ObjectCannedACLPublicRead),
+		Bucket:        aws.String(flconfig.Config.AWSBucket),
+		Key:           aws.String("public/" + key),
+		ACL:           aws.String(s3.ObjectCannedACLPublicRead),
+		ContentLength: aws.Int64(int64(size)),
+		ContentType:   aws.String(cType),
 	})
 
 	return req.Presign(1 * time.Hour)

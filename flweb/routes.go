@@ -24,8 +24,8 @@ const (
 	PropertiesPath = "/properties"
 	// PropertiesShowPath to show property details
 	PropertiesShowPath = "/properties/:id"
-	// PropertiesImagesNewPath for obtaining pre-signed upload URLs
-	PropertiesImagesNewPath = "/properties/:id/images/new"
+	// PropertiesImagesPath for obtaining pre-signed upload URLs
+	PropertiesImagesPath = "/properties/:id/images"
 	// PropertiesImagesUploadedPath for marking an image as uploaded
 	PropertiesImagesUploadedPath = "/properties/:property_id/images/:id/uploaded"
 )
@@ -42,7 +42,7 @@ func (a *Application) AddRoutes(e *gin.Engine) {
 	a.route(e.GET, CountriesPath, a.countriesList)
 	a.route(e.POST, PropertiesPath, a.propertiesCreate)
 	a.route(e.GET, PropertiesShowPath, a.propertiesShow)
-	a.route(e.GET, PropertiesImagesNewPath, a.propertiesImagesNew)
+	a.route(e.POST, PropertiesImagesPath, a.propertiesImagesNew)
 	a.route(e.PUT, PropertiesImagesUploadedPath, a.propertiesImagesUploaded)
 }
 
@@ -62,8 +62,7 @@ func (a *Application) signUp(c *Context) {
 	withAction(&flactions.SignUp{},
 		withRepository(
 			loadActionBody(
-				validateActionBody(
-					performAction))))(c)
+				performAction)))(c)
 }
 
 func (a *Application) signIn(c *Context) {
@@ -112,7 +111,8 @@ func (a *Application) propertiesImagesNew(c *Context) {
 	withAction(flactions.NewPropertiesImagesNew(),
 		withRepository(
 			authenticateUser(
-				performAction)))(c)
+				loadActionBody(
+					performAction))))(c)
 }
 
 func (a *Application) propertiesImagesUploaded(c *Context) {

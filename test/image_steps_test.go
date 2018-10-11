@@ -2,7 +2,10 @@ package fujilane
 
 import (
 	"fmt"
+	"strconv"
 	"strings"
+
+	"github.com/nerde/fuji-lane-back/flactions"
 
 	"github.com/DATA-DOG/godog"
 	"github.com/DATA-DOG/godog/gherkin"
@@ -58,16 +61,32 @@ func createImages(table *gherkin.DataTable) error {
 	return createRowEntitiesFromTable(new(imageRow), table)
 }
 
-func requestPropertiesImagesNew(fileName, name string) error {
+func requestPropertiesImagesNew(table *gherkin.DataTable) error {
+	image, err := assist.ParseMap(table)
+	if err != nil {
+		return err
+	}
+
+	propertyName := image["Property"]
+
+	body := flactions.PropertiesImagesCreateBody{}
+	body.Name = image["Name"]
+	body.Size, err = strconv.Atoi(image["Size"])
+	body.Type = image["Type"]
+
+	if err != nil {
+		return err
+	}
+
 	return flentities.WithRepository(func(r *flentities.Repository) error {
 		property := &flentities.Property{}
-		if err := r.Find(property, map[string]interface{}{"name": name}).Error; err != nil {
+		if err := r.Find(property, map[string]interface{}{"name": propertyName}).Error; err != nil {
 			return err
 		}
 
-		path := strings.Replace(flweb.PropertiesImagesNewPath, ":id", fmt.Sprint(property.ID), 1)
+		path := strings.Replace(flweb.PropertiesImagesPath, ":id", fmt.Sprint(property.ID), 1)
 
-		return performGET(path + "?name=" + fileName)
+		return performPOST(path, body)
 	})
 }
 
@@ -90,4 +109,5 @@ func ImageContext(s *godog.Suite) {
 	s.Step(`^the following images:$`, createImages)
 	s.Step(`^I request an URL to upload an image called "([^"]*)" for property "([^"]*)"$`, requestPropertiesImagesNew)
 	s.Step(`^I mark image "([^"]*)" as uploaded$`, requestPropertiesImagesUploaded)
+	s.Step(`^I request an URL to upload the following image:$`, requestPropertiesImagesNew)
 }

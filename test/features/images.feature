@@ -1,5 +1,9 @@
 Feature: Images Management
 
+  Background:
+    Given the following configuration:
+      | MAX_IMAGE_SIZE_MB | 20 |
+
   Scenario: Obtaining a signed URL to upload a property image
     Given the following accounts:
       | Name             |
@@ -11,13 +15,38 @@ Feature: Images Management
       | ID | Account          | Name            |
       | 20 | Diego Apartments | ACME Skyscraper |
     And I am authenticated with "diego@selzlein.com"
-    When I request an URL to upload an image called "build/ing.jpg" for property "ACME Skyscraper"
+    When I request an URL to upload the following image:
+      | Name     | build/ing.jpg   |
+      | Size     | 15000000        |
+      | Type     | image/jpeg      |
+      | Property | ACME Skyscraper |
     Then the system should respond with "OK" and the following image:
-      | Name | building.jpg                                                                                                                                                                                                                                                                                                                    |
-      | URL  | https://fujilane-test.s3.amazonaws.com/public/properties/20/images/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=11111111111111111111%2F20181008%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=TEST_DATE&X-Amz-Expires=3600&X-Amz-SignedHeaders=host%3Bx-amz-acl&X-Amz-Signature=TEST_SIGNATURE |
+      | Name | building.jpg                                                                                                                                                                                                                                                                                     |
+      | URL  | https://fujilane-test.s3.amazonaws.com/public/properties/20/images/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=CREDENTIAL&X-Amz-Date=DATE&X-Amz-Expires=3600&X-Amz-SignedHeaders=content-length%3Bcontent-type%3Bhost%3Bx-amz-acl&X-Amz-Signature=SIGNATURE |
     And I should have the following images:
       | Property        | Name         | URL                                                                                               | Uploaded |
       | ACME Skyscraper | building.jpg | https://fujilane-test.s3.amazonaws.com/public/properties/20/images/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa | false    |
+
+  Scenario: Validating file size
+    Given the following accounts:
+      | Name             |
+      | Diego Apartments |
+    And the following users:
+      | Account          | Email              | Name                 |
+      | Diego Apartments | diego@selzlein.com | Diego Aguir Selzlein |
+    And the following properties:
+      | ID | Account          | Name            |
+      | 20 | Diego Apartments | ACME Skyscraper |
+    And I am authenticated with "diego@selzlein.com"
+    When I request an URL to upload the following image:
+      | Name     |                 |
+      | Size     | 25000000        |
+      | Type     | text/csv        |
+      | Property | ACME Skyscraper |
+    Then the system should respond with "UNPROCESSABLE ENTITY" and the following errors:
+      | Invalid name: cannot be blank      |
+      | Invalid size: maximum is 20971520  |
+      | Invalid type: needs to be an image |
 
   Scenario: Obtaining a signed URL to upload a property image without having an account
     Given the following accounts:
@@ -30,7 +59,11 @@ Feature: Images Management
       | Account             | Name            |
       | Somebody Apartments | ACME Skyscraper |
     And I am authenticated with "diego@selzlein.com"
-    When I request an URL to upload an image called "building.jpg" for property "ACME Skyscraper"
+    When I request an URL to upload the following image:
+      | Name     | building.jpg    |
+      | Size     | 15000000        |
+      | Type     | image/png       |
+      | Property | ACME Skyscraper |
     Then the system should respond with "PRECONDITION REQUIRED" and the following errors:
       | You do not have an owner account |
 
@@ -46,7 +79,11 @@ Feature: Images Management
       | Account             | Name            |
       | Somebody Apartments | ACME Skyscraper |
     And I am authenticated with "diego@selzlein.com"
-    When I request an URL to upload an image called "building.jpg" for property "ACME Skyscraper"
+    When I request an URL to upload the following image:
+      | Name     | building.jpg    |
+      | Size     | 15000000        |
+      | Type     | image/png       |
+      | Property | ACME Skyscraper |
     Then the system should respond with "NOT FOUND"
 
   Scenario: Marking an image as uploaded

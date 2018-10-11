@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"strconv"
 
 	yaml "gopkg.in/yaml.v2"
 )
@@ -16,6 +17,7 @@ type Configuration struct {
 	DatabaseURL         string
 	FacebookAppID       string
 	FacebookClientToken string
+	MaxImageSizeMB      int
 	Stage               string
 	TokenSecret         string
 }
@@ -27,10 +29,23 @@ const projectPath = "github.com/nerde/fuji-lane-back"
 
 // LoadConfiguration from environment
 func LoadConfiguration() {
+	var err error
 	stage := getStage()
 
-	if err := LoadEnv(stage); err != nil {
+	if err = LoadEnv(stage); err != nil {
 		panic(err)
+	}
+
+	maxImageSize := 0
+	maxImageSizeVar := os.Getenv("MAX_IMAGE_SIZE_MB")
+	if maxImageSizeVar != "" {
+		maxImageSize, err = strconv.Atoi(maxImageSizeVar)
+		if err != nil {
+			fmt.Printf("Unable to load MAX_IMAGE_SIZE_MB (%s), falling back to default.\n", err.Error())
+		}
+	}
+	if maxImageSize == 0 {
+		maxImageSize = 20
 	}
 
 	Config = &Configuration{
@@ -40,6 +55,7 @@ func LoadConfiguration() {
 		DatabaseURL:         os.Getenv("DATABASE_URL"),
 		FacebookAppID:       os.Getenv("FACEBOOK_APP_ID"),
 		FacebookClientToken: os.Getenv("FACEBOOK_CLIENT_TOKEN"),
+		MaxImageSizeMB:      maxImageSize,
 		Stage:               stage,
 		TokenSecret:         os.Getenv("TOKEN_SECRET"),
 	}

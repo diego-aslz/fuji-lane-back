@@ -61,20 +61,20 @@ func authenticateUser(next func(*Context)) func(*Context) {
 		}
 
 		if session.ExpiresAt.Before(c.Now()) {
-			c.Diagnostics().AddSensitive("session", session)
+			c.Diagnostics().AddJSON("session", session)
 			c.RespondError(http.StatusUnauthorized, errors.New("Your session expired"))
 			return
 		}
 
 		user, err := c.repository.FindUserByEmail(session.Email)
 		if err != nil {
-			c.Diagnostics().AddSensitive("session", session).AddQuoted("reason", "Unable to load user")
+			c.Diagnostics().AddJSON("session", session).AddQuoted("reason", "Unable to load user")
 			c.ServerError(err)
 			return
 		}
 
 		if user == nil || user.ID == 0 {
-			c.Diagnostics().AddSensitive("session", session).AddQuoted("reason", "User not found")
+			c.Diagnostics().AddJSON("session", session).AddQuoted("reason", "User not found")
 			c.unauthorized()
 			return
 		}

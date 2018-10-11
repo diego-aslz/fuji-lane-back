@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/DATA-DOG/godog"
+	"github.com/DATA-DOG/godog/gherkin"
 	"github.com/gin-gonic/gin"
 	"github.com/nerde/fuji-lane-back/flconfig"
 	"github.com/nerde/fuji-lane-back/flservices"
@@ -122,6 +123,21 @@ func itIsCurrently(timeExpr string) (err error) {
 	return
 }
 
+func forceConfiguration(table *gherkin.DataTable) error {
+	config, err := assist.ParseMap(table)
+	if err != nil {
+		return err
+	}
+
+	if value, ok := config["MAX_IMAGE_SIZE_MB"]; ok {
+		if flconfig.Config.MaxImageSizeMB, err = strconv.Atoi(value); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
 func ApplicationContext(s *godog.Suite) {
 	s.BeforeSuite(setupApplication)
 	s.BeforeScenario(func(_ interface{}) {
@@ -129,4 +145,5 @@ func ApplicationContext(s *godog.Suite) {
 	})
 
 	s.Step(`^it is currently "([^"]*)"$`, itIsCurrently)
+	s.Step(`^the following configuration:$`, forceConfiguration)
 }

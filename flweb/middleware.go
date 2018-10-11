@@ -41,14 +41,12 @@ func loadActionBody(next func(*Context)) func(*Context) {
 			return
 		}
 
-		next(c)
-	}
-}
+		c.Diagnostics().AddJSON("body", c.action)
 
-func validateActionBody(next func(*Context)) func(*Context) {
-	return func(c *Context) {
-		if !c.validate(c.action.(flentities.Validatable)) {
-			return
+		if validatable, ok := c.action.(flentities.Validatable); ok {
+			if !c.validate(validatable) {
+				return
+			}
 		}
 
 		next(c)

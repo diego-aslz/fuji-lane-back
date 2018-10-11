@@ -182,10 +182,10 @@ func assertResponseStatusAndImage(status string, table *gherkin.DataTable) error
 		return fmt.Errorf("Unable to unmarshal %s: %s", response.Body.String(), err.Error())
 	}
 
-	// Discarding signature and date because they cannot be asserted
-	reps := map[string]string{"Amz-Signature": "TEST_SIGNATURE", "Amz-Date": "TEST_DATE"}
+	// Discarding fields that cannot be asserted because they are dynamic
+	reps := map[string]string{"Amz-Signature": "SIGNATURE", "Amz-Date": "DATE", "Amz-Credential": "CREDENTIAL"}
 	for key, replacement := range reps {
-		reg := regexp.MustCompile(key + "=\\w+")
+		reg := regexp.MustCompile(key + "=([\\w\\-]|%2F)+")
 		image.URL = string(reg.ReplaceAll([]byte(image.URL), []byte(key+"="+replacement)))
 	}
 

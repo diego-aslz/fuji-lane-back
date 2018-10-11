@@ -32,8 +32,6 @@ type FacebookSignIn struct {
 
 // Perform the action
 func (a *FacebookSignIn) Perform(c Context) {
-	c.Diagnostics().AddSensitive("params", a)
-
 	err := a.facebook.Validate(a.AccessToken, a.ID)
 	if err != nil {
 		c.Diagnostics().AddError(err)
