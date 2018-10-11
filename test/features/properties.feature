@@ -43,10 +43,10 @@ Feature: Properties Management
       | 1  | Diego Apartments | Draft | ACME Downtown | Add. One | Add. Two | Add. Three | Osaka | 223344     | Japan   |
       | 2  | Other            | Draft | Other Prop    | Add. One | Add. Two | Add. Three | Osaka | 223344     | Japan   |
     And the following images:
-      | ID | Property      | Uploaded | Name      | URL                                |
-      | 1  | ACME Downtown | true     | front.jpg | https://s3.amazonaws.com/front.jpg |
-      | 2  | ACME Downtown | false    | back.jpg  | https://s3.amazonaws.com/back.jpg  |
-      | 3  | Other Prop    | true     | front.jpg | https://s3.amazonaws.com/front.jpg |
+      | ID | Property      | Uploaded | Name      | URL                                | Type       | Size    |
+      | 1  | ACME Downtown | true     | front.jpg | https://s3.amazonaws.com/front.jpg | image/jpeg | 1000000 |
+      | 2  | ACME Downtown | false    | back.jpg  | https://s3.amazonaws.com/back.jpg  | image/jpeg | 1000000 |
+      | 3  | Other Prop    | true     | front.jpg | https://s3.amazonaws.com/front.jpg | image/jpeg | 1000000 |
     And I am authenticated with "diego@selzlein.com"
     When I get details for property "ACME Downtown"
     Then the system should respond with "OK" and the following JSON:
@@ -66,6 +66,8 @@ Feature: Properties Management
           {
             "id": 1,
             "name": "front.jpg",
+            "type": "image/jpeg",
+            "size": 1000000,
             "url": "https://s3.amazonaws.com/front.jpg",
             "uploaded":true,
             "propertyID":1

@@ -3,6 +3,8 @@ CREATE TABLE images(
   created_at timestamp without time zone not null,
   updated_at timestamp without time zone not null,
   name varchar not null,
+  type varchar not null,
+  size integer not null,
   url varchar not null,
   property_id integer not null references properties,
   uploaded boolean default false

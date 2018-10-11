@@ -65,7 +65,13 @@ func (a *PropertiesImagesCreate) Perform(c Context) {
 	}
 
 	a.Name = strings.Replace(a.Name, "/", "", -1)
-	image := &flentities.Image{Name: a.Name, URL: strings.Split(url, "?")[0], PropertyID: int(property.ID)}
+	image := &flentities.Image{
+		Name:       a.Name,
+		URL:        strings.Split(url, "?")[0],
+		Type:       a.Type,
+		Size:       a.Size,
+		PropertyID: int(property.ID)}
+
 	if err = c.Repository().Save(image).Error; err != nil {
 		c.ServerError(err)
 		return
