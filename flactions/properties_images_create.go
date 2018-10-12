@@ -32,7 +32,7 @@ func (b PropertiesImagesCreateBody) Validate() []error {
 
 // PropertiesImagesCreate returns a pre-signed URL for clients to upload images directly to S3
 type PropertiesImagesCreate struct {
-	*flservices.S3
+	flservices.S3Service
 	PropertiesImagesCreateBody
 }
 
@@ -83,6 +83,6 @@ func (a *PropertiesImagesCreate) Perform(c Context) {
 }
 
 // NewPropertiesImagesNew returns a new instance of the PropertiesImagesNew action
-func NewPropertiesImagesNew() *PropertiesImagesCreate {
-	return &PropertiesImagesCreate{S3: flservices.NewS3()}
+func NewPropertiesImagesNew(s3 flservices.S3Service) *PropertiesImagesCreate {
+	return &PropertiesImagesCreate{S3Service: s3}
 }

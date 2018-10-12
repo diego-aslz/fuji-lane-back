@@ -47,6 +47,7 @@ func setupApplication() {
 	facebookClient = &mockedFacebookClient{tokens: map[string]flservices.FacebookTokenDetails{}}
 	application = flweb.NewApplication(facebookClient)
 	application.RandSource = fakeRandSource{}
+	application.S3Service = newFakeS3(application.S3Service)
 
 	application.TimeFunc = func() time.Time {
 		return appTime

@@ -5,10 +5,13 @@ import (
 
 	"github.com/jinzhu/gorm"
 	"github.com/nerde/fuji-lane-back/flentities"
+	"github.com/nerde/fuji-lane-back/flservices"
 )
 
 // PropertiesImagesDestroy marks an image as uploaded
-type PropertiesImagesDestroy struct{}
+type PropertiesImagesDestroy struct {
+	flservices.S3Service
+}
 
 // Perform the action
 func (a *PropertiesImagesDestroy) Perform(c Context) {
@@ -40,10 +43,20 @@ func (a *PropertiesImagesDestroy) Perform(c Context) {
 		return
 	}
 
+	if err = a.DeleteFile(image.URL); err != nil {
+		c.ServerError(err)
+		return
+	}
+
 	if err = c.Repository().Delete(image).Error; err != nil {
 		c.ServerError(err)
 		return
 	}
 
 	c.Respond(http.StatusOK, map[string]interface{}{})
+}
+
+// NewPropertiesImagesDestroy returns a new instance of the PropertiesImagesDestroy action
+func NewPropertiesImagesDestroy(s3 flservices.S3Service) *PropertiesImagesDestroy {
+	return &PropertiesImagesDestroy{s3}
 }

@@ -111,7 +111,7 @@ func (a *Application) propertiesShow(c *Context) {
 }
 
 func (a *Application) propertiesImagesNew(c *Context) {
-	withAction(flactions.NewPropertiesImagesNew(),
+	withAction(flactions.NewPropertiesImagesNew(a.S3Service),
 		withRepository(
 			authenticateUser(
 				loadActionBody(
@@ -126,7 +126,7 @@ func (a *Application) propertiesImagesUploaded(c *Context) {
 }
 
 func (a *Application) propertiesImagesDestroy(c *Context) {
-	withAction(&flactions.PropertiesImagesDestroy{},
+	withAction(flactions.NewPropertiesImagesDestroy(a.S3Service),
 		withRepository(
 			authenticateUser(
 				performAction)))(c)

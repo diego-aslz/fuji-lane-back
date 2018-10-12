@@ -1,6 +1,7 @@
 package flservices
 
 import (
+	"strings"
 	"time"
 
 	"github.com/aws/aws-sdk-go/aws"
@@ -12,7 +13,7 @@ import (
 
 // S3 is an abstraction that provides easy-to-use functions to access Amazon S3
 type S3 struct {
-	config *aws.Config
+	service *s3.S3
 }
 
 // GenerateURLToUploadPublicFile generates a pre-signed URL to upload public files to Amazon S3. To test it, you can
@@ -20,15 +21,7 @@ type S3 struct {
 //
 //   curl -H 'x-amz-acl: public-read' -X PUT -F file=@<path/to/file> <presigned_url>
 func (s S3) GenerateURLToUploadPublicFile(key, cType string, size int) (string, error) {
-	sess, err := session.NewSession(s.config)
-
-	if err != nil {
-		return "", err
-	}
-
-	svc := s3.New(sess)
-
-	req, _ := svc.PutObjectRequest(&s3.PutObjectInput{
+	req, _ := s.service.PutObjectRequest(&s3.PutObjectInput{
 		Bucket:        aws.String(flconfig.Config.AWSBucket),
 		Key:           aws.String("public/" + key),
 		ACL:           aws.String(s3.ObjectCannedACLPublicRead),
@@ -39,10 +32,33 @@ func (s S3) GenerateURLToUploadPublicFile(key, cType string, size int) (string, 
 	return req.Presign(1 * time.Hour)
 }
 
-// NewS3 creates a new instance for the S3 service with configuration
-func NewS3() *S3 {
-	return &S3{&aws.Config{
+// DeleteFile removes a file stored in S3
+func (s S3) DeleteFile(path string) error {
+	_, err := s.service.DeleteObject(&s3.DeleteObjectInput{
+		Bucket: aws.String(flconfig.Config.AWSBucket),
+		Key:    aws.String(strings.Split(path, "s3.amazonaws.com/")[1]),
+	})
+
+	return err
+}
+
+// S3Service provides the functionality the system needs from AWS S3
+type S3Service interface {
+	GenerateURLToUploadPublicFile(string, string, int) (string, error)
+	DeleteFile(string) error
+}
+
+// NewS3 returns a new S3Service based on the env vars configuration
+func NewS3() (S3Service, error) {
+	config := &aws.Config{
 		Region:      aws.String(flconfig.Config.AWSRegion),
 		Credentials: credentials.NewEnvCredentials(),
-	}}
+	}
+
+	sess, err := session.NewSession(config)
+	if err != nil {
+		return nil, err
+	}
+
+	return &S3{s3.New(sess)}, nil
 }

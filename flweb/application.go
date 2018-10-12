@@ -15,6 +15,7 @@ type Application struct {
 	facebookClient flservices.FacebookClient
 	TimeFunc       func() time.Time
 	RandSource     rand.Source
+	flservices.S3Service
 }
 
 // Start listening to requests
@@ -33,9 +34,15 @@ func (a *Application) CreateRouter() *gin.Engine {
 
 // NewApplication with the injected dependencies
 func NewApplication(facebookClient flservices.FacebookClient) *Application {
+	s3, err := flservices.NewS3()
+	if err != nil {
+		panic(err)
+	}
+
 	return &Application{
 		facebookClient: facebookClient,
 		TimeFunc:       time.Now,
 		RandSource:     flutils.NewRandomSource(),
+		S3Service:      s3,
 	}
 }
