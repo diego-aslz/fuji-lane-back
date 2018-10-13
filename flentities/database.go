@@ -104,6 +104,10 @@ func Seed() error {
 				Country{Model: gorm.Model{ID: 5}},
 				&Country{Model: gorm.Model{ID: 5}, Name: "Vietnam"},
 			},
+			[]interface{}{
+				City{Model: gorm.Model{ID: 1}},
+				&City{Model: gorm.Model{ID: 1}, CountryID: 3, Name: "Osaka"},
+			},
 		}
 
 		for _, pairs := range findOrCreate {

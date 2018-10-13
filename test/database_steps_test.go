@@ -65,6 +65,6 @@ func databaseDefaultsAreLoaded() error {
 }
 
 func DatabaseContext(s *godog.Suite) {
-	s.Step(`^database defaults are loaded$`, databaseDefaultsAreLoaded)
+	s.Step(`^defaults are loaded$`, databaseDefaultsAreLoaded)
 	s.AfterScenario(cleanup)
 }

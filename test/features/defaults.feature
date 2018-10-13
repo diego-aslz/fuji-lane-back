@@ -1,7 +1,7 @@
 Feature: Application Defaults
 
-  Scenario: Loading database defaults
-    When database defaults are loaded
+  Scenario: Loading defaults
+    When defaults are loaded
     Then we should have the following countries:
       | ID | Name      |
       | 1  | China     |
@@ -9,3 +9,6 @@ Feature: Application Defaults
       | 3  | Japan     |
       | 4  | Singapore |
       | 5  | Vietnam   |
+    And we should have the following cities:
+      | ID | CountryID | Name  |
+      | 1  | 3         | Osaka |

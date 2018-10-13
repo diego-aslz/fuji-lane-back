@@ -33,6 +33,29 @@ func requestCities() error {
 	return performGET(flweb.CitiesPath)
 }
 
+func assertCities(table *gherkin.DataTable) error {
+	return flentities.WithRepository(func(r *flentities.Repository) error {
+		count := 0
+		err := r.Model(&flentities.City{}).Count(&count).Error
+		if err != nil {
+			return err
+		}
+
+		rowsCount := len(table.Rows) - 1
+		if count != rowsCount {
+			return fmt.Errorf("Expected to have %d cities in the DB, got %d", rowsCount, count)
+		}
+
+		cities := []*flentities.City{}
+		err = r.Find(&cities).Error
+		if err != nil {
+			return err
+		}
+
+		return assist.CompareToSlice(cities, table)
+	})
+}
+
 func assertCitiesResponse(status string, table *gherkin.DataTable) error {
 	if err := assertResponseStatus(status); err != nil {
 		return err
@@ -49,5 +72,6 @@ func assertCitiesResponse(status string, table *gherkin.DataTable) error {
 func CityContext(s *godog.Suite) {
 	s.Step(`^the following cities:$`, theFollowingCities)
 	s.Step(`^I list cities$`, requestCities)
+	s.Step(`^we should have the following cities:$`, assertCities)
 	s.Step(`^the system should respond with "([^"]*)" and the following cities:$`, assertCitiesResponse)
 }
