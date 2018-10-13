@@ -20,6 +20,8 @@ const (
 	AccountsPath = "/accounts"
 	// CountriesPath for listing countries
 	CountriesPath = "/countries"
+	// CitiesPath for listing cities
+	CitiesPath = "/cities"
 	// PropertiesPath for properties management
 	PropertiesPath = "/properties"
 	// PropertyPath to show property details
@@ -42,6 +44,7 @@ func (a *Application) AddRoutes(e *gin.Engine) {
 
 	a.route(e.POST, AccountsPath, a.accountsCreate)
 	a.route(e.GET, CountriesPath, a.countriesList)
+	a.route(e.GET, CitiesPath, a.citiesList)
 	a.route(e.POST, PropertiesPath, a.propertiesCreate)
 	a.route(e.GET, PropertyPath, a.propertiesShow)
 	a.route(e.POST, PropertiesImagesPath, a.propertiesImagesCreate)
@@ -92,6 +95,12 @@ func (a *Application) accountsCreate(c *Context) {
 
 func (a *Application) countriesList(c *Context) {
 	withAction(&flactions.CountriesList{},
+		withRepository(
+			performAction))(c)
+}
+
+func (a *Application) citiesList(c *Context) {
+	withAction(&flactions.CitiesList{},
 		withRepository(
 			performAction))(c)
 }
