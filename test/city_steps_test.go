@@ -15,18 +15,17 @@ type cityRow struct {
 	Country string
 }
 
-func (row *cityRow) save(r *flentities.Repository) error {
+func tableRowToCity(r *flentities.Repository, a interface{}) (interface{}, error) {
+	row := a.(*cityRow)
+
 	if row.Country != "" {
 		err := r.Find(&row.City.Country, flentities.Country{Name: row.Country}).Error
 		if err != nil {
-			return err
+			return nil, err
 		}
 	}
-	return r.Create(&row.City).Error
-}
 
-func theFollowingCities(table *gherkin.DataTable) error {
-	return createRowEntitiesFromTable(new(cityRow), table)
+	return &row.City, nil
 }
 
 func requestCities() error {
@@ -34,26 +33,7 @@ func requestCities() error {
 }
 
 func assertCities(table *gherkin.DataTable) error {
-	return flentities.WithRepository(func(r *flentities.Repository) error {
-		count := 0
-		err := r.Model(&flentities.City{}).Count(&count).Error
-		if err != nil {
-			return err
-		}
-
-		rowsCount := len(table.Rows) - 1
-		if count != rowsCount {
-			return fmt.Errorf("Expected to have %d cities in the DB, got %d", rowsCount, count)
-		}
-
-		cities := []*flentities.City{}
-		err = r.Find(&cities).Error
-		if err != nil {
-			return err
-		}
-
-		return assist.CompareToSlice(cities, table)
-	})
+	return assertDatabaseRecords(&[]*flentities.City{}, table)
 }
 
 func assertCitiesResponse(status string, table *gherkin.DataTable) error {
@@ -70,7 +50,7 @@ func assertCitiesResponse(status string, table *gherkin.DataTable) error {
 }
 
 func CityContext(s *godog.Suite) {
-	s.Step(`^the following cities:$`, theFollowingCities)
+	s.Step(`^the following cities:$`, createFromTableStep(new(cityRow), tableRowToCity))
 	s.Step(`^I list cities$`, requestCities)
 	s.Step(`^we should have the following cities:$`, assertCities)
 	s.Step(`^the system should respond with "([^"]*)" and the following cities:$`, assertCitiesResponse)
