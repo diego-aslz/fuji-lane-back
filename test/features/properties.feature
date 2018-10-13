@@ -20,8 +20,8 @@ Feature: Properties Management
       | diego@selzlein.com | Diego Aguir Selzlein |
     And I am authenticated with "diego@selzlein.com"
     When I add a new property
-    Then the system should respond with "UNPROCESSABLE ENTITY" and the following errors:
-      | You need a company account |
+    Then the system should respond with "PRECONDITION REQUIRED" and the following errors:
+      | You need a company account to perform this action |
     And we should have no properties
 
   Scenario: Getting property details

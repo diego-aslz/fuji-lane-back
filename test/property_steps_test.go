@@ -21,7 +21,7 @@ func requestPropertiesShow(name string) error {
 			return err
 		}
 
-		url := strings.Replace(flweb.PropertiesShowPath, ":id", fmt.Sprint(property.ID), 1)
+		url := strings.Replace(flweb.PropertyPath, ":id", fmt.Sprint(property.ID), 1)
 
 		return performGET(url)
 	})

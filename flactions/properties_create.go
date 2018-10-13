@@ -1,7 +1,6 @@
 package flactions
 
 import (
-	"errors"
 	"net/http"
 
 	"github.com/nerde/fuji-lane-back/flentities"
@@ -13,11 +12,6 @@ type PropertiesCreate struct{}
 // Perform executes the action
 func (a *PropertiesCreate) Perform(c Context) {
 	user := c.CurrentUser()
-
-	if user.AccountID == nil {
-		c.RespondError(http.StatusUnprocessableEntity, errors.New("You need a company account"))
-		return
-	}
 
 	property := &flentities.Property{AccountID: *user.AccountID, StateID: flentities.PropertyStateDraft}
 

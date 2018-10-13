@@ -22,14 +22,14 @@ const (
 	CountriesPath = "/countries"
 	// PropertiesPath for properties management
 	PropertiesPath = "/properties"
-	// PropertiesShowPath to show property details
-	PropertiesShowPath = "/properties/:id"
+	// PropertyPath to show property details
+	PropertyPath = "/properties/:id"
 	// PropertiesImagesPath for obtaining pre-signed upload URLs
 	PropertiesImagesPath = "/properties/:id/images"
 	// PropertiesImagesUploadedPath for marking an image as uploaded
 	PropertiesImagesUploadedPath = "/properties/:property_id/images/:id/uploaded"
-	// PropertiesImagePath for accessing a specific image
-	PropertiesImagePath = "/properties/:property_id/images/:id"
+	// ImagePath for accessing a specific image
+	ImagePath = "/images/:id"
 )
 
 // AddRoutes to a Gin Engine
@@ -43,10 +43,10 @@ func (a *Application) AddRoutes(e *gin.Engine) {
 	a.route(e.POST, AccountsPath, a.accountsCreate)
 	a.route(e.GET, CountriesPath, a.countriesList)
 	a.route(e.POST, PropertiesPath, a.propertiesCreate)
-	a.route(e.GET, PropertiesShowPath, a.propertiesShow)
-	a.route(e.POST, PropertiesImagesPath, a.propertiesImagesNew)
+	a.route(e.GET, PropertyPath, a.propertiesShow)
+	a.route(e.POST, PropertiesImagesPath, a.propertiesImagesCreate)
 	a.route(e.PUT, PropertiesImagesUploadedPath, a.propertiesImagesUploaded)
-	a.route(e.DELETE, PropertiesImagePath, a.propertiesImagesDestroy)
+	a.route(e.DELETE, ImagePath, a.imagesDestroy)
 }
 
 type ginMethod func(string, ...gin.HandlerFunc) gin.IRoutes
@@ -100,7 +100,8 @@ func (a *Application) propertiesCreate(c *Context) {
 	withAction(&flactions.PropertiesCreate{},
 		withRepository(
 			authenticateUser(
-				performAction)))(c)
+				requireAccount(
+					performAction))))(c)
 }
 
 func (a *Application) propertiesShow(c *Context) {
@@ -110,12 +111,13 @@ func (a *Application) propertiesShow(c *Context) {
 				performAction)))(c)
 }
 
-func (a *Application) propertiesImagesNew(c *Context) {
-	withAction(flactions.NewPropertiesImagesNew(a.S3Service),
+func (a *Application) propertiesImagesCreate(c *Context) {
+	withAction(flactions.NewPropertiesImagesCreate(a.S3Service),
 		withRepository(
 			authenticateUser(
 				loadActionBody(
-					performAction))))(c)
+					requireAccount(
+						performAction)))))(c)
 }
 
 func (a *Application) propertiesImagesUploaded(c *Context) {
@@ -125,9 +127,10 @@ func (a *Application) propertiesImagesUploaded(c *Context) {
 				performAction)))(c)
 }
 
-func (a *Application) propertiesImagesDestroy(c *Context) {
-	withAction(flactions.NewPropertiesImagesDestroy(a.S3Service),
+func (a *Application) imagesDestroy(c *Context) {
+	withAction(flactions.NewImagesDestroy(a.S3Service),
 		withRepository(
 			authenticateUser(
-				performAction)))(c)
+				requireAccount(
+					performAction))))(c)
 }

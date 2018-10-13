@@ -65,7 +65,7 @@ Feature: Images Management
       | Type     | image/png       |
       | Property | ACME Skyscraper |
     Then the system should respond with "PRECONDITION REQUIRED" and the following errors:
-      | You do not have an owner account |
+      | You need a company account to perform this action |
 
   Scenario: Obtaining a signed URL to upload a property image for a property I don't have access to
     Given the following accounts:

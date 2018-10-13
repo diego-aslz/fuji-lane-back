@@ -111,8 +111,7 @@ func requestPropertiesImagesDestroy(name string) error {
 			return err
 		}
 
-		path := strings.Replace(flweb.PropertiesImagePath, ":property_id", fmt.Sprint(image.PropertyID), 1)
-		path = strings.Replace(path, ":id", fmt.Sprint(image.ID), 1)
+		path := strings.Replace(flweb.ImagePath, ":id", fmt.Sprint(image.ID), 1)
 
 		return perform("DELETE", path, nil)
 	})

@@ -1,7 +1,9 @@
 package flweb
 
 import (
+	"errors"
 	"log"
+	"net/http"
 	"reflect"
 	"strconv"
 	"time"
@@ -78,4 +80,17 @@ func withAction(a flactions.Action, next func(c *Context)) func(c *Context) {
 
 func performAction(c *Context) {
 	c.action.Perform(c)
+}
+
+func requireAccount(next func(*Context)) func(*Context) {
+	return func(c *Context) {
+		account := c.CurrentAccount()
+
+		if account == nil {
+			c.RespondError(http.StatusPreconditionRequired, errors.New("You need a company account to perform this action"))
+			return
+		}
+
+		next(c)
+	}
 }

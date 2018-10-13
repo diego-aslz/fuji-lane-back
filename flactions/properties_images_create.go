@@ -1,7 +1,6 @@
 package flactions
 
 import (
-	"errors"
 	"net/http"
 	"strconv"
 	"strings"
@@ -39,10 +38,6 @@ type PropertiesImagesCreate struct {
 // Perform executes the action
 func (a *PropertiesImagesCreate) Perform(c Context) {
 	account := c.CurrentAccount()
-	if account == nil {
-		c.RespondError(http.StatusPreconditionRequired, errors.New("You do not have an owner account"))
-		return
-	}
 
 	id := c.Param("id")
 	property := &flentities.Property{}
@@ -82,7 +77,7 @@ func (a *PropertiesImagesCreate) Perform(c Context) {
 	c.Respond(http.StatusOK, image)
 }
 
-// NewPropertiesImagesNew returns a new instance of the PropertiesImagesNew action
-func NewPropertiesImagesNew(s3 flservices.S3Service) *PropertiesImagesCreate {
+// NewPropertiesImagesCreate returns a new instance of the PropertiesImagesNew action
+func NewPropertiesImagesCreate(s3 flservices.S3Service) *PropertiesImagesCreate {
 	return &PropertiesImagesCreate{S3Service: s3}
 }
