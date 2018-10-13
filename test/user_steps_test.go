@@ -4,7 +4,6 @@ import (
 	"time"
 
 	"github.com/DATA-DOG/godog"
-	"github.com/DATA-DOG/godog/gherkin"
 	"github.com/jinzhu/gorm"
 	"github.com/nerde/fuji-lane-back/flentities"
 )
@@ -40,10 +39,6 @@ func tableRowToUser(r *flentities.Repository, a interface{}) (interface{}, error
 	return &row.User, nil
 }
 
-func assertUsers(table *gherkin.DataTable) error {
-	return assertDatabaseRecords(&[]*flentities.User{}, table, userToTableRow)
-}
-
 func userToTableRow(r *flentities.Repository, u interface{}) (interface{}, error) {
 	user := u.(*flentities.User)
 
@@ -68,6 +63,6 @@ func userToTableRow(r *flentities.Repository, u interface{}) (interface{}, error
 
 func UserContext(s *godog.Suite) {
 	s.Step(`^the following users:$`, createFromTableStep(new(userRow), tableRowToUser))
-	s.Step(`^we should have the following users:$`, assertUsers)
+	s.Step(`^we should have the following users:$`, assertDatabaseRecordsStep(&[]*flentities.User{}, userToTableRow))
 	s.Step(`^we should have no users$`, assertNoDatabaseRecordsStep(&flentities.User{}))
 }

@@ -21,10 +21,13 @@ func (a *PropertiesShow) Perform(c Context) {
 		return
 	}
 
-	property := &flentities.Property{AccountID: *user.AccountID}
-	property.ID = uint(id)
+	conditions := map[string]interface{}{
+		"id":         id,
+		"account_id": *user.AccountID,
+	}
 
-	err = c.Repository().Preload("Images", flentities.Image{Uploaded: true}).First(property, *property).Error
+	property := &flentities.Property{}
+	err = c.Repository().Preload("Images", flentities.Image{Uploaded: true}).Find(property, conditions).Error
 
 	if err != nil {
 		if gorm.IsRecordNotFoundError(err) {

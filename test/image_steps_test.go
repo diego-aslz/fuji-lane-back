@@ -1,7 +1,9 @@
 package fujilane
 
 import (
+	"encoding/json"
 	"fmt"
+	"regexp"
 	"strconv"
 	"strings"
 
@@ -19,10 +21,6 @@ type imageRow struct {
 	Property string
 }
 
-func assertImages(table *gherkin.DataTable) error {
-	return assertDatabaseRecords(&[]*flentities.Image{}, table, imageToTableRow)
-}
-
 func imageToTableRow(r *flentities.Repository, i interface{}) (interface{}, error) {
 	image := i.(*flentities.Image)
 
@@ -38,10 +36,6 @@ func imageToTableRow(r *flentities.Repository, i interface{}) (interface{}, erro
 	}
 
 	return row, nil
-}
-
-func createImages(table *gherkin.DataTable) error {
-	return createFromTable(new(imageRow), table, tableRowToImage)
 }
 
 func tableRowToImage(r *flentities.Repository, a interface{}) (interface{}, error) {
@@ -103,7 +97,7 @@ func requestPropertiesImagesUploaded(name string) error {
 func requestPropertiesImagesDestroy(name string) error {
 	return flentities.WithRepository(func(r *flentities.Repository) error {
 		image := &flentities.Image{}
-		if err := r.Find(image, map[string]interface{}{"name": name}).Error; err != nil {
+		if err := r.Find(image, flentities.Image{Name: name}).Error; err != nil {
 			return err
 		}
 
@@ -113,12 +107,33 @@ func requestPropertiesImagesDestroy(name string) error {
 	})
 }
 
+func assertResponseStatusAndImage(status string, table *gherkin.DataTable) error {
+	if err := assertResponseStatus(status); err != nil {
+		return err
+	}
+
+	image := &flentities.Image{}
+	if err := json.Unmarshal([]byte(response.Body.String()), image); err != nil {
+		return fmt.Errorf("Unable to unmarshal %s: %s", response.Body.String(), err.Error())
+	}
+
+	// Discarding fields that cannot be asserted because they are dynamic
+	reps := map[string]string{"Amz-Signature": "SIGNATURE", "Amz-Date": "DATE", "Amz-Credential": "CREDENTIAL"}
+	for key, replacement := range reps {
+		reg := regexp.MustCompile(key + "=([\\w\\-]|%2F)+")
+		image.URL = string(reg.ReplaceAll([]byte(image.URL), []byte(key+"="+replacement)))
+	}
+
+	return assist.CompareToInstance(image, table)
+}
+
 func ImageContext(s *godog.Suite) {
-	s.Step(`^I should have the following images:$`, assertImages)
-	s.Step(`^the following images:$`, createImages)
+	s.Step(`^I should have the following images:$`, assertDatabaseRecordsStep(&[]*flentities.Image{}, imageToTableRow))
+	s.Step(`^the following images:$`, createFromTableStep(new(imageRow), tableRowToImage))
 	s.Step(`^I request an URL to upload an image called "([^"]*)" for property "([^"]*)"$`, requestPropertiesImagesCreate)
 	s.Step(`^I mark image "([^"]*)" as uploaded$`, requestPropertiesImagesUploaded)
 	s.Step(`^I request an URL to upload the following image:$`, requestPropertiesImagesCreate)
 	s.Step(`^I remove the image "([^"]*)"$`, requestPropertiesImagesDestroy)
 	s.Step(`^I should have no images$`, assertNoDatabaseRecordsStep(&flentities.Image{}))
+	s.Step(`^the system should respond with "([^"]*)" and the following image:$`, assertResponseStatusAndImage)
 }

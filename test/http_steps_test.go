@@ -7,10 +7,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"reflect"
-	"regexp"
 	"strings"
-
-	"github.com/nerde/fuji-lane-back/flentities"
 
 	"github.com/DATA-DOG/godog"
 	"github.com/DATA-DOG/godog/gherkin"
@@ -108,17 +105,18 @@ func assertResponseStatusAndErrors(status string, table *gherkin.DataTable) erro
 	return nil
 }
 
-func assertResponseStatusAndCountries(status string, table *gherkin.DataTable) error {
-	if err := assertResponseStatus(status); err != nil {
-		return err
-	}
+func assertResponseStatusAndListStep(slice interface{}) func(string, *gherkin.DataTable) error {
+	return func(status string, table *gherkin.DataTable) error {
+		if err := assertResponseStatus(status); err != nil {
+			return err
+		}
 
-	countries := []*flentities.Country{}
-	if err := json.Unmarshal([]byte(response.Body.String()), &countries); err != nil {
-		return fmt.Errorf("Unable to unmarshal %s: %s", response.Body.String(), err.Error())
-	}
+		if err := json.Unmarshal([]byte(response.Body.String()), slice); err != nil {
+			return fmt.Errorf("Unable to unmarshal %s: %s", response.Body.String(), err.Error())
+		}
 
-	return assist.CompareToSlice(countries, table)
+		return assist.CompareToSlice(reflect.ValueOf(slice).Elem().Interface(), table)
+	}
 }
 
 func performPOSTWithTable(path string, table *gherkin.DataTable) error {
@@ -150,8 +148,10 @@ func performPOST(path string, body interface{}) error {
 	return perform("POST", path, bodyIO)
 }
 
-func performGET(path string) error {
-	return perform("GET", path, nil)
+func performGETStep(path string) func() error {
+	return func() error {
+		return perform("GET", path, nil)
+	}
 }
 
 func perform(method, path string, body io.Reader) error {
@@ -170,26 +170,6 @@ func perform(method, path string, body io.Reader) error {
 	router.ServeHTTP(response, req)
 
 	return nil
-}
-
-func assertResponseStatusAndImage(status string, table *gherkin.DataTable) error {
-	if err := assertResponseStatus(status); err != nil {
-		return err
-	}
-
-	image := &flentities.Image{}
-	if err := json.Unmarshal([]byte(response.Body.String()), image); err != nil {
-		return fmt.Errorf("Unable to unmarshal %s: %s", response.Body.String(), err.Error())
-	}
-
-	// Discarding fields that cannot be asserted because they are dynamic
-	reps := map[string]string{"Amz-Signature": "SIGNATURE", "Amz-Date": "DATE", "Amz-Credential": "CREDENTIAL"}
-	for key, replacement := range reps {
-		reg := regexp.MustCompile(key + "=([\\w\\-]|%2F)+")
-		image.URL = string(reg.ReplaceAll([]byte(image.URL), []byte(key+"="+replacement)))
-	}
-
-	return assist.CompareToInstance(image, table)
 }
 
 func assertResponseStatus(status string) error {
@@ -227,7 +207,5 @@ func HTTPContext(s *godog.Suite) {
 	s.Step(`^the system should respond with "([^"]*)" and the following body:$`, assertResponseStatusAndBody)
 	s.Step(`^the system should respond with "([^"]*)" and the following JSON:$`, assertResponseStatusAndJSON)
 	s.Step(`^the system should respond with "([^"]*)" and the following errors:$`, assertResponseStatusAndErrors)
-	s.Step(`^the system should respond with "([^"]*)" and the following image:$`, assertResponseStatusAndImage)
-	s.Step(`^the system should respond with "([^"]*)" and the following countries:$`, assertResponseStatusAndCountries)
 	s.Step(`^the system should respond with "([^"]*)"$`, assertResponseStatus)
 }

@@ -38,10 +38,6 @@ func requestAccountsCreate(table *gherkin.DataTable) error {
 	})
 }
 
-func assertAccounts(table *gherkin.DataTable) error {
-	return assertDatabaseRecords(&[]*flentities.Account{}, table, accountToTableRow)
-}
-
 func tableRowToAccount(r *flentities.Repository, a interface{}) (interface{}, error) {
 	row := a.(*accountRow)
 
@@ -76,5 +72,5 @@ func accountToTableRow(r *flentities.Repository, a interface{}) (interface{}, er
 func AccountContext(s *godog.Suite) {
 	s.Step(`^the following accounts:$`, createFromTableStep(new(accountRow), tableRowToAccount))
 	s.Step(`^I create the following account:$`, requestAccountsCreate)
-	s.Step(`^we should have the following accounts:$`, assertAccounts)
+	s.Step(`^we should have the following accounts:$`, assertDatabaseRecordsStep(&[]*flentities.Account{}, accountToTableRow))
 }

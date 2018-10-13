@@ -49,6 +49,12 @@ func createFromTable(tp interface{}, table *gherkin.DataTable, decorators ...ent
 	})
 }
 
+func assertDatabaseRecordsStep(slice interface{}, decorators ...entityDecorator) func(table *gherkin.DataTable) error {
+	return func(table *gherkin.DataTable) error {
+		return assertDatabaseRecords(slice, table, decorators...)
+	}
+}
+
 func assertDatabaseRecords(slice interface{}, table *gherkin.DataTable, decorators ...entityDecorator) error {
 	return flentities.WithRepository(func(r *flentities.Repository) error {
 		err := r.Find(slice).Error

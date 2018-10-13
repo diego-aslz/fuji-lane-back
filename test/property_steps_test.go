@@ -5,7 +5,6 @@ import (
 	"strings"
 
 	"github.com/DATA-DOG/godog"
-	"github.com/DATA-DOG/godog/gherkin"
 	"github.com/jinzhu/gorm"
 	"github.com/nerde/fuji-lane-back/flentities"
 	"github.com/nerde/fuji-lane-back/flweb"
@@ -37,7 +36,7 @@ func requestPropertiesShow(name string) error {
 
 		url := strings.Replace(flweb.PropertyPath, ":id", fmt.Sprint(property.ID), 1)
 
-		return performGET(url)
+		return performGETStep(url)()
 	})
 }
 
@@ -82,10 +81,6 @@ func tableRowToProperty(r *flentities.Repository, a interface{}) (interface{}, e
 	return &row.Property, nil
 }
 
-func assertProperties(table *gherkin.DataTable) error {
-	return assertDatabaseRecords(&[]*flentities.Property{}, table, propertyToTableRow)
-}
-
 func propertyToTableRow(r *flentities.Repository, p interface{}) (interface{}, error) {
 	property := p.(*flentities.Property)
 
@@ -102,7 +97,7 @@ func propertyToTableRow(r *flentities.Repository, p interface{}) (interface{}, e
 func PropertyContext(s *godog.Suite) {
 	s.Step(`^I add a new property$`, requestPropertiesCreate)
 	s.Step(`^the following properties:$`, createFromTableStep(new(propertyRow), tableRowToProperty))
-	s.Step(`^we should have the following properties:$`, assertProperties)
+	s.Step(`^we should have the following properties:$`, assertDatabaseRecordsStep(&[]*flentities.Property{}, propertyToTableRow))
 	s.Step(`^we should have no properties$`, assertNoDatabaseRecordsStep(&flentities.Property{}))
 	s.Step(`^I get details for property "([^"]*)"$`, requestPropertiesShow)
 }
