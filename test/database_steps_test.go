@@ -160,6 +160,36 @@ func databaseDefaultsAreLoaded() error {
 	return flentities.Seed()
 }
 
+func loadAssociationByName(record interface{}, nameAndValues ...string) error {
+	for i := 0; i <= len(nameAndValues)-2; i += 2 {
+		assocName := nameAndValues[i]
+		value := nameAndValues[i+1]
+
+		if value == "" {
+			continue
+		}
+
+		field := reflect.ValueOf(record).Elem().FieldByName(assocName)
+
+		if field.Kind() == reflect.Ptr && field.IsNil() {
+			field.Set(reflect.New(field.Type().Elem()))
+		} else {
+			field = field.Addr()
+		}
+
+		if err := findByName(field.Interface(), value); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func findByName(record interface{}, name string) (err error) {
+	return flentities.WithRepository(func(r *flentities.Repository) error {
+		return r.Find(record, map[string]interface{}{"name": name}).Error
+	})
+}
+
 func DatabaseContext(s *godog.Suite) {
 	s.Step(`^defaults are loaded$`, databaseDefaultsAreLoaded)
 	s.AfterScenario(cleanup)

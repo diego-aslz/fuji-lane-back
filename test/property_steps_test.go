@@ -28,45 +28,18 @@ func requestPropertiesCreate() error {
 }
 
 func requestPropertiesShow(name string) error {
-	return flentities.WithRepository(func(r *flentities.Repository) error {
-		property := &flentities.Property{}
-		if err := r.Find(property, map[string]interface{}{"name": name}).Error; err != nil {
-			return err
-		}
+	property := &flentities.Property{}
+	if err := findByName(property, name); err != nil {
+		return err
+	}
 
-		url := strings.Replace(flweb.PropertyPath, ":id", fmt.Sprint(property.ID), 1)
+	url := strings.Replace(flweb.PropertyPath, ":id", fmt.Sprint(property.ID), 1)
 
-		return performGETStep(url)()
-	})
+	return performGETStep(url)()
 }
 
 func tableRowToProperty(r *flentities.Repository, a interface{}) (interface{}, error) {
 	row := a.(*propertyRow)
-
-	if row.Account != "" {
-		row.Property.Account = &flentities.Account{}
-		err := r.Find(row.Property.Account, flentities.Account{Name: row.Account}).Error
-		if err != nil {
-			return nil, err
-		}
-	}
-
-	if row.City != "" {
-		row.Property.City = &flentities.City{}
-		err := r.Find(row.Property.City, flentities.City{Name: row.City}).Error
-		if err != nil {
-			return nil, err
-		}
-	}
-
-	if row.Country != "" {
-		row.Property.Country = &flentities.Country{}
-		err := r.Find(row.Property.Country, flentities.Country{Name: row.Country}).Error
-		if err != nil {
-			return nil, err
-		}
-	}
-
 	row.Property.Name = refStr(row.Name)
 	row.Property.Address1 = refStr(row.Address1)
 	row.Property.Address2 = refStr(row.Address2)
@@ -78,7 +51,10 @@ func tableRowToProperty(r *flentities.Repository, a interface{}) (interface{}, e
 		row.Property.StateID = flentities.PropertyStateDraft
 	}
 
-	return &row.Property, nil
+	return &row.Property, loadAssociationByName(&row.Property,
+		"Account", row.Account,
+		"City", row.City,
+		"Country", row.Country)
 }
 
 func propertyToTableRow(r *flentities.Repository, p interface{}) (interface{}, error) {

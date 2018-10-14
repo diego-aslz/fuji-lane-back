@@ -13,15 +13,7 @@ type cityRow struct {
 
 func tableRowToCity(r *flentities.Repository, a interface{}) (interface{}, error) {
 	row := a.(*cityRow)
-
-	if row.Country != "" {
-		err := r.Find(&row.City.Country, flentities.Country{Name: row.Country}).Error
-		if err != nil {
-			return nil, err
-		}
-	}
-
-	return &row.City, nil
+	return &row.City, loadAssociationByName(&row.City, "Country", row.Country)
 }
 
 func CityContext(s *godog.Suite) {

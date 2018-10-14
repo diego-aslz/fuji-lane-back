@@ -21,39 +21,25 @@ func requestAccountsCreate(table *gherkin.DataTable) error {
 		return err
 	}
 
-	return flentities.WithRepository(func(r *flentities.Repository) error {
-		country := &flentities.Country{}
+	country := &flentities.Country{}
+	if err := findByName(country, b["country"]); err != nil {
+		return err
+	}
 
-		if err := r.Find(country, flentities.Country{Name: b["country"]}).Error; err != nil {
-			return err
-		}
+	body := flactions.AccountsCreateBody{}
+	body.Name = b["name"]
+	body.Phone = b["phone"]
+	body.UserName = b["userName"]
+	body.CountryID = int(country.ID)
 
-		body := flactions.AccountsCreateBody{}
-		body.Name = b["name"]
-		body.Phone = b["phone"]
-		body.UserName = b["userName"]
-		body.CountryID = int(country.ID)
-
-		return performPOST(flweb.AccountsPath, body)
-	})
+	return performPOST(flweb.AccountsPath, body)
 }
 
 func tableRowToAccount(r *flentities.Repository, a interface{}) (interface{}, error) {
 	row := a.(*accountRow)
+	row.Account.Phone = refStr(row.Phone)
 
-	if row.Country != "" {
-		row.Account.Country = &flentities.Country{}
-		err := r.Find(row.Account.Country, flentities.Country{Name: row.Country}).Error
-		if err != nil {
-			return nil, err
-		}
-	}
-
-	if row.Phone != "" {
-		row.Account.Phone = &row.Phone
-	}
-
-	return &row.Account, nil
+	return &row.Account, loadAssociationByName(&row.Account, "Country", row.Country)
 }
 
 func accountToTableRow(r *flentities.Repository, a interface{}) (interface{}, error) {
@@ -72,5 +58,6 @@ func accountToTableRow(r *flentities.Repository, a interface{}) (interface{}, er
 func AccountContext(s *godog.Suite) {
 	s.Step(`^the following accounts:$`, createFromTableStep(new(accountRow), tableRowToAccount))
 	s.Step(`^I create the following account:$`, requestAccountsCreate)
-	s.Step(`^we should have the following accounts:$`, assertDatabaseRecordsStep(&[]*flentities.Account{}, accountToTableRow))
+	s.Step(`^we should have the following accounts:$`, assertDatabaseRecordsStep(&[]*flentities.Account{},
+		accountToTableRow))
 }

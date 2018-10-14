@@ -40,15 +40,7 @@ func imageToTableRow(r *flentities.Repository, i interface{}) (interface{}, erro
 
 func tableRowToImage(r *flentities.Repository, a interface{}) (interface{}, error) {
 	row := a.(*imageRow)
-
-	if row.Property != "" {
-		err := r.Find(&row.Image.Property, flentities.Property{Name: &row.Property}).Error
-		if err != nil {
-			return nil, err
-		}
-	}
-
-	return &row.Image, nil
+	return &row.Image, loadAssociationByName(&row.Image, "Property", row.Property)
 }
 
 func requestPropertiesImagesCreate(table *gherkin.DataTable) error {
@@ -68,43 +60,37 @@ func requestPropertiesImagesCreate(table *gherkin.DataTable) error {
 		return err
 	}
 
-	return flentities.WithRepository(func(r *flentities.Repository) error {
-		property := &flentities.Property{}
-		if err := r.Find(property, map[string]interface{}{"name": propertyName}).Error; err != nil {
-			return err
-		}
+	property := &flentities.Property{}
+	if err := findByName(property, propertyName); err != nil {
+		return err
+	}
 
-		path := strings.Replace(flweb.PropertiesImagesPath, ":id", fmt.Sprint(property.ID), 1)
+	path := strings.Replace(flweb.PropertiesImagesPath, ":id", fmt.Sprint(property.ID), 1)
 
-		return performPOST(path, body)
-	})
+	return performPOST(path, body)
 }
 
 func requestPropertiesImagesUploaded(name string) error {
-	return flentities.WithRepository(func(r *flentities.Repository) error {
-		image := &flentities.Image{}
-		if err := r.Find(image, map[string]interface{}{"name": name}).Error; err != nil {
-			return err
-		}
+	image := &flentities.Image{}
+	if err := findByName(image, name); err != nil {
+		return err
+	}
 
-		path := strings.Replace(flweb.PropertiesImagesUploadedPath, ":property_id", fmt.Sprint(image.PropertyID), 1)
-		path = strings.Replace(path, ":id", fmt.Sprint(image.ID), 1)
+	path := strings.Replace(flweb.PropertiesImagesUploadedPath, ":property_id", fmt.Sprint(image.PropertyID), 1)
+	path = strings.Replace(path, ":id", fmt.Sprint(image.ID), 1)
 
-		return perform("PUT", path, nil)
-	})
+	return perform("PUT", path, nil)
 }
 
 func requestPropertiesImagesDestroy(name string) error {
-	return flentities.WithRepository(func(r *flentities.Repository) error {
-		image := &flentities.Image{}
-		if err := r.Find(image, flentities.Image{Name: name}).Error; err != nil {
-			return err
-		}
+	image := &flentities.Image{}
+	if err := findByName(image, name); err != nil {
+		return err
+	}
 
-		path := strings.Replace(flweb.ImagePath, ":id", fmt.Sprint(image.ID), 1)
+	path := strings.Replace(flweb.ImagePath, ":id", fmt.Sprint(image.ID), 1)
 
-		return perform("DELETE", path, nil)
-	})
+	return perform("DELETE", path, nil)
 }
 
 func assertResponseStatusAndImage(status string, table *gherkin.DataTable) error {
@@ -130,7 +116,6 @@ func assertResponseStatusAndImage(status string, table *gherkin.DataTable) error
 func ImageContext(s *godog.Suite) {
 	s.Step(`^I should have the following images:$`, assertDatabaseRecordsStep(&[]*flentities.Image{}, imageToTableRow))
 	s.Step(`^the following images:$`, createFromTableStep(new(imageRow), tableRowToImage))
-	s.Step(`^I request an URL to upload an image called "([^"]*)" for property "([^"]*)"$`, requestPropertiesImagesCreate)
 	s.Step(`^I mark image "([^"]*)" as uploaded$`, requestPropertiesImagesUploaded)
 	s.Step(`^I request an URL to upload the following image:$`, requestPropertiesImagesCreate)
 	s.Step(`^I remove the image "([^"]*)"$`, requestPropertiesImagesDestroy)

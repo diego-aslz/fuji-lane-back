@@ -19,24 +19,15 @@ type userRow struct {
 
 func tableRowToUser(r *flentities.Repository, a interface{}) (interface{}, error) {
 	row := a.(*userRow)
+	row.User.Name = refStr(row.Name)
+	row.User.FacebookID = refStr(row.FacebookID)
+	row.User.LastSignedIn = refTime(row.LastSignedIn)
 
 	if row.Password != "" {
 		row.User.SetPassword(row.Password)
 	}
 
-	if row.Account != "" {
-		row.User.Account = &flentities.Account{}
-		err := r.Find(row.User.Account, flentities.Account{Name: row.Account}).Error
-		if err != nil {
-			return nil, err
-		}
-	}
-
-	row.User.Name = refStr(row.Name)
-	row.User.FacebookID = refStr(row.FacebookID)
-	row.User.LastSignedIn = refTime(row.LastSignedIn)
-
-	return &row.User, nil
+	return &row.User, loadAssociationByName(&row.User, "Account", row.Account)
 }
 
 func userToTableRow(r *flentities.Repository, u interface{}) (interface{}, error) {
