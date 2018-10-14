@@ -174,34 +174,32 @@ func perform(method, path string, body io.Reader) error {
 	return nil
 }
 
+var statusNames map[string]int
+
+func init() {
+	statusNames = map[string]int{}
+	statusNames["CREATED"] = http.StatusCreated
+	statusNames["NOT FOUND"] = http.StatusNotFound
+	statusNames["OK"] = http.StatusOK
+	statusNames["PRECONDITION REQUIRED"] = http.StatusPreconditionRequired
+	statusNames["UNAUTHORIZED"] = http.StatusUnauthorized
+	statusNames["UNPROCESSABLE ENTITY"] = http.StatusUnprocessableEntity
+}
+
 func assertResponseStatus(status string) error {
 	if response == nil {
 		return fmt.Errorf("Response is nil, are you sure you made any HTTP request?")
 	}
 
-	switch status {
-	case "CREATED":
-		return assertResponseStatusCode(http.StatusCreated)
-	case "NOT FOUND":
-		return assertResponseStatusCode(http.StatusNotFound)
-	case "OK":
-		return assertResponseStatusCode(http.StatusOK)
-	case "PRECONDITION REQUIRED":
-		return assertResponseStatusCode(http.StatusPreconditionRequired)
-	case "UNAUTHORIZED":
-		return assertResponseStatusCode(http.StatusUnauthorized)
-	case "UNPROCESSABLE ENTITY":
-		return assertResponseStatusCode(http.StatusUnprocessableEntity)
-	default:
-		return fmt.Errorf("Unhandled status: %s", status)
-	}
-}
+	if code, ok := statusNames[status]; ok {
+		if response.Code != code {
+			return fmt.Errorf("Expected response to be status %d, got %d", code, response.Code)
+		}
 
-func assertResponseStatusCode(expected int) error {
-	if response.Code != expected {
-		return fmt.Errorf("Expected response to be status %d, got %d", expected, response.Code)
+		return nil
 	}
-	return nil
+
+	return fmt.Errorf("Unhandled status: %s", status)
 }
 
 func HTTPContext(s *godog.Suite) {
