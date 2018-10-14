@@ -28,8 +28,8 @@ const (
 	PropertyPath = "/properties/:id"
 	// PropertiesImagesPath for obtaining pre-signed upload URLs
 	PropertiesImagesPath = "/properties/:id/images"
-	// PropertiesImagesUploadedPath for marking an image as uploaded
-	PropertiesImagesUploadedPath = "/properties/:property_id/images/:id/uploaded"
+	// ImagesUploadedPath for marking an image as uploaded
+	ImagesUploadedPath = "/images/:id/uploaded"
 	// ImagePath for accessing a specific image
 	ImagePath = "/images/:id"
 )
@@ -48,7 +48,7 @@ func (a *Application) AddRoutes(e *gin.Engine) {
 	a.route(e.POST, PropertiesPath, a.propertiesCreate)
 	a.route(e.GET, PropertyPath, a.propertiesShow)
 	a.route(e.POST, PropertiesImagesPath, a.propertiesImagesCreate)
-	a.route(e.PUT, PropertiesImagesUploadedPath, a.propertiesImagesUploaded)
+	a.route(e.PUT, ImagesUploadedPath, a.imagesUploaded)
 	a.route(e.DELETE, ImagePath, a.imagesDestroy)
 }
 
@@ -129,11 +129,12 @@ func (a *Application) propertiesImagesCreate(c *Context) {
 						performAction)))))(c)
 }
 
-func (a *Application) propertiesImagesUploaded(c *Context) {
-	withAction(&flactions.PropertiesImagesUploaded{},
+func (a *Application) imagesUploaded(c *Context) {
+	withAction(&flactions.ImagesUploaded{},
 		withRepository(
 			authenticateUser(
-				performAction)))(c)
+				requireAccount(
+					performAction))))(c)
 }
 
 func (a *Application) imagesDestroy(c *Context) {

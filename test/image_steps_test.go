@@ -70,14 +70,13 @@ func requestPropertiesImagesCreate(table *gherkin.DataTable) error {
 	return performPOST(path, body)
 }
 
-func requestPropertiesImagesUploaded(name string) error {
+func requestImagesUploaded(name string) error {
 	image := &flentities.Image{}
 	if err := findByName(image, name); err != nil {
 		return err
 	}
 
-	path := strings.Replace(flweb.PropertiesImagesUploadedPath, ":property_id", fmt.Sprint(image.PropertyID), 1)
-	path = strings.Replace(path, ":id", fmt.Sprint(image.ID), 1)
+	path := strings.Replace(flweb.ImagesUploadedPath, ":id", fmt.Sprint(image.ID), 1)
 
 	return perform("PUT", path, nil)
 }
@@ -116,7 +115,7 @@ func assertResponseStatusAndImage(status string, table *gherkin.DataTable) error
 func ImageContext(s *godog.Suite) {
 	s.Step(`^I should have the following images:$`, assertDatabaseRecordsStep(&[]*flentities.Image{}, imageToTableRow))
 	s.Step(`^the following images:$`, createFromTableStep(new(imageRow), tableRowToImage))
-	s.Step(`^I mark image "([^"]*)" as uploaded$`, requestPropertiesImagesUploaded)
+	s.Step(`^I mark image "([^"]*)" as uploaded$`, requestImagesUploaded)
 	s.Step(`^I request an URL to upload the following image:$`, requestPropertiesImagesCreate)
 	s.Step(`^I remove the image "([^"]*)"$`, requestPropertiesImagesDestroy)
 	s.Step(`^I should have no images$`, assertNoDatabaseRecordsStep(&flentities.Image{}))
