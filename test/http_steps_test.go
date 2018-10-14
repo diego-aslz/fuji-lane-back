@@ -180,6 +180,7 @@ func init() {
 	statusNames = map[string]int{}
 	statusNames["CREATED"] = http.StatusCreated
 	statusNames["NOT FOUND"] = http.StatusNotFound
+	statusNames["NOT MODIFIED"] = http.StatusNotModified
 	statusNames["OK"] = http.StatusOK
 	statusNames["PRECONDITION REQUIRED"] = http.StatusPreconditionRequired
 	statusNames["UNAUTHORIZED"] = http.StatusUnauthorized

@@ -15,6 +15,7 @@ type Context interface {
 
 	CurrentAccount() *flentities.Account
 	CurrentUser() *flentities.User
+	CurrentSession() *flentities.Session
 
 	Param(string) string
 	Query(string) string

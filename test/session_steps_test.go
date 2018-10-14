@@ -52,5 +52,6 @@ func SessionContext(s *godog.Suite) {
 
 	s.Step(`^I am authenticated with "([^"]*)"$`, iAmAuthenticatedWith)
 	s.Step(`^I sign in with:$`, postTableStep(flweb.SignInPath))
+	s.Step(`^I renew the session token$`, performGETStep(flweb.RenewSessionPath))
 	s.Step(`^the following session:$`, theFollowingSession)
 }

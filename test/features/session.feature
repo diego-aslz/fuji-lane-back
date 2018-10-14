@@ -63,3 +63,32 @@ Feature: Session
         }
       }
       """
+
+  Scenario: Renewing session token
+    Given it is currently "05 Jun 18 08:00"
+    And the following users:
+      | Email              | Name                 | Password | FacebookID |
+      | diego@selzlein.com | Diego Aguir Selzlein | 12345678 | 12345      |
+    And the following session:
+      | Email      | diego@selzlein.com   |
+      | IssuedAt   | 2018-06-01T08:00:00Z |
+      | RenewAfter | 2018-06-05T08:00:00Z |
+      | ExpiresAt  | 2018-06-08T08:00:00Z |
+    When I renew the session token
+    Then the system should respond with "OK" and the following body:
+      | issuedAt   | 2018-06-05T08:00:00Z |
+      | renewAfter | 2018-06-09T08:00:00Z |
+      | expiresAt  | 2018-06-12T08:00:00Z |
+
+  Scenario: Renewing session token before time
+    Given it is currently "05 Jun 18 07:00"
+    And the following users:
+      | Email              | Name                 | Password | FacebookID |
+      | diego@selzlein.com | Diego Aguir Selzlein | 12345678 | 12345      |
+    And the following session:
+      | Email      | diego@selzlein.com   |
+      | IssuedAt   | 2018-06-01T08:00:00Z |
+      | RenewAfter | 2018-06-05T08:00:00Z |
+      | ExpiresAt  | 2018-06-08T08:00:00Z |
+    When I renew the session token
+    Then the system should respond with "NOT MODIFIED" and no body

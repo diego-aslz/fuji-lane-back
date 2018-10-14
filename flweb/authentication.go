@@ -31,12 +31,20 @@ func (c *Context) CurrentAccount() *flentities.Account {
 
 // CurrentUser returns the currently authenticated user
 func (c *Context) CurrentUser() *flentities.User {
-	v, ok := c.Get("current-user")
-	if !ok {
-		return nil
+	if v, ok := c.Get("current-user"); ok {
+		return v.(*flentities.User)
 	}
 
-	return v.(*flentities.User)
+	return nil
+}
+
+// CurrentSession returns the session we loaded from authentication token
+func (c *Context) CurrentSession() *flentities.Session {
+	if v, ok := c.Get("current-session"); ok {
+		return v.(*flentities.Session)
+	}
+
+	return nil
 }
 
 func (c *Context) unauthorized() {
@@ -87,6 +95,7 @@ func authenticateUser(next func(*Context)) func(*Context) {
 		}
 
 		c.set("current-user", user)
+		c.set("current-session", session)
 
 		next(c)
 	}

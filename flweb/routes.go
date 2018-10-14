@@ -15,6 +15,8 @@ const (
 	SignInPath = "/sign_in"
 	// FacebookSignInPath for Facebook sign in
 	FacebookSignInPath = "/sign_in/facebook"
+	// RenewSessionPath use used to get a new session and a new token
+	RenewSessionPath = "/renew_session"
 
 	// AccountsPath for accounts management
 	AccountsPath = "/accounts"
@@ -41,6 +43,7 @@ func (a *Application) AddRoutes(e *gin.Engine) {
 	a.route(e.POST, SignUpPath, a.signUp)
 	a.route(e.POST, SignInPath, a.signIn)
 	a.route(e.POST, FacebookSignInPath, a.facebookSignIn)
+	a.route(e.GET, RenewSessionPath, a.renewSession)
 
 	a.route(e.POST, AccountsPath, a.accountsCreate)
 	a.route(e.GET, CountriesPath, a.countriesList)
@@ -82,6 +85,13 @@ func (a *Application) facebookSignIn(c *Context) {
 	withAction(flactions.NewFacebookSignIn(a.facebookClient),
 		withRepository(
 			loadActionBody(
+				performAction)))(c)
+}
+
+func (a *Application) renewSession(c *Context) {
+	withAction(&flactions.RenewSession{},
+		withRepository(
+			authenticateUser(
 				performAction)))(c)
 }
 
