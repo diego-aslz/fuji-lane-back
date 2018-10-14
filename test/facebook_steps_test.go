@@ -46,11 +46,7 @@ func facebookRecognizesTheFollowingTokens(table *gherkin.DataTable) error {
 	return nil
 }
 
-func theFollowingUserSignsInViaFacebook(table *gherkin.DataTable) error {
-	return performPOSTWithTable(flweb.FacebookSignInPath, table)
-}
-
 func SignInContext(s *godog.Suite) {
 	s.Step(`^Facebook recognizes the following tokens:$`, facebookRecognizesTheFollowingTokens)
-	s.Step(`^the following user signs in via Facebook:$`, theFollowingUserSignsInViaFacebook)
+	s.Step(`^the following user signs in via Facebook:$`, postTableStep(flweb.FacebookSignInPath))
 }

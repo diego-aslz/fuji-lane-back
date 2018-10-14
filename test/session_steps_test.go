@@ -29,10 +29,6 @@ func iAmAuthenticatedWith(email string) error {
 	})
 }
 
-func iSignInWith(table *gherkin.DataTable) error {
-	return performPOSTWithTable(flweb.SignInPath, table)
-}
-
 func theFollowingSession(table *gherkin.DataTable) error {
 	s, err := assist.CreateInstance(new(flentities.Session), table)
 
@@ -55,6 +51,6 @@ func SessionContext(s *godog.Suite) {
 	s.AfterScenario(resetSession)
 
 	s.Step(`^I am authenticated with "([^"]*)"$`, iAmAuthenticatedWith)
-	s.Step(`^I sign in with:$`, iSignInWith)
+	s.Step(`^I sign in with:$`, postTableStep(flweb.SignInPath))
 	s.Step(`^the following session:$`, theFollowingSession)
 }

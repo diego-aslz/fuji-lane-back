@@ -119,18 +119,20 @@ func assertResponseStatusAndListStep(slice interface{}) func(string, *gherkin.Da
 	}
 }
 
-func performPOSTWithTable(path string, table *gherkin.DataTable) error {
-	var body map[string]string
+func postTableStep(path string) func(*gherkin.DataTable) error {
+	return func(table *gherkin.DataTable) error {
+		var body map[string]string
 
-	if len(table.Rows) > 0 {
-		var err error
-		body, err = assist.ParseMap(table)
-		if err != nil {
-			return err
+		if len(table.Rows) > 0 {
+			var err error
+			body, err = assist.ParseMap(table)
+			if err != nil {
+				return err
+			}
 		}
-	}
 
-	return performPOST(path, body)
+		return performPOST(path, body)
+	}
 }
 
 func performPOST(path string, body interface{}) error {
