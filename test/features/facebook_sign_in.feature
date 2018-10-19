@@ -12,7 +12,7 @@ Feature: Facebook Signing In
       | id          | 123                |
       | name        | Diego Selzlein     |
       | email       | diego@selzlein.com |
-    Then we should have the following users:
+    Then I should have the following users:
       | Email              | Name           | FacebookID | LastSignedIn         |
       | diego@selzlein.com | Diego Selzlein | 123        | 2018-06-01T08:00:00Z |
     And the system should respond with "OK" and the following body:
@@ -32,7 +32,7 @@ Feature: Facebook Signing In
       | id          | 123                |
       | name        | Diego Selzlein     |
       | email       | diego@selzlein.com |
-    Then we should have the following users:
+    Then I should have the following users:
       | Email              | Name           | FacebookID | LastSignedIn         |
       | diego@selzlein.com | Diego Selzlein | 123        | 2018-06-01T08:00:00Z |
     And the system should respond with "OK" and the following body:
@@ -52,7 +52,7 @@ Feature: Facebook Signing In
       | id          | 123                |
       | name        | Diego Selzlein     |
       | email       | diego@selzlein.com |
-    Then we should have the following users:
+    Then I should have the following users:
       | Email              | Name           | FacebookID | LastSignedIn         |
       | diego@selzlein.com | Diego Selzlein | 123        | 2018-06-01T08:00:00Z |
     And the system should respond with "OK" and the following body:
@@ -72,7 +72,7 @@ Feature: Facebook Signing In
       | id          | 123                |
       | name        | Diego Selzlein     |
       | email       | diego@selzlein.com |
-    Then we should have the following users:
+    Then I should have the following users:
       | Email                    | Name           | FacebookID | LastSignedIn         |
       | diego+other@selzlein.com | Diego Selzlein | 123        | 2018-06-01T08:00:00Z |
     And the system should respond with "OK" and the following body:
@@ -86,7 +86,7 @@ Feature: Facebook Signing In
       | id          | 123                |
       | name        | Diego Selzlein     |
       | email       | diego@selzlein.com |
-    Then we should have no users
+    Then I should have no users
     And the system should respond with "UNAUTHORIZED" and the following errors:
       | You could not be authenticated |
 
@@ -99,6 +99,6 @@ Feature: Facebook Signing In
       | id          | 123                |
       | name        | Diego Selzlein     |
       | email       | diego@selzlein.com |
-    Then we should have no users
+    Then I should have no users
     And the system should respond with "UNAUTHORIZED" and the following errors:
       | You could not be authenticated |

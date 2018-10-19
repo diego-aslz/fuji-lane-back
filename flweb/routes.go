@@ -50,6 +50,7 @@ func (a *Application) AddRoutes(e *gin.Engine) {
 	a.route(e.GET, CitiesPath, a.citiesList)
 	a.route(e.POST, PropertiesPath, a.propertiesCreate)
 	a.route(e.GET, PropertyPath, a.propertiesShow)
+	a.route(e.PUT, PropertyPath, a.propertiesUpdate)
 	a.route(e.POST, PropertiesImagesPath, a.propertiesImagesCreate)
 	a.route(e.PUT, ImagesUploadedPath, a.imagesUploaded)
 	a.route(e.DELETE, ImagePath, a.imagesDestroy)
@@ -121,6 +122,15 @@ func (a *Application) propertiesCreate(c *Context) {
 			authenticateUser(
 				requireAccount(
 					performAction))))(c)
+}
+
+func (a *Application) propertiesUpdate(c *Context) {
+	withAction(&flactions.PropertiesUpdate{},
+		withRepository(
+			authenticateUser(
+				requireAccount(
+					loadActionBody(
+						performAction)))))(c)
 }
 
 func (a *Application) propertiesShow(c *Context) {

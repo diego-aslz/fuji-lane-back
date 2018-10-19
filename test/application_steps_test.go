@@ -41,8 +41,11 @@ func setupApplication() {
 	assist.RegisterComparer(time.Time{}, timeComparer)
 	assist.RegisterComparer(true, boolComparer)
 	assist.RegisterComparer(uint(0), uintComparer)
+	assist.RegisterComparer(refStr("a"), strPtrComparer)
 	assist.RegisterParser(uint(0), uintParser)
 	assist.RegisterParser(true, boolParser)
+	assist.RegisterParser(refStr("a"), strPtrParser)
+	assist.RegisterParser(refInt(1), intPtrParser)
 
 	facebookClient = &mockedFacebookClient{tokens: map[string]flservices.FacebookTokenDetails{}}
 	application = flweb.NewApplication(facebookClient)
@@ -98,6 +101,15 @@ func boolComparer(raw string, rawActual interface{}) error {
 	return fmt.Errorf("Expected %s, but got %s", raw, actual)
 }
 
+func strPtrComparer(raw string, rawActual interface{}) error {
+	actual := derefStr(rawActual.(*string))
+	if raw == actual {
+		return nil
+	}
+
+	return fmt.Errorf("Expected %s, but got %s", raw, actual)
+}
+
 func uintParser(raw string) (interface{}, error) {
 	i, err := strconv.Atoi(raw)
 	if err != nil {
@@ -113,6 +125,27 @@ func boolParser(raw string) (interface{}, error) {
 	}
 
 	return raw == "true", nil
+}
+
+func strPtrParser(raw string) (interface{}, error) {
+	if raw == "" {
+		return nil, nil
+	}
+
+	return &raw, nil
+}
+
+func intPtrParser(raw string) (interface{}, error) {
+	if raw == "" {
+		return nil, nil
+	}
+
+	i, err := strconv.Atoi(raw)
+	if err != nil {
+		return nil, err
+	}
+
+	return &i, nil
 }
 
 func itIsCurrently(timeExpr string) (err error) {

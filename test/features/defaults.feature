@@ -2,14 +2,14 @@ Feature: Application Defaults
 
   Scenario: Loading defaults
     When defaults are loaded
-    Then we should have the following countries:
+    Then I should have the following countries:
       | ID | Name      |
       | 1  | China     |
       | 2  | Hong Kong |
       | 3  | Japan     |
       | 4  | Singapore |
       | 5  | Vietnam   |
-    And we should have the following cities:
+    And I should have the following cities:
       | ID  | CountryID | Name        |
       | 101 | 1         | Beijing     |
       | 102 | 1         | Chengdu     |

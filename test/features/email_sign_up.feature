@@ -11,7 +11,7 @@ Feature: Email Sign Up
       | issuedAt   | 2018-06-01T08:00:00Z |
       | renewAfter | 2018-06-05T08:00:00Z |
       | expiresAt  | 2018-06-08T08:00:00Z |
-    And we should have the following users:
+    And I should have the following users:
       | Email              | LastSignedIn         |
       | diego@selzlein.com | 2018-06-01T08:00:00Z |
 
@@ -22,7 +22,7 @@ Feature: Email Sign Up
     Then the system should respond with "UNPROCESSABLE ENTITY" and the following errors:
       | Invalid email: diego                |
       | Invalid password: minimum size is 8 |
-    And we should have no users
+    And I should have no users
 
   Scenario: Signing Up with existing email
     Given the following users:
@@ -33,6 +33,6 @@ Feature: Email Sign Up
       | password | 12345678           |
     Then the system should respond with "UNPROCESSABLE ENTITY" and the following errors:
       | Invalid email: already in use |
-    And we should have the following users:
+    And I should have the following users:
       | Email              | Name                 | LastSignedIn         |
       | diego@selzlein.com | Diego Aguir Selzlein | 2018-05-01T08:00:00Z |

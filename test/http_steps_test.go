@@ -135,19 +135,25 @@ func postTableStep(path string) func(*gherkin.DataTable) error {
 	}
 }
 
-func performPOST(path string, body interface{}) error {
+func performPOST(path string, body interface{}) (err error) {
 	var bodyIO io.Reader
 
 	if body != nil {
-		jsonBody, err := json.Marshal(body)
-		if err != nil {
-			return err
+		if bodyIO, err = bodyFromObject(body); err != nil {
+			return
 		}
-
-		bodyIO = strings.NewReader(string(jsonBody))
 	}
 
 	return perform("POST", path, bodyIO)
+}
+
+func bodyFromObject(body interface{}) (io.Reader, error) {
+	jsonBody, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	return strings.NewReader(string(jsonBody)), nil
 }
 
 func performGETStep(path string) func() error {

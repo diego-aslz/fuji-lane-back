@@ -11,7 +11,6 @@ import (
 
 type accountRow struct {
 	flentities.Account
-	Phone   string
 	Country string
 }
 
@@ -37,7 +36,6 @@ func requestAccountsCreate(table *gherkin.DataTable) error {
 
 func tableRowToAccount(r *flentities.Repository, a interface{}) (interface{}, error) {
 	row := a.(*accountRow)
-	row.Account.Phone = refStr(row.Phone)
 
 	return &row.Account, loadAssociationByName(&row.Account, "Country", row.Country)
 }
@@ -52,12 +50,12 @@ func accountToTableRow(r *flentities.Repository, a interface{}) (interface{}, er
 		err = nil
 	}
 
-	return &accountRow{Account: *acc, Country: acc.Country.Name, Phone: derefStr(acc.Phone)}, err
+	return &accountRow{Account: *acc, Country: acc.Country.Name}, err
 }
 
 func AccountContext(s *godog.Suite) {
 	s.Step(`^the following accounts:$`, createFromTableStep(new(accountRow), tableRowToAccount))
 	s.Step(`^I create the following account:$`, requestAccountsCreate)
-	s.Step(`^we should have the following accounts:$`, assertDatabaseRecordsStep(&[]*flentities.Account{},
+	s.Step(`^I should have the following accounts:$`, assertDatabaseRecordsStep(&[]*flentities.Account{},
 		accountToTableRow))
 }

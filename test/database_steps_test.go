@@ -132,6 +132,14 @@ func refStr(str string) *string {
 	return &str
 }
 
+func refInt(i int) *int {
+	if i == 0 {
+		return nil
+	}
+
+	return &i
+}
+
 func refTime(t time.Time) *time.Time {
 	if t.IsZero() {
 		return nil

@@ -10,17 +10,13 @@ import (
 
 type userRow struct {
 	flentities.User
-	Name         string
 	Password     string
 	Account      string
-	FacebookID   string
 	LastSignedIn time.Time
 }
 
 func tableRowToUser(r *flentities.Repository, a interface{}) (interface{}, error) {
 	row := a.(*userRow)
-	row.User.Name = refStr(row.Name)
-	row.User.FacebookID = refStr(row.FacebookID)
 	row.User.LastSignedIn = refTime(row.LastSignedIn)
 
 	if row.Password != "" {
@@ -40,8 +36,6 @@ func userToTableRow(r *flentities.Repository, u interface{}) (interface{}, error
 
 	row := &userRow{
 		User:         *user,
-		Name:         derefStr(user.Name),
-		FacebookID:   derefStr(user.FacebookID),
 		LastSignedIn: derefTime(user.LastSignedIn),
 	}
 
@@ -54,6 +48,6 @@ func userToTableRow(r *flentities.Repository, u interface{}) (interface{}, error
 
 func UserContext(s *godog.Suite) {
 	s.Step(`^the following users:$`, createFromTableStep(new(userRow), tableRowToUser))
-	s.Step(`^we should have the following users:$`, assertDatabaseRecordsStep(&[]*flentities.User{}, userToTableRow))
-	s.Step(`^we should have no users$`, assertNoDatabaseRecordsStep(&flentities.User{}))
+	s.Step(`^I should have the following users:$`, assertDatabaseRecordsStep(&[]*flentities.User{}, userToTableRow))
+	s.Step(`^I should have no users$`, assertNoDatabaseRecordsStep(&flentities.User{}))
 }

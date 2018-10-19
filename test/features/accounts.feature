@@ -16,9 +16,9 @@ Feature: Accounts Management
     Then the system should respond with "CREATED" and the following body:
       | name  | Diego Apartments  |
       | phone | +55 44 99999-9999 |
-    And we should have the following accounts:
+    And I should have the following accounts:
       | Name             | Phone             | Country |
       | Diego Apartments | +55 44 99999-9999 | Japan   |
-    And we should have the following users:
+    And I should have the following users:
       | Account          | Email              |
       | Diego Apartments | diego@selzlein.com |

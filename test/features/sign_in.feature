@@ -12,7 +12,7 @@ Feature: Signing In
       | issuedAt   | 2018-06-01T08:00:00Z |
       | renewAfter | 2018-06-05T08:00:00Z |
       | expiresAt  | 2018-06-08T08:00:00Z |
-    And we should have the following users:
+    And I should have the following users:
       | Email              | Name                 | LastSignedIn         |
       | diego@selzlein.com | Diego Aguir Selzlein | 2018-06-01T08:00:00Z |
 
@@ -25,7 +25,7 @@ Feature: Signing In
       | password | 123456789          |
     Then the system should respond with "UNAUTHORIZED" and the following errors:
       | Invalid email or password |
-    And we should have the following users:
+    And I should have the following users:
       | Email              | Name                 | LastSignedIn         |
       | diego@selzlein.com | Diego Aguir Selzlein | 2018-05-01T08:00:00Z |
 
@@ -38,6 +38,6 @@ Feature: Signing In
       | password | 12345678          |
     Then the system should respond with "UNAUTHORIZED" and the following errors:
       | Invalid email or password |
-    And we should have the following users:
+    And I should have the following users:
       | Email              | Name                 | LastSignedIn         |
       | diego@selzlein.com | Diego Aguir Selzlein | 2018-05-01T08:00:00Z |

@@ -10,7 +10,7 @@ Feature: Properties Management
     And I am authenticated with "diego@selzlein.com"
     When I add a new property
     Then the system should respond with "CREATED"
-    And we should have the following properties:
+    And I should have the following properties:
       | Account          | State |
       | Diego Apartments | draft |
 
@@ -22,7 +22,7 @@ Feature: Properties Management
     When I add a new property
     Then the system should respond with "PRECONDITION REQUIRED" and the following errors:
       | You need a company account to perform this action |
-    And we should have no properties
+    And I should have no properties
 
   Scenario: Getting property details
     Given the following accounts:
@@ -96,3 +96,32 @@ Feature: Properties Management
     And I am authenticated with "diego@selzlein.com"
     When I get details for property "ACME Downtown"
     Then the system should respond with "NOT FOUND"
+
+  Scenario: Updating my property
+    Given the following accounts:
+      | Name             |
+      | Diego Apartments |
+    And the following users:
+      | Account          | Email              | Name                 |
+      | Diego Apartments | diego@selzlein.com | Diego Aguir Selzlein |
+    And the following countries:
+      | ID | Name  |
+      | 2  | Japan |
+    And the following cities:
+      | ID | Country | Name  |
+      | 3  | Japan   | Osaka |
+    And the following properties:
+      | ID | Account          | State |
+      | 1  | Diego Apartments | Draft |
+    And I am authenticated with "diego@selzlein.com"
+    When I update the property "1" with the following details:
+      | Name       | ACME Downtown |
+      | Address1   | Add. One      |
+      | Address2   | Add. Two      |
+      | Address3   | Add. Three    |
+      | CityID     | 3             |
+      | PostalCode | 223344        |
+    Then the system should respond with "OK"
+    And I should have the following properties:
+      | Account          | State | Name          | Address1 | Address2 | Address3   | City  | PostalCode | Country |
+      | Diego Apartments | draft | ACME Downtown | Add. One | Add. Two | Add. Three | Osaka | 223344     | Japan   |
