@@ -105,8 +105,100 @@ func Seed() error {
 				&Country{Model: gorm.Model{ID: 5}, Name: "Vietnam"},
 			},
 			[]interface{}{
-				City{Model: gorm.Model{ID: 1}},
-				&City{Model: gorm.Model{ID: 1}, CountryID: 3, Name: "Osaka"},
+				City{Model: gorm.Model{ID: 101}},
+				&City{Model: gorm.Model{ID: 101}, CountryID: 1, Name: "Beijing"},
+			},
+			[]interface{}{
+				City{Model: gorm.Model{ID: 102}},
+				&City{Model: gorm.Model{ID: 102}, CountryID: 1, Name: "Chengdu"},
+			},
+			[]interface{}{
+				City{Model: gorm.Model{ID: 103}},
+				&City{Model: gorm.Model{ID: 103}, CountryID: 1, Name: "Chongqing"},
+			},
+			[]interface{}{
+				City{Model: gorm.Model{ID: 104}},
+				&City{Model: gorm.Model{ID: 104}, CountryID: 1, Name: "Dongguan"},
+			},
+			[]interface{}{
+				City{Model: gorm.Model{ID: 105}},
+				&City{Model: gorm.Model{ID: 105}, CountryID: 1, Name: "Guangzhou"},
+			},
+			[]interface{}{
+				City{Model: gorm.Model{ID: 106}},
+				&City{Model: gorm.Model{ID: 106}, CountryID: 1, Name: "Shanghai"},
+			},
+			[]interface{}{
+				City{Model: gorm.Model{ID: 107}},
+				&City{Model: gorm.Model{ID: 107}, CountryID: 1, Name: "Shenyang"},
+			},
+			[]interface{}{
+				City{Model: gorm.Model{ID: 108}},
+				&City{Model: gorm.Model{ID: 108}, CountryID: 1, Name: "Shenzhen"},
+			},
+			[]interface{}{
+				City{Model: gorm.Model{ID: 109}},
+				&City{Model: gorm.Model{ID: 109}, CountryID: 1, Name: "Tianjin"},
+			},
+			[]interface{}{
+				City{Model: gorm.Model{ID: 110}},
+				&City{Model: gorm.Model{ID: 110}, CountryID: 1, Name: "Wuhan"},
+			},
+			[]interface{}{
+				City{Model: gorm.Model{ID: 201}},
+				&City{Model: gorm.Model{ID: 201}, CountryID: 2, Name: "Hong Kong"},
+			},
+			[]interface{}{
+				City{Model: gorm.Model{ID: 301}},
+				&City{Model: gorm.Model{ID: 301}, CountryID: 3, Name: "Fukuoka"},
+			},
+			[]interface{}{
+				City{Model: gorm.Model{ID: 302}},
+				&City{Model: gorm.Model{ID: 302}, CountryID: 3, Name: "Kawasaki"},
+			},
+			[]interface{}{
+				City{Model: gorm.Model{ID: 303}},
+				&City{Model: gorm.Model{ID: 303}, CountryID: 3, Name: "Kobe"},
+			},
+			[]interface{}{
+				City{Model: gorm.Model{ID: 304}},
+				&City{Model: gorm.Model{ID: 304}, CountryID: 3, Name: "Kyoto"},
+			},
+			[]interface{}{
+				City{Model: gorm.Model{ID: 305}},
+				&City{Model: gorm.Model{ID: 305}, CountryID: 3, Name: "Nagoya"},
+			},
+			[]interface{}{
+				City{Model: gorm.Model{ID: 306}},
+				&City{Model: gorm.Model{ID: 306}, CountryID: 3, Name: "Osaka"},
+			},
+			[]interface{}{
+				City{Model: gorm.Model{ID: 307}},
+				&City{Model: gorm.Model{ID: 307}, CountryID: 3, Name: "Saitama"},
+			},
+			[]interface{}{
+				City{Model: gorm.Model{ID: 308}},
+				&City{Model: gorm.Model{ID: 308}, CountryID: 3, Name: "Sapporo"},
+			},
+			[]interface{}{
+				City{Model: gorm.Model{ID: 309}},
+				&City{Model: gorm.Model{ID: 309}, CountryID: 3, Name: "Tokyo"},
+			},
+			[]interface{}{
+				City{Model: gorm.Model{ID: 310}},
+				&City{Model: gorm.Model{ID: 310}, CountryID: 3, Name: "Yokohama"},
+			},
+			[]interface{}{
+				City{Model: gorm.Model{ID: 401}},
+				&City{Model: gorm.Model{ID: 401}, CountryID: 4, Name: "Singapore"},
+			},
+			[]interface{}{
+				City{Model: gorm.Model{ID: 501}},
+				&City{Model: gorm.Model{ID: 501}, CountryID: 5, Name: "Ho Chi Minh"},
+			},
+			[]interface{}{
+				City{Model: gorm.Model{ID: 502}},
+				&City{Model: gorm.Model{ID: 502}, CountryID: 5, Name: "Hanoi"},
 			},
 		}
 
