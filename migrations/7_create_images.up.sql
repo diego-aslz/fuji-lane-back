@@ -6,8 +6,12 @@ CREATE TABLE images(
   type varchar not null,
   size integer not null,
   url varchar not null,
-  property_id integer not null references properties,
+  property_id integer references properties,
+  unit_id integer references units,
   uploaded boolean default false
 );
 
-CREATE INDEX images_property_id_idx ON images(property_id);
+ALTER TABLE units ADD floor_plan_image_id int references images;
+
+CREATE INDEX images_property_id ON images(property_id);
+CREATE INDEX images_unit_id ON images(unit_id);

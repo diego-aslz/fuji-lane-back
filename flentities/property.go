@@ -9,34 +9,38 @@ import (
 // PropertyStateDraft means this property is being filled in by the user
 const PropertyStateDraft = 1
 
-var propertyStates map[int]string
+var propertyStates = map[int]string{
+	PropertyStateDraft: "draft",
+}
 
 // Property contains address and can have multiple units that can be booked
 type Property struct {
-	gorm.Model `json:"-"`
-	Name       *string  `json:"name"`
-	StateID    int      `gorm:"column:state" json:"-"`
-	AccountID  int      `json:"-"`
-	Account    *Account `json:"-"`
-	Address1   *string  `json:"address1"`
-	Address2   *string  `json:"address2"`
-	Address3   *string  `json:"address3"`
-	PostalCode *string  `json:"postalCode"`
-	CityID     *int     `json:"cityID"`
-	City       *City    `json:"-"`
-	CountryID  *int     `json:"countryID"`
-	Country    *Country `json:"-"`
-	Images     []*Image `json:"images"`
+	gorm.Model      `json:"-"`
+	Name            *string  `json:"name"`
+	StateID         int      `gorm:"column:state" json:"-"`
+	AccountID       int      `json:"-"`
+	Account         *Account `json:"-"`
+	Address1        *string  `json:"address1"`
+	Address2        *string  `json:"address2"`
+	Address3        *string  `json:"address3"`
+	PostalCode      *string  `json:"postalCode"`
+	CityID          *int     `json:"cityID"`
+	City            *City    `json:"-"`
+	CountryID       *int     `json:"countryID"`
+	Country         *Country `json:"-"`
+	Images          []*Image `json:"images"`
+	MinimumStay     *string  `json:"minimumStay"`
+	Deposit         *string  `json:"deposit"`
+	Cleaning        *string  `json:"cleaning"`
+	NearestAirport  *string  `json:"nearestAirport"`
+	NearestSubway   *string  `json:"nearestSubway"`
+	NearbyLocations *string  `json:"nearbyLocations"`
+	Overview        *string  `json:"overview"`
 }
 
 // State returns the state name for the property's state ID
 func (p *Property) State() string {
 	return propertyStates[p.StateID]
-}
-
-func init() {
-	propertyStates = make(map[int]string)
-	propertyStates[PropertyStateDraft] = "draft"
 }
 
 type propertyAlias Property

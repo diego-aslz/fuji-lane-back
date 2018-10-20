@@ -39,9 +39,9 @@ Feature: Properties Management
       | ID | Country | Name  |
       | 3  | Japan   | Osaka |
     And the following properties:
-      | ID | Account          | State | Name          | Address1 | Address2 | Address3   | City  | PostalCode | Country |
-      | 1  | Diego Apartments | Draft | ACME Downtown | Add. One | Add. Two | Add. Three | Osaka | 223344     | Japan   |
-      | 2  | Other            | Draft | Other Prop    | Add. One | Add. Two | Add. Three | Osaka | 223344     | Japan   |
+      | ID | Account          | State | Name          | Address1 | Address2 | Address3   | City  | PostalCode | Country | MinimumStay | Deposit | Cleaning | NearestAirport | NearestSubway | NearbyLocations | Overview   |
+      | 1  | Diego Apartments | Draft | ACME Downtown | Add. One | Add. Two | Add. Three | Osaka | 223344     | Japan   | 3           | 300     | 50       | IGU            | Ines          | Pharmacy        | Good place |
+      | 2  | Other            | Draft | Other Prop    | Add. One | Add. Two | Add. Three | Osaka | 223344     | Japan   | 4           | 350     | 50       | IGU            | Ines          | Restaurant      | Nice place |
     And the following images:
       | ID | Property      | Uploaded | Name      | URL                                | Type       | Size    |
       | 1  | ACME Downtown | true     | front.jpg | https://s3.amazonaws.com/front.jpg | image/jpeg | 1000000 |
@@ -62,6 +62,13 @@ Feature: Properties Management
         "cityID": 3,
         "postalCode": "223344",
         "countryID":  2,
+        "minimumStay": "3",
+        "deposit": "300",
+        "cleaning": "50",
+        "nearestAirport": "IGU",
+        "nearestSubway": "Ines",
+        "nearbyLocations": "Pharmacy",
+        "overview": "Good place",
         "images": [
           {
             "id": 1,

@@ -11,9 +11,16 @@ CREATE TABLE properties(
   address3 varchar,
   city_id int references cities,
   postal_code varchar,
-  country_id int references countries
+  country_id int references countries,
+  minimum_stay varchar,
+  deposit varchar,
+  cleaning varchar,
+  nearest_airport varchar,
+  nearest_subway varchar,
+  nearby_locations varchar,
+  overview varchar
 );
 
-CREATE INDEX properties_account_id_idx ON properties(account_id);
-CREATE INDEX properties_state_idx ON properties(state);
+CREATE INDEX properties_account_id ON properties(account_id);
+CREATE INDEX properties_state ON properties(state);
 CREATE INDEX properties_deleted_at ON properties(deleted_at);

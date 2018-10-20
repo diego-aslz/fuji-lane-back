@@ -180,17 +180,14 @@ func perform(method, path string, body io.Reader) error {
 	return nil
 }
 
-var statusNames map[string]int
-
-func init() {
-	statusNames = map[string]int{}
-	statusNames["CREATED"] = http.StatusCreated
-	statusNames["NOT FOUND"] = http.StatusNotFound
-	statusNames["NOT MODIFIED"] = http.StatusNotModified
-	statusNames["OK"] = http.StatusOK
-	statusNames["PRECONDITION REQUIRED"] = http.StatusPreconditionRequired
-	statusNames["UNAUTHORIZED"] = http.StatusUnauthorized
-	statusNames["UNPROCESSABLE ENTITY"] = http.StatusUnprocessableEntity
+var statusNames = map[string]int{
+	"CREATED":               http.StatusCreated,
+	"NOT FOUND":             http.StatusNotFound,
+	"NOT MODIFIED":          http.StatusNotModified,
+	"OK":                    http.StatusOK,
+	"PRECONDITION REQUIRED": http.StatusPreconditionRequired,
+	"UNAUTHORIZED":          http.StatusUnauthorized,
+	"UNPROCESSABLE ENTITY":  http.StatusUnprocessableEntity,
 }
 
 func assertResponseStatus(status string) error {
