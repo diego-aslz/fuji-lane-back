@@ -10,12 +10,19 @@ import (
 
 // PropertiesUpdateBody is the request body for creating a property image
 type PropertiesUpdateBody struct {
-	Name       *string `json:"name"`
-	Address1   *string `json:"address1"`
-	Address2   *string `json:"address2"`
-	Address3   *string `json:"address3"`
-	CityID     *int    `json:"cityID"`
-	PostalCode *string `json:"postalCode"`
+	Name            *string `json:"name"`
+	Address1        *string `json:"address1"`
+	Address2        *string `json:"address2"`
+	Address3        *string `json:"address3"`
+	CityID          *int    `json:"cityID"`
+	PostalCode      *string `json:"postalCode"`
+	MinimumStay     *string `json:"minimumStay"`
+	Deposit         *string `json:"deposit"`
+	Cleaning        *string `json:"cleaning"`
+	NearestAirport  *string `json:"nearestAirport"`
+	NearestSubway   *string `json:"nearestSubway"`
+	NearbyLocations *string `json:"nearbyLocations"`
+	Overview        *string `json:"overview"`
 }
 
 // PropertiesUpdate returns a pre-signed URL for clients to upload images directly to S3
@@ -41,24 +48,24 @@ func (a *PropertiesUpdate) Perform(c Context) {
 
 	updates := map[string]interface{}{}
 
-	if a.Name != nil {
-		updates["name"] = *a.Name
+	fields := map[string]interface{}{
+		"name":             a.Name,
+		"address1":         a.Address1,
+		"address2":         a.Address2,
+		"address3":         a.Address3,
+		"postal_code":      a.PostalCode,
+		"minimum_stay":     a.MinimumStay,
+		"deposit":          a.Deposit,
+		"cleaning":         a.Cleaning,
+		"nearest_airport":  a.NearestAirport,
+		"nearest_subway":   a.NearestSubway,
+		"nearby_locations": a.NearbyLocations,
+		"overview":         a.Overview,
 	}
-
-	if a.Address1 != nil {
-		updates["address1"] = *a.Address1
-	}
-
-	if a.Address2 != nil {
-		updates["address2"] = *a.Address2
-	}
-
-	if a.Address3 != nil {
-		updates["address3"] = *a.Address3
-	}
-
-	if a.PostalCode != nil {
-		updates["postal_code"] = *a.PostalCode
+	for field, value := range fields {
+		if value != nil {
+			updates[field] = value
+		}
 	}
 
 	if a.CityID != nil {

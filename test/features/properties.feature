@@ -122,13 +122,20 @@ Feature: Properties Management
       | 1  | Diego Apartments | Draft |
     And I am authenticated with "diego@selzlein.com"
     When I update the property "1" with the following details:
-      | Name       | ACME Downtown |
-      | Address1   | Add. One      |
-      | Address2   | Add. Two      |
-      | Address3   | Add. Three    |
-      | CityID     | 3             |
-      | PostalCode | 223344        |
+      | Name            | ACME Downtown |
+      | Address1        | Add. One      |
+      | Address2        | Add. Two      |
+      | Address3        | Add. Three    |
+      | CityID          | 3             |
+      | PostalCode      | 223344        |
+      | MinimumStay     | 3 days        |
+      | Deposit         | 150           |
+      | Cleaning        | daily         |
+      | NearestAirport  | IGU           |
+      | NearestSubway   | Central Park  |
+      | NearbyLocations | Pharmacy      |
+      | Overview        | Nice place    |
     Then the system should respond with "OK"
     And I should have the following properties:
-      | Account          | State | Name          | Address1 | Address2 | Address3   | City  | PostalCode | Country |
-      | Diego Apartments | draft | ACME Downtown | Add. One | Add. Two | Add. Three | Osaka | 223344     | Japan   |
+      | Account          | State | Name          | Address1 | Address2 | Address3   | City  | PostalCode | Country | MinimumStay | Deposit | Cleaning | NearestAirport | NearestSubway | NearbyLocations | Overview   |
+      | Diego Apartments | draft | ACME Downtown | Add. One | Add. Two | Add. Three | Osaka | 223344     | Japan   | 3 days      | 150     | daily    | IGU            | Central Park  | Pharmacy        | Nice place |
