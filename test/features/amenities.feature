@@ -10,7 +10,6 @@ Feature: Amenities
       | pool          | Pool          |
       | restaurant    | Restaurant    |
 
-
   Scenario: Listing amenity types for units
     When I list amenity types for "units"
     Then the system should respond with "OK" and the following amenity types:

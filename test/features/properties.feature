@@ -79,7 +79,8 @@ Feature: Properties Management
             "uploaded":true,
             "propertyID":1
           }
-        ]
+        ],
+        "amenities": null
       }
       """
 
@@ -158,3 +159,36 @@ Feature: Properties Management
     And I should have the following properties:
       | Account          | State | Name |
       | Other Apartments | draft |      |
+
+  Scenario: Updating property amenities
+    Given the following accounts:
+      | Name             |
+      | Diego Apartments |
+    And the following users:
+      | Account          | Email              | Name                 |
+      | Diego Apartments | diego@selzlein.com | Diego Aguir Selzlein |
+    And the following properties:
+      | ID | Account          | State | Name          |
+      | 1  | Diego Apartments | Draft | ACME Downtown |
+    And the following amenities:
+      | Property      | Type |
+      | ACME Downtown | gym  |
+      | ACME Downtown | pool |
+    And the following amenities:
+      | Property      | Type   | Name      |
+      | ACME Downtown | custom | Breakfast |
+      | ACME Downtown | custom | Casino    |
+    And I am authenticated with "diego@selzlein.com"
+    When I update the property "1" with the following amenities:
+      | Type       | Name          |
+      | pool       | Pool          |
+      | restaurant | Restaurant    |
+      | custom     | Casino        |
+      | custom     | All Inclusive |
+    Then the system should respond with "OK"
+    And I should have the following amenities:
+      | Property      | Type       | Name          |
+      | ACME Downtown | pool       |               |
+      | ACME Downtown | custom     | Casino        |
+      | ACME Downtown | restaurant |               |
+      | ACME Downtown | custom     | All Inclusive |

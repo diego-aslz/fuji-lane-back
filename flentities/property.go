@@ -16,26 +16,27 @@ var propertyStates = map[int]string{
 // Property contains address and can have multiple units that can be booked
 type Property struct {
 	gorm.Model      `json:"-"`
-	Name            *string  `json:"name"`
-	StateID         int      `gorm:"column:state" json:"-"`
-	AccountID       int      `json:"-"`
-	Account         *Account `json:"-"`
-	Address1        *string  `json:"address1"`
-	Address2        *string  `json:"address2"`
-	Address3        *string  `json:"address3"`
-	PostalCode      *string  `json:"postalCode"`
-	CityID          *int     `json:"cityID"`
-	City            *City    `json:"-"`
-	CountryID       *int     `json:"countryID"`
-	Country         *Country `json:"-"`
-	Images          []*Image `json:"images"`
-	MinimumStay     *string  `json:"minimumStay"`
-	Deposit         *string  `json:"deposit"`
-	Cleaning        *string  `json:"cleaning"`
-	NearestAirport  *string  `json:"nearestAirport"`
-	NearestSubway   *string  `json:"nearestSubway"`
-	NearbyLocations *string  `json:"nearbyLocations"`
-	Overview        *string  `json:"overview"`
+	Name            *string    `json:"name"`
+	StateID         int        `gorm:"column:state" json:"-"`
+	AccountID       int        `json:"-"`
+	Account         *Account   `json:"-"`
+	Address1        *string    `json:"address1"`
+	Address2        *string    `json:"address2"`
+	Address3        *string    `json:"address3"`
+	PostalCode      *string    `json:"postalCode"`
+	CityID          *int       `json:"cityID"`
+	City            *City      `json:"-"`
+	CountryID       *int       `json:"countryID"`
+	Country         *Country   `json:"-"`
+	Images          []*Image   `json:"images"`
+	MinimumStay     *string    `json:"minimumStay"`
+	Deposit         *string    `json:"deposit"`
+	Cleaning        *string    `json:"cleaning"`
+	NearestAirport  *string    `json:"nearestAirport"`
+	NearestSubway   *string    `json:"nearestSubway"`
+	NearbyLocations *string    `json:"nearbyLocations"`
+	Overview        *string    `json:"overview"`
+	Amenities       []*Amenity `json:"amenities"`
 }
 
 // State returns the state name for the property's state ID

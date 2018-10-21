@@ -6,7 +6,6 @@ import (
 
 	"github.com/DATA-DOG/godog"
 	"github.com/DATA-DOG/godog/gherkin"
-	"github.com/jinzhu/gorm"
 	"github.com/nerde/fuji-lane-back/flactions"
 	"github.com/nerde/fuji-lane-back/flentities"
 	"github.com/nerde/fuji-lane-back/flweb"
@@ -31,6 +30,18 @@ func requestPropertiesUpdate(id string, table *gherkin.DataTable) error {
 	}
 
 	body, err := bodyFromObject(b)
+
+	return perform("PUT", strings.Replace(flweb.PropertyPath, ":id", id, 1), body)
+}
+
+func requestPropertiesUpdateWithAmenities(id string, table *gherkin.DataTable) error {
+	b, err := assist.CreateSlice(new(flactions.AmenityBody), table)
+	if err != nil {
+		return err
+	}
+
+	amenities := b.([]*flactions.AmenityBody)
+	body, err := bodyFromObject(&flactions.PropertiesUpdateBody{Amenities: &amenities})
 
 	return perform("PUT", strings.Replace(flweb.PropertyPath, ":id", id, 1), body)
 }
@@ -72,16 +83,9 @@ func propertyToTableRow(r *flentities.Repository, p interface{}) (interface{}, e
 		"City":    property.City,
 		"Country": property.Country,
 	}
-	for assocName, field := range assocs {
-		err := r.Model(p).Association(assocName).Find(field).Error
 
-		if gorm.IsRecordNotFoundError(err) {
-			err = nil
-		}
-
-		if err != nil {
-			return nil, err
-		}
+	if err := loadAssociations(r, p, assocs); err != nil {
+		return nil, err
 	}
 
 	row := &propertyRow{
@@ -98,6 +102,7 @@ func propertyToTableRow(r *flentities.Repository, p interface{}) (interface{}, e
 func PropertyContext(s *godog.Suite) {
 	s.Step(`^I add a new property$`, requestPropertiesCreate)
 	s.Step(`^I update the property "([^"]*)" with the following details:$`, requestPropertiesUpdate)
+	s.Step(`^I update the property "([^"]*)" with the following amenities:$`, requestPropertiesUpdateWithAmenities)
 	s.Step(`^the following properties:$`, createFromTableStep(new(propertyRow), tableRowToProperty))
 	s.Step(`^I should have the following properties:$`, assertDatabaseRecordsStep(&[]*flentities.Property{}, propertyToTableRow))
 	s.Step(`^I should have no properties$`, assertNoDatabaseRecordsStep(&flentities.Property{}))

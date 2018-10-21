@@ -7,7 +7,7 @@ CREATE TABLE images(
   size integer not null,
   url varchar not null,
   property_id integer references properties,
-  unit_id integer references units,
+  unit_id integer references units check (property_id is not null or unit_id is not null),
   uploaded boolean default false
 );
 

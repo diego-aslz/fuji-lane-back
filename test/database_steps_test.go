@@ -8,6 +8,7 @@ import (
 
 	"github.com/DATA-DOG/godog"
 	"github.com/DATA-DOG/godog/gherkin"
+	"github.com/jinzhu/gorm"
 	"github.com/nerde/fuji-lane-back/flentities"
 )
 
@@ -196,6 +197,22 @@ func findByName(record interface{}, name string) (err error) {
 	return flentities.WithRepository(func(r *flentities.Repository) error {
 		return r.Find(record, map[string]interface{}{"name": name}).Error
 	})
+}
+
+func loadAssociations(r *flentities.Repository, model interface{}, assocs map[string]interface{}) error {
+	for assocName, field := range assocs {
+		err := r.Model(model).Association(assocName).Find(field).Error
+
+		if gorm.IsRecordNotFoundError(err) {
+			err = nil
+		}
+
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
 
 func DatabaseContext(s *godog.Suite) {
