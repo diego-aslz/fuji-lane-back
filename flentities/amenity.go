@@ -11,7 +11,7 @@ type AmenityType struct {
 }
 
 // AmenityTypes supported by the system
-var AmenityTypes = []AmenityType{
+var AmenityTypes = []*AmenityType{
 	{"daycare", "Daycare", true, false},
 	{"gym", "Gym", true, false},
 	{"meeting_rooms", "Meeting Rooms", true, false},

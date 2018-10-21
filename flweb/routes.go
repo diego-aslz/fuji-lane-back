@@ -20,6 +20,8 @@ const (
 
 	// AccountsPath for accounts management
 	AccountsPath = "/accounts"
+	// AmenityTypesPath for listing amenity types
+	AmenityTypesPath = "/amenity_types/:target"
 	// CountriesPath for listing countries
 	CountriesPath = "/countries"
 	// CitiesPath for listing cities
@@ -47,6 +49,7 @@ func (a *Application) AddRoutes(e *gin.Engine) {
 
 	a.route(e.POST, AccountsPath, a.accountsCreate)
 	a.route(e.GET, CountriesPath, a.countriesList)
+	a.route(e.GET, AmenityTypesPath, a.amenityTypesList)
 	a.route(e.GET, CitiesPath, a.citiesList)
 	a.route(e.POST, PropertiesPath, a.propertiesCreate)
 	a.route(e.GET, PropertyPath, a.propertiesShow)
@@ -108,6 +111,10 @@ func (a *Application) countriesList(c *Context) {
 	withAction(&flactions.CountriesList{},
 		withRepository(
 			performAction))(c)
+}
+
+func (a *Application) amenityTypesList(c *Context) {
+	withAction(&flactions.AmenityTypesList{}, performAction)(c)
 }
 
 func (a *Application) citiesList(c *Context) {

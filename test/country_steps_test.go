@@ -6,7 +6,7 @@ import (
 	"github.com/nerde/fuji-lane-back/flweb"
 )
 
-func FeatureContext(s *godog.Suite) {
+func CountryContext(s *godog.Suite) {
 	s.Step(`^the following countries:$`, createFromTableStep(new(flentities.Country)))
 	s.Step(`^I should have the following countries:$`, assertDatabaseRecordsStep(&[]*flentities.Country{}))
 	s.Step(`^I list countries$`, performGETStep(flweb.CountriesPath))
