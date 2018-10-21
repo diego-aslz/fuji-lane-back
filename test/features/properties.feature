@@ -139,3 +139,22 @@ Feature: Properties Management
     And I should have the following properties:
       | Account          | State | Name          | Address1 | Address2 | Address3   | City  | PostalCode | Country | MinimumStay | Deposit | Cleaning | NearestAirport | NearestSubway | NearbyLocations | Overview   |
       | Diego Apartments | draft | ACME Downtown | Add. One | Add. Two | Add. Three | Osaka | 223344     | Japan   | 3 days      | 150     | daily    | IGU            | Central Park  | Pharmacy        | Nice place |
+
+  Scenario: Updating a property that does not belong to me
+    Given the following accounts:
+      | Name             |
+      | Diego Apartments |
+      | Other Apartments |
+    And the following users:
+      | Account          | Email              | Name                 |
+      | Diego Apartments | diego@selzlein.com | Diego Aguir Selzlein |
+    And the following properties:
+      | ID | Account          | State |
+      | 1  | Other Apartments | Draft |
+    And I am authenticated with "diego@selzlein.com"
+    When I update the property "1" with the following details:
+      | Name | ACME Downtown |
+    Then the system should respond with "NOT FOUND"
+    And I should have the following properties:
+      | Account          | State | Name |
+      | Other Apartments | draft |      |
