@@ -40,3 +40,20 @@ type Amenity struct {
 	Type       string    `json:"type"`
 	Name       *string   `json:"name"`
 }
+
+// IsValidAmenity checks if the given amenity type and name are to be accepted by the system. Custom amenities are
+// defined by the user and need a name. Other amenities need to be recognized by the system, that is, they need to
+// be in AmenityTypes slice
+func IsValidAmenity(aType, name string) bool {
+	if aType == "custom" {
+		return name != ""
+	}
+
+	for _, typ := range AmenityTypes {
+		if typ.Code == aType {
+			return true
+		}
+	}
+
+	return false
+}

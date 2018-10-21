@@ -1,34 +1,9 @@
 Feature: Properties Management
 
-  Scenario: Adding a new property
+  Background:
     Given the following accounts:
       | Name             |
       | Diego Apartments |
-    And the following users:
-      | Account          | Email              | Name                 |
-      | Diego Apartments | diego@selzlein.com | Diego Aguir Selzlein |
-    And I am authenticated with "diego@selzlein.com"
-    When I add a new property
-    Then the system should respond with "CREATED"
-    And I should have the following properties:
-      | Account          | State |
-      | Diego Apartments | draft |
-
-  Scenario: Adding a new property without having an Account
-    Given the following users:
-      | Email              | Name                 |
-      | diego@selzlein.com | Diego Aguir Selzlein |
-    And I am authenticated with "diego@selzlein.com"
-    When I add a new property
-    Then the system should respond with "PRECONDITION REQUIRED" and the following errors:
-      | You need a company account to perform this action |
-    And I should have no properties
-
-  Scenario: Getting property details
-    Given the following accounts:
-      | Name             |
-      | Diego Apartments |
-      | Other            |
     And the following users:
       | Account          | Email              | Name                 |
       | Diego Apartments | diego@selzlein.com | Diego Aguir Selzlein |
@@ -38,6 +13,29 @@ Feature: Properties Management
     And the following cities:
       | ID | Country | Name  |
       | 3  | Japan   | Osaka |
+    And I am authenticated with "diego@selzlein.com"
+
+  Scenario: Adding a new property
+    When I add a new property
+    Then the system should respond with "CREATED"
+    And I should have the following properties:
+      | Account          | State |
+      | Diego Apartments | draft |
+
+  Scenario: Adding a new property without having an Account
+    Given the following users:
+      | Email                | Name             |
+      | djeison@selzlein.com | Djeison Selzlein |
+    And I am authenticated with "djeison@selzlein.com"
+    When I add a new property
+    Then the system should respond with "PRECONDITION REQUIRED" and the following errors:
+      | You need a company account to perform this action |
+    And I should have no properties
+
+  Scenario: Getting property details
+    Given the following accounts:
+      | Name  |
+      | Other |
     And the following properties:
       | ID | Account          | State | Name          | Address1 | Address2 | Address3   | City  | PostalCode | Country | MinimumStay | Deposit | Cleaning | NearestAirport | NearestSubway | NearbyLocations | Overview   |
       | 1  | Diego Apartments | Draft | ACME Downtown | Add. One | Add. Two | Add. Three | Osaka | 223344     | Japan   | 3           | 300     | 50       | IGU            | Ines          | Pharmacy        | Good place |
@@ -47,7 +45,6 @@ Feature: Properties Management
       | 1  | ACME Downtown | true     | front.jpg | https://s3.amazonaws.com/front.jpg | image/jpeg | 1000000 |
       | 2  | ACME Downtown | false    | back.jpg  | https://s3.amazonaws.com/back.jpg  | image/jpeg | 1000000 |
       | 3  | Other Prop    | true     | front.jpg | https://s3.amazonaws.com/front.jpg | image/jpeg | 1000000 |
-    And I am authenticated with "diego@selzlein.com"
     When I get details for property "ACME Downtown"
     Then the system should respond with "OK" and the following JSON:
       """
@@ -86,42 +83,18 @@ Feature: Properties Management
 
   Scenario: Getting property details for a property the user does not have access to
     Given the following accounts:
-      | Name             |
-      | Diego Apartments |
-      | John Apartments  |
-    And the following users:
-      | Account          | Email              | Name                 |
-      | Diego Apartments | diego@selzlein.com | Diego Aguir Selzlein |
-    And the following countries:
-      | ID | Name  |
-      | 2  | Japan |
-    And the following cities:
-      | ID | Country | Name  |
-      | 3  | Japan   | Osaka |
+      | Name            |
+      | John Apartments |
     And the following properties:
       | Account         | State | Name          | Address1 | Address2 | Address3   | City  | PostalCode | Country |
       | John Apartments | Draft | ACME Downtown | Add. One | Add. Two | Add. Three | Osaka | 223344     | Japan   |
-    And I am authenticated with "diego@selzlein.com"
     When I get details for property "ACME Downtown"
     Then the system should respond with "NOT FOUND"
 
   Scenario: Updating my property
-    Given the following accounts:
-      | Name             |
-      | Diego Apartments |
-    And the following users:
-      | Account          | Email              | Name                 |
-      | Diego Apartments | diego@selzlein.com | Diego Aguir Selzlein |
-    And the following countries:
-      | ID | Name  |
-      | 2  | Japan |
-    And the following cities:
-      | ID | Country | Name  |
-      | 3  | Japan   | Osaka |
-    And the following properties:
+    Given the following properties:
       | ID | Account          | State |
       | 1  | Diego Apartments | Draft |
-    And I am authenticated with "diego@selzlein.com"
     When I update the property "1" with the following details:
       | Name            | ACME Downtown |
       | Address1        | Add. One      |
@@ -144,15 +117,10 @@ Feature: Properties Management
   Scenario: Updating a property that does not belong to me
     Given the following accounts:
       | Name             |
-      | Diego Apartments |
       | Other Apartments |
-    And the following users:
-      | Account          | Email              | Name                 |
-      | Diego Apartments | diego@selzlein.com | Diego Aguir Selzlein |
     And the following properties:
       | ID | Account          | State |
       | 1  | Other Apartments | Draft |
-    And I am authenticated with "diego@selzlein.com"
     When I update the property "1" with the following details:
       | Name | ACME Downtown |
     Then the system should respond with "NOT FOUND"
@@ -161,13 +129,7 @@ Feature: Properties Management
       | Other Apartments | draft |      |
 
   Scenario: Updating property amenities
-    Given the following accounts:
-      | Name             |
-      | Diego Apartments |
-    And the following users:
-      | Account          | Email              | Name                 |
-      | Diego Apartments | diego@selzlein.com | Diego Aguir Selzlein |
-    And the following properties:
+    Given the following properties:
       | ID | Account          | State | Name          |
       | 1  | Diego Apartments | Draft | ACME Downtown |
     And the following amenities:
@@ -178,7 +140,6 @@ Feature: Properties Management
       | Property      | Type   | Name      |
       | ACME Downtown | custom | Breakfast |
       | ACME Downtown | custom | Casino    |
-    And I am authenticated with "diego@selzlein.com"
     When I update the property "1" with the following amenities:
       | Type       | Name          |
       | pool       | Pool          |
@@ -192,3 +153,18 @@ Feature: Properties Management
       | ACME Downtown | custom     | Casino        |
       | ACME Downtown | restaurant |               |
       | ACME Downtown | custom     | All Inclusive |
+
+  Scenario: Updating property with invalid or duplicated amenities
+    Given the following properties:
+      | ID | Account          | State | Name          |
+      | 1  | Diego Apartments | Draft | ACME Downtown |
+    When I update the property "1" with the following amenities:
+      | Type    | Name    |
+      | invalid | Invalid |
+      | custom  | Casino  |
+      | custom  | Casino  |
+      | custom  |         |
+    Then the system should respond with "OK"
+    And I should have the following amenities:
+      | Property      | Type   | Name   |
+      | ACME Downtown | custom | Casino |

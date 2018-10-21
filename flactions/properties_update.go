@@ -10,9 +10,9 @@ import (
 
 // AmenityBody is the payload for an Amenity a Property or Unit can have
 type AmenityBody struct {
-	Type   string `json:"type"`
-	Name   string `json:"name"`
-	exists bool
+	Type      string `json:"type"`
+	Name      string `json:"name"`
+	isCreated bool
 }
 
 func (ab *AmenityBody) matches(a *flentities.Amenity) bool {
@@ -150,24 +150,37 @@ func (a *PropertiesUpdate) amenitiesDiff(property *flentities.Property) (
 		return
 	}
 
+	// Checking which amenities were removed by the user so we can delete them from the database
 	for _, am := range property.Amenities {
-		found := false
-
+		removedByUser := true
 		for _, ab := range *a.Amenities {
 			if ab.matches(am) {
-				found = true
-				ab.exists = true
+				removedByUser = false
+				ab.isCreated = true
 				break
 			}
 		}
 
-		if !found {
+		if removedByUser {
 			amenitiesToDelete = append(amenitiesToDelete, am)
 		}
 	}
 
 	for _, ab := range *a.Amenities {
-		if ab.exists {
+		// Skipping amenities that are already in the database or invalid
+		if ab.isCreated || !flentities.IsValidAmenity(ab.Type, ab.Name) {
+			continue
+		}
+
+		// Skipping duplicated amenities
+		duplicated := false
+		for _, am := range amenitiesToCreate {
+			if ab.matches(am) {
+				duplicated = true
+				break
+			}
+		}
+		if duplicated {
 			continue
 		}
 

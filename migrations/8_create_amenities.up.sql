@@ -7,5 +7,5 @@ CREATE TABLE amenities(
   unit_id integer references units check (property_id is not null or unit_id is not null)
 );
 
-CREATE INDEX amenities_property_id ON amenities(property_id);
-CREATE INDEX amenities_unit_id ON amenities(unit_id);
+CREATE UNIQUE INDEX amenities_name_uniq_by_property ON amenities(property_id, name);
+CREATE UNIQUE INDEX amenities_name_uniq_by_unit ON amenities(unit_id, name);
