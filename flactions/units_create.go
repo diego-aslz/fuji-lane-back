@@ -12,8 +12,8 @@ type UnitsCreateBody struct {
 	PropertyID   uint   `json:"propertyID"`
 	Name         string `json:"name"`
 	Bedrooms     int    `json:"bedrooms"`
-	SizeM2       int    `json:"size_m2"`
-	MaxOccupancy int    `json:"max_occupancy"`
+	SizeM2       int    `json:"sizeM2"`
+	MaxOccupancy int    `json:"maxOccupancy"`
 	Count        int    `json:"count"`
 }
 

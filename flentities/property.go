@@ -18,7 +18,7 @@ type Property struct {
 	gorm.Model      `json:"-"`
 	Name            *string    `json:"name"`
 	StateID         int        `gorm:"column:state" json:"-"`
-	AccountID       int        `json:"-"`
+	AccountID       uint       `json:"-"`
 	Account         *Account   `json:"-"`
 	Address1        *string    `json:"address1"`
 	Address2        *string    `json:"address2"`

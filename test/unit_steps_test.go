@@ -1,7 +1,10 @@
 package fujilane
 
 import (
+	"fmt"
+	"io"
 	"strconv"
+	"strings"
 
 	"github.com/DATA-DOG/godog"
 	"github.com/DATA-DOG/godog/gherkin"
@@ -41,6 +44,47 @@ func requestUnitsCreate(table *gherkin.DataTable) error {
 	return performPOST(flweb.UnitsPath, body)
 }
 
+func requestUnitsUpdate(name string, table *gherkin.DataTable) error {
+	u, err := assist.ParseMap(table)
+	if err != nil {
+		return err
+	}
+
+	unit := &flentities.Unit{}
+	if err := findByName(unit, name); err != nil {
+		return err
+	}
+
+	body := flactions.UnitsUpdateBody{}
+	body.Name = u["Name"]
+
+	body.Bedrooms, _ = strconv.Atoi(u["Bedrooms"])
+	body.SizeM2, _ = strconv.Atoi(u["SizeM2"])
+	body.MaxOccupancy, _ = strconv.Atoi(u["MaxOccupancy"])
+	body.Count, _ = strconv.Atoi(u["Count"])
+	body.BasePriceCents, _ = strconv.Atoi(u["BasePriceCents"])
+	body.OneNightPriceCents, _ = strconv.Atoi(u["OneNightPriceCents"])
+	body.OneWeekPriceCents, _ = strconv.Atoi(u["OneWeekPriceCents"])
+	body.ThreeMonthsPriceCents, _ = strconv.Atoi(u["ThreeMonthsPriceCents"])
+	body.SixMonthsPriceCents, _ = strconv.Atoi(u["SixMonthsPriceCents"])
+	body.TwelveMonthsPriceCents, _ = strconv.Atoi(u["TwelveMonthsPriceCents"])
+
+	FloorPlanImageID, _ := strconv.Atoi(u["FloorPlanImageID"])
+	body.FloorPlanImageID = uint(FloorPlanImageID)
+
+	var bodyIO io.Reader
+	if bodyIO, err = bodyFromObject(body); err != nil {
+		return err
+	}
+
+	return perform("PUT", strings.Replace(flweb.UnitPath, ":id", fmt.Sprint(unit.ID), 1), bodyIO)
+}
+
+func tableRowToUnit(r *flentities.Repository, a interface{}) (interface{}, error) {
+	row := a.(*unitRow)
+	return &row.Unit, loadAssociationByName(&row.Unit, "Property", row.Property)
+}
+
 func unitToTableRow(r *flentities.Repository, a interface{}) (interface{}, error) {
 	unit := a.(*flentities.Unit)
 
@@ -63,7 +107,9 @@ func unitToTableRow(r *flentities.Repository, a interface{}) (interface{}, error
 }
 
 func UnitContext(s *godog.Suite) {
+	s.Step(`^the following units:$`, createFromTableStep(new(unitRow), tableRowToUnit))
 	s.Step(`^I add the following unit:$`, requestUnitsCreate)
+	s.Step(`^I update unit "([^"]*)" with the following attributes:$`, requestUnitsUpdate)
 	s.Step(`^I should have the following units:$`, assertDatabaseRecordsStep(&[]*flentities.Unit{}, unitToTableRow))
 	s.Step(`^I should have no units$`, assertNoDatabaseRecordsStep(&flentities.Unit{}))
 }

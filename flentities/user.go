@@ -12,7 +12,7 @@ import (
 // User of the system
 type User struct {
 	gorm.Model        `json:"-"`
-	AccountID         *int       `json:"-"`
+	AccountID         *uint      `json:"-"`
 	Account           *Account   `json:"-"`
 	Name              *string    `json:"name"`
 	Email             string     `json:"email"`

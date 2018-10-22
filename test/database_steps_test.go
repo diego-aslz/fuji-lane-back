@@ -125,6 +125,14 @@ func derefInt(i *int) int {
 	return *i
 }
 
+func derefUint(i *uint) uint {
+	if i == nil {
+		return 0
+	}
+
+	return *i
+}
+
 func derefTime(t *time.Time) time.Time {
 	if t == nil {
 		return time.Time{}
@@ -155,6 +163,14 @@ func refTime(t time.Time) *time.Time {
 	}
 
 	return &t
+}
+
+func refUint(i uint) *uint {
+	if i == 0 {
+		return nil
+	}
+
+	return &i
 }
 
 func cleanup(_ interface{}, _ error) {

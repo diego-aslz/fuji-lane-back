@@ -36,6 +36,8 @@ const (
 	PropertiesPath = "/properties"
 	// PropertyPath to show property details
 	PropertyPath = "/properties/:id"
+	// UnitPath for accessing an individual unit
+	UnitPath = "/unit/:id"
 	// UnitsPath for accessing units
 	UnitsPath = "/units"
 )
@@ -60,6 +62,7 @@ func (a *Application) AddRoutes(e *gin.Engine) {
 	a.route(e.PUT, ImagesUploadedPath, a.imagesUploaded)
 	a.route(e.DELETE, ImagePath, a.imagesDestroy)
 	a.route(e.POST, UnitsPath, a.unitsCreate)
+	a.route(e.PUT, UnitPath, a.unitsUpdate)
 }
 
 type ginMethod func(string, ...gin.HandlerFunc) gin.IRoutes
@@ -161,6 +164,14 @@ func (a *Application) propertiesImagesCreate(c *Context) {
 
 func (a *Application) unitsCreate(c *Context) {
 	withAction(&flactions.UnitsCreate{},
+		withRepository(
+			authenticateUser(
+				loadActionBody(
+					performAction))))(c)
+}
+
+func (a *Application) unitsUpdate(c *Context) {
+	withAction(&flactions.UnitsUpdate{},
 		withRepository(
 			authenticateUser(
 				loadActionBody(

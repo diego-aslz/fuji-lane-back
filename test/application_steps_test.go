@@ -43,6 +43,7 @@ func setupApplication() {
 	assist.RegisterComparer(uint(0), uintComparer)
 	assist.RegisterComparer(refStr("a"), strPtrComparer)
 	assist.RegisterComparer(refInt(1), intPtrComparer)
+	assist.RegisterComparer(refUint(1), uintPtrComparer)
 	assist.RegisterParser(uint(0), uintParser)
 	assist.RegisterParser(true, boolParser)
 	assist.RegisterParser(refStr("a"), strPtrParser)
@@ -113,6 +114,15 @@ func strPtrComparer(raw string, rawActual interface{}) error {
 
 func intPtrComparer(raw string, rawActual interface{}) error {
 	actual := strconv.Itoa(derefInt(rawActual.(*int)))
+	if raw == actual {
+		return nil
+	}
+
+	return fmt.Errorf("Expected %s, but got %s", raw, actual)
+}
+
+func uintPtrComparer(raw string, rawActual interface{}) error {
+	actual := fmt.Sprint(derefUint(rawActual.(*uint)))
 	if raw == actual {
 		return nil
 	}
