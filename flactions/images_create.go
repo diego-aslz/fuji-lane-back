@@ -1,6 +1,7 @@
 package flactions
 
 import (
+	"fmt"
 	"net/http"
 	"strings"
 
@@ -12,15 +13,16 @@ import (
 	"github.com/nerde/fuji-lane-back/flutils"
 )
 
-// PropertiesImagesCreateBody is the request body for creating a property image
-type PropertiesImagesCreateBody struct {
-	Name string `json:"name"`
-	Size int    `json:"size"`
-	Type string `json:"type"`
+// ImagesCreateBody is the request body for creating a property image
+type ImagesCreateBody struct {
+	PropertyID uint   `json:"propertyID"`
+	Name       string `json:"name"`
+	Size       int    `json:"size"`
+	Type       string `json:"type"`
 }
 
 // Validate the request body
-func (b PropertiesImagesCreateBody) Validate() []error {
+func (b ImagesCreateBody) Validate() []error {
 	return flentities.ValidateFields(
 		flentities.ValidateField("name", b.Name).Required(),
 		flentities.ValidateField("size", b.Size).Min(1).Max(flconfig.Config.MaxImageSizeMB*1024*1024),
@@ -28,19 +30,18 @@ func (b PropertiesImagesCreateBody) Validate() []error {
 	)
 }
 
-// PropertiesImagesCreate returns a pre-signed URL for clients to upload images directly to S3
-type PropertiesImagesCreate struct {
+// ImagesCreate returns a pre-signed URL for clients to upload images directly to S3
+type ImagesCreate struct {
 	flservices.S3Service
-	PropertiesImagesCreateBody
+	ImagesCreateBody
 }
 
 // Perform executes the action
-func (a *PropertiesImagesCreate) Perform(c Context) {
+func (a *ImagesCreate) Perform(c Context) {
 	account := c.CurrentAccount()
 
-	id := c.Param("id")
 	property := &flentities.Property{}
-	err := c.Repository().Find(property, map[string]interface{}{"id": id, "account_id": account.ID}).Error
+	err := c.Repository().Find(property, map[string]interface{}{"id": a.PropertyID, "account_id": account.ID}).Error
 	if gorm.IsRecordNotFoundError(err) {
 		c.RespondNotFound()
 		return
@@ -50,8 +51,8 @@ func (a *PropertiesImagesCreate) Perform(c Context) {
 		return
 	}
 
-	key := flutils.GenerateRandomString(30, c.RandomSource())
-	url, err := a.GenerateURLToUploadPublicFile("properties/"+id+"/images/"+key, a.Type, a.Size)
+	path := fmt.Sprintf("properties/%d/images/%s", a.PropertyID, flutils.GenerateRandomString(30, c.RandomSource()))
+	url, err := a.GenerateURLToUploadPublicFile(path, a.Type, a.Size)
 
 	if err != nil {
 		c.ServerError(err)
@@ -77,7 +78,7 @@ func (a *PropertiesImagesCreate) Perform(c Context) {
 	c.Respond(http.StatusOK, image)
 }
 
-// NewPropertiesImagesCreate returns a new instance of the PropertiesImagesNew action
-func NewPropertiesImagesCreate(s3 flservices.S3Service) *PropertiesImagesCreate {
-	return &PropertiesImagesCreate{S3Service: s3}
+// NewImagesCreate returns a new instance of the PropertiesImagesNew action
+func NewImagesCreate(s3 flservices.S3Service) *ImagesCreate {
+	return &ImagesCreate{S3Service: s3}
 }

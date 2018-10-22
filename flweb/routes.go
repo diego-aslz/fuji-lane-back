@@ -28,10 +28,10 @@ const (
 	CountriesPath = "/countries"
 	// ImagePath for accessing a specific image
 	ImagePath = "/images/:id"
+	// ImagesPath for accessing images
+	ImagesPath = "/images"
 	// ImagesUploadedPath for marking an image as uploaded
 	ImagesUploadedPath = "/images/:id/uploaded"
-	// PropertiesImagesPath for obtaining pre-signed upload URLs
-	PropertiesImagesPath = "/properties/:id/images"
 	// PropertiesPath for properties management
 	PropertiesPath = "/properties"
 	// PropertyPath to show property details
@@ -58,7 +58,7 @@ func (a *Application) AddRoutes(e *gin.Engine) {
 	a.route(e.POST, PropertiesPath, a.propertiesCreate)
 	a.route(e.GET, PropertyPath, a.propertiesShow)
 	a.route(e.PUT, PropertyPath, a.propertiesUpdate)
-	a.route(e.POST, PropertiesImagesPath, a.propertiesImagesCreate)
+	a.route(e.POST, ImagesPath, a.imagesCreate)
 	a.route(e.PUT, ImagesUploadedPath, a.imagesUploaded)
 	a.route(e.DELETE, ImagePath, a.imagesDestroy)
 	a.route(e.POST, UnitsPath, a.unitsCreate)
@@ -153,8 +153,8 @@ func (a *Application) propertiesShow(c *Context) {
 				performAction)))(c)
 }
 
-func (a *Application) propertiesImagesCreate(c *Context) {
-	withAction(flactions.NewPropertiesImagesCreate(a.S3Service),
+func (a *Application) imagesCreate(c *Context) {
+	withAction(flactions.NewImagesCreate(a.S3Service),
 		withRepository(
 			authenticateUser(
 				loadActionBody(

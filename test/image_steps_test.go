@@ -51,9 +51,13 @@ func requestPropertiesImagesCreate(table *gherkin.DataTable) error {
 		return err
 	}
 
-	propertyName := image["Property"]
+	property := &flentities.Property{}
+	if err := findByName(property, image["Property"]); err != nil {
+		return err
+	}
 
-	body := flactions.PropertiesImagesCreateBody{}
+	body := flactions.ImagesCreateBody{}
+	body.PropertyID = property.ID
 	body.Name = image["Name"]
 	body.Size, err = strconv.Atoi(image["Size"])
 	body.Type = image["Type"]
@@ -62,14 +66,7 @@ func requestPropertiesImagesCreate(table *gherkin.DataTable) error {
 		return err
 	}
 
-	property := &flentities.Property{}
-	if err := findByName(property, propertyName); err != nil {
-		return err
-	}
-
-	path := strings.Replace(flweb.PropertiesImagesPath, ":id", fmt.Sprint(property.ID), 1)
-
-	return performPOST(path, body)
+	return performPOST(flweb.ImagesPath, body)
 }
 
 func requestImagesUploaded(name string) error {
