@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"reflect"
+	"strings"
 	"time"
 
 	"github.com/DATA-DOG/godog"
@@ -173,14 +174,32 @@ func refUint(i uint) *uint {
 	return &i
 }
 
+var allEntities = map[string]interface{}{
+	"amenities":  flentities.Amenity{},
+	"units":      flentities.Unit{},
+	"images":     flentities.Image{},
+	"properties": flentities.Property{},
+	"users":      flentities.User{},
+	"accounts":   flentities.Account{},
+	"cities":     flentities.City{},
+	"countries":  flentities.Country{},
+}
+
 func cleanup(_ interface{}, _ error) {
 	err := flentities.WithRepository(func(r *flentities.Repository) error {
-		for _, model := range flentities.AllEntities() {
+		for tableName, model := range allEntities {
 			err := r.Unscoped().Delete(model).Error
 			if err != nil {
+				if strings.Index(err.Error(), "violates foreign key") >= 0 {
+					if err = r.Exec(fmt.Sprintf("TRUNCATE %s CASCADE", tableName)).Error; err != nil {
+						return err
+					}
+					continue
+				}
 				return err
 			}
 		}
+
 		return nil
 	})
 
