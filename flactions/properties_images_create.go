@@ -2,7 +2,6 @@ package flactions
 
 import (
 	"net/http"
-	"strconv"
 	"strings"
 
 	"github.com/nerde/fuji-lane-back/flconfig"
@@ -24,7 +23,7 @@ type PropertiesImagesCreateBody struct {
 func (b PropertiesImagesCreateBody) Validate() []error {
 	return flentities.ValidateFields(
 		flentities.ValidateField("name", b.Name).Required(),
-		flentities.ValidateField("size", strconv.Itoa(b.Size)).Min(1).Max(flconfig.Config.MaxImageSizeMB*1024*1024),
+		flentities.ValidateField("size", b.Size).Min(1).Max(flconfig.Config.MaxImageSizeMB*1024*1024),
 		flentities.ValidateField("type", b.Type).Required().Image(),
 	)
 }

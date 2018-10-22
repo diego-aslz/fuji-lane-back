@@ -4,6 +4,7 @@ package flentities
 func AllEntities() []interface{} {
 	return []interface{}{
 		Amenity{},
+		Unit{},
 		Image{},
 		Property{},
 		User{},

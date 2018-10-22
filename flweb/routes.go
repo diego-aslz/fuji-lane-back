@@ -9,33 +9,35 @@ const (
 	// StatusPath path for health check
 	StatusPath = "/status"
 
-	// SignUpPath for email sign up
-	SignUpPath = "/sign_up"
-	// SignInPath for email sign in
-	SignInPath = "/sign_in"
 	// FacebookSignInPath for Facebook sign in
 	FacebookSignInPath = "/sign_in/facebook"
 	// RenewSessionPath use used to get a new session and a new token
 	RenewSessionPath = "/renew_session"
+	// SignInPath for email sign in
+	SignInPath = "/sign_in"
+	// SignUpPath for email sign up
+	SignUpPath = "/sign_up"
 
 	// AccountsPath for accounts management
 	AccountsPath = "/accounts"
 	// AmenityTypesPath for listing amenity types
 	AmenityTypesPath = "/amenity_types/:target"
-	// CountriesPath for listing countries
-	CountriesPath = "/countries"
 	// CitiesPath for listing cities
 	CitiesPath = "/cities"
+	// CountriesPath for listing countries
+	CountriesPath = "/countries"
+	// ImagePath for accessing a specific image
+	ImagePath = "/images/:id"
+	// ImagesUploadedPath for marking an image as uploaded
+	ImagesUploadedPath = "/images/:id/uploaded"
+	// PropertiesImagesPath for obtaining pre-signed upload URLs
+	PropertiesImagesPath = "/properties/:id/images"
 	// PropertiesPath for properties management
 	PropertiesPath = "/properties"
 	// PropertyPath to show property details
 	PropertyPath = "/properties/:id"
-	// PropertiesImagesPath for obtaining pre-signed upload URLs
-	PropertiesImagesPath = "/properties/:id/images"
-	// ImagesUploadedPath for marking an image as uploaded
-	ImagesUploadedPath = "/images/:id/uploaded"
-	// ImagePath for accessing a specific image
-	ImagePath = "/images/:id"
+	// UnitsPath for accessing units
+	UnitsPath = "/units"
 )
 
 // AddRoutes to a Gin Engine
@@ -57,6 +59,7 @@ func (a *Application) AddRoutes(e *gin.Engine) {
 	a.route(e.POST, PropertiesImagesPath, a.propertiesImagesCreate)
 	a.route(e.PUT, ImagesUploadedPath, a.imagesUploaded)
 	a.route(e.DELETE, ImagePath, a.imagesDestroy)
+	a.route(e.POST, UnitsPath, a.unitsCreate)
 }
 
 type ginMethod func(string, ...gin.HandlerFunc) gin.IRoutes
@@ -154,6 +157,14 @@ func (a *Application) propertiesImagesCreate(c *Context) {
 				loadActionBody(
 					requireAccount(
 						performAction)))))(c)
+}
+
+func (a *Application) unitsCreate(c *Context) {
+	withAction(&flactions.UnitsCreate{},
+		withRepository(
+			authenticateUser(
+				loadActionBody(
+					performAction))))(c)
 }
 
 func (a *Application) imagesUploaded(c *Context) {

@@ -6,7 +6,7 @@ CREATE TABLE units(
   property_id integer not null references properties,
   name varchar not null,
   bedrooms integer not null,
-  size_m2 integer,
+  size_m2 integer not null,
   max_occupancy integer,
   count integer not null,
   base_price_cents integer,

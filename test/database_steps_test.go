@@ -117,6 +117,14 @@ func derefStr(str *string) string {
 	return *str
 }
 
+func derefInt(i *int) int {
+	if i == nil {
+		return 0
+	}
+
+	return *i
+}
+
 func derefTime(t *time.Time) time.Time {
 	if t == nil {
 		return time.Time{}

@@ -2,8 +2,8 @@ package flentities
 
 import (
 	"fmt"
+	"reflect"
 	"regexp"
-	"strconv"
 )
 
 const (
@@ -29,21 +29,36 @@ func ValidateFields(field FieldValidation, fields ...FieldValidation) []error {
 }
 
 // ValidateField returns a FieldValidation for the given parameters
-func ValidateField(name, value string) FieldValidation {
+func ValidateField(name string, value interface{}) FieldValidation {
 	return FieldValidation{name, value, []error{}}
 }
 
 // FieldValidation carries the context and errors when validating a specific field
 type FieldValidation struct {
 	Name   string
-	Value  string
+	Value  interface{}
 	Errors []error
 }
 
 // Required adds an error if the value is blank
 func (v FieldValidation) Required() FieldValidation {
-	if len(v.Value) == 0 {
-		v.Errors = append(v.Errors, fmt.Errorf("Invalid %s: cannot be blank", v.Name))
+	valid := true
+	switch val := v.Value.(type) {
+	case string:
+		valid = len(val) != 0
+		break
+	case uint:
+		valid = val != 0
+		break
+	case int:
+		valid = val != 0
+		break
+	default:
+		v.Errors = append(v.Errors, v.unsupportedTypeError("Required"))
+	}
+
+	if !valid {
+		v.Errors = append(v.Errors, fmt.Errorf("%s is required", v.Name))
 	}
 
 	return v
@@ -51,9 +66,15 @@ func (v FieldValidation) Required() FieldValidation {
 
 // Email adds an error if the value is not a valid email
 func (v FieldValidation) Email() FieldValidation {
-	emailReg := regexp.MustCompile(emailRegexString)
-	if !emailReg.Match([]byte(v.Value)) {
-		v.Errors = append(v.Errors, fmt.Errorf("Invalid email: %s", v.Value))
+	switch val := v.Value.(type) {
+	case string:
+		emailReg := regexp.MustCompile(emailRegexString)
+		if !emailReg.Match([]byte(val)) {
+			v.Errors = append(v.Errors, fmt.Errorf("Invalid email: %s", val))
+		}
+		break
+	default:
+		v.Errors = append(v.Errors, v.unsupportedTypeError("Email"))
 	}
 
 	return v
@@ -61,8 +82,14 @@ func (v FieldValidation) Email() FieldValidation {
 
 // MinLen adds an error if the value does not comply with the minimum size
 func (v FieldValidation) MinLen(min int) FieldValidation {
-	if len(v.Value) < min {
-		v.Errors = append(v.Errors, fmt.Errorf("Invalid %s: minimum size is %d", v.Name, min))
+	switch val := v.Value.(type) {
+	case string:
+		if len(val) < min {
+			v.Errors = append(v.Errors, fmt.Errorf("Invalid %s: minimum size is %d", v.Name, min))
+		}
+		break
+	default:
+		v.Errors = append(v.Errors, v.unsupportedTypeError("MinLen"))
 	}
 
 	return v
@@ -70,8 +97,14 @@ func (v FieldValidation) MinLen(min int) FieldValidation {
 
 // MaxLen adds an error if the value does not comply with the maximum size
 func (v FieldValidation) MaxLen(max int) FieldValidation {
-	if len(v.Value) > max {
-		v.Errors = append(v.Errors, fmt.Errorf("Invalid %s: maximum size is %d", v.Name, max))
+	switch val := v.Value.(type) {
+	case string:
+		if len(val) > max {
+			v.Errors = append(v.Errors, fmt.Errorf("Invalid %s: maximum size is %d", v.Name, max))
+		}
+		break
+	default:
+		v.Errors = append(v.Errors, v.unsupportedTypeError("MaxLen"))
 	}
 
 	return v
@@ -79,13 +112,14 @@ func (v FieldValidation) MaxLen(max int) FieldValidation {
 
 // Min adds an error if the value is less than the given minimum
 func (v FieldValidation) Min(min int) FieldValidation {
-	var value float64
-	var err error
-
-	if value, err = strconv.ParseFloat(v.Value, 64); err != nil {
-		v.Errors = append(v.Errors, fmt.Errorf("Invalid %s: expected %s to be a valid number", v.Name, v.Value))
-	} else if value < float64(min) {
-		v.Errors = append(v.Errors, fmt.Errorf("Invalid %s: minimum is %d", v.Name, min))
+	switch val := v.Value.(type) {
+	case int:
+		if val < min {
+			v.Errors = append(v.Errors, fmt.Errorf("Invalid %s: minimum is %d", v.Name, min))
+		}
+		break
+	default:
+		v.Errors = append(v.Errors, v.unsupportedTypeError("Min"))
 	}
 
 	return v
@@ -93,13 +127,14 @@ func (v FieldValidation) Min(min int) FieldValidation {
 
 // Max adds an error if the value is more than the given maximum
 func (v FieldValidation) Max(max int) FieldValidation {
-	var value float64
-	var err error
-
-	if value, err = strconv.ParseFloat(v.Value, 64); err != nil {
-		v.Errors = append(v.Errors, fmt.Errorf("Invalid %s: expected %s to be a valid number", v.Name, v.Value))
-	} else if value > float64(max) {
-		v.Errors = append(v.Errors, fmt.Errorf("Invalid %s: maximum is %d", v.Name, max))
+	switch val := v.Value.(type) {
+	case int:
+		if val > max {
+			v.Errors = append(v.Errors, fmt.Errorf("Invalid %s: maximum is %d", v.Name, max))
+		}
+		break
+	default:
+		v.Errors = append(v.Errors, v.unsupportedTypeError("Max"))
 	}
 
 	return v
@@ -107,9 +142,19 @@ func (v FieldValidation) Max(max int) FieldValidation {
 
 // Image adds an error if the value is not an image type
 func (v FieldValidation) Image() FieldValidation {
-	if _, ok := allowedImageTypes[v.Value]; !ok {
-		v.Errors = append(v.Errors, fmt.Errorf("Invalid %s: needs to be JPEG, PNG or GIF", v.Name))
+	switch val := v.Value.(type) {
+	case string:
+		if _, ok := allowedImageTypes[val]; !ok {
+			v.Errors = append(v.Errors, fmt.Errorf("Invalid %s: needs to be JPEG, PNG or GIF", v.Name))
+		}
+		break
+	default:
+		v.Errors = append(v.Errors, v.unsupportedTypeError("Image"))
 	}
 
 	return v
+}
+
+func (v FieldValidation) unsupportedTypeError(validator string) error {
+	return fmt.Errorf("Unsupported type for %s validator: %s", validator, reflect.TypeOf(v.Value))
 }

@@ -44,7 +44,7 @@ Feature: Images Management
       | Type     | text/csv        |
       | Property | ACME Skyscraper |
     Then the system should respond with "UNPROCESSABLE ENTITY" and the following errors:
-      | Invalid name: cannot be blank              |
+      | name is required                           |
       | Invalid size: maximum is 20971520          |
       | Invalid type: needs to be JPEG, PNG or GIF |
 
