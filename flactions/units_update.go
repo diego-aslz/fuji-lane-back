@@ -1,6 +1,7 @@
 package flactions
 
 import (
+	"errors"
 	"net/http"
 
 	"github.com/jinzhu/gorm"
@@ -89,7 +90,23 @@ func (a *UnitsUpdate) Perform(c Context) {
 		return
 	}
 
-	if err := c.Repository().Model(unit).Updates(a.toMap()).Error; err != nil {
+	updates := a.toMap()
+	if imageID, ok := updates["FloorPlanImageID"]; ok {
+		image := &flentities.Image{}
+		image.ID = imageID.(uint)
+
+		if err := c.Repository().Preload("Unit.Property").Find(image).Error; err != nil {
+			c.ServerError(err)
+			return
+		}
+
+		if image.Unit == nil || image.Unit.Property.AccountID != c.CurrentAccount().ID {
+			c.RespondError(http.StatusUnprocessableEntity, errors.New("floor plan image does not exist"))
+			return
+		}
+	}
+
+	if err := c.Repository().Model(unit).Updates(updates).Error; err != nil {
 		c.ServerError(err)
 		return
 	}

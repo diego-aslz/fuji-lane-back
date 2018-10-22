@@ -64,7 +64,8 @@ func (a *PropertiesImagesCreate) Perform(c Context) {
 		URL:        strings.Split(url, "?")[0],
 		Type:       a.Type,
 		Size:       a.Size,
-		PropertyID: int(property.ID)}
+		PropertyID: &property.ID,
+	}
 
 	if err = c.Repository().Save(image).Error; err != nil {
 		c.ServerError(err)

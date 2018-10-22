@@ -14,7 +14,8 @@ type Image struct {
 	Size       int       `json:"size"`
 	URL        string    `json:"url"`
 	Uploaded   bool      `json:"uploaded"`
-	PropertyID int       `json:"propertyID"`
-	Property   Property  `json:"-"`
-	Unit       Unit      `json:"-"`
+	PropertyID *uint     `json:"-"`
+	Property   *Property `json:"-"`
+	UnitID     *uint     `json:"-"`
+	Unit       *Unit     `json:"-"`
 }

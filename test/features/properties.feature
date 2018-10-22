@@ -73,8 +73,7 @@ Feature: Properties Management
             "type": "image/jpeg",
             "size": 1000000,
             "url": "https://s3.amazonaws.com/front.jpg",
-            "uploaded":true,
-            "propertyID":1
+            "uploaded":true
           }
         ],
         "amenities": null

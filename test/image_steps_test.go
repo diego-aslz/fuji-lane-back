@@ -19,12 +19,14 @@ import (
 type imageRow struct {
 	flentities.Image
 	Property string
+	Unit     string
 }
 
 func imageToTableRow(r *flentities.Repository, i interface{}) (interface{}, error) {
 	image := i.(*flentities.Image)
 
-	err := r.Model(i).Association("Property").Find(&image.Property).Error
+	image.Property = &flentities.Property{}
+	err := r.Model(i).Association("Property").Find(image.Property).Error
 	if err != nil && !gorm.IsRecordNotFoundError(err) {
 		return nil, err
 	}
@@ -40,7 +42,7 @@ func imageToTableRow(r *flentities.Repository, i interface{}) (interface{}, erro
 
 func tableRowToImage(r *flentities.Repository, a interface{}) (interface{}, error) {
 	row := a.(*imageRow)
-	return &row.Image, loadAssociationByName(&row.Image, "Property", row.Property)
+	return &row.Image, loadAssociationByName(&row.Image, "Property", row.Property, "Unit", row.Unit)
 }
 
 func requestPropertiesImagesCreate(table *gherkin.DataTable) error {

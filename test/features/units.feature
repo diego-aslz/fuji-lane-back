@@ -61,8 +61,8 @@ Feature: Units Management
       | Property      | Name         | Bedrooms | SizeM2 | MaxOccupancy | Count |
       | ACME Downtown | Standard Apt | 1        | 52     | 3            | 15    |
     And the following images:
-      | ID | Property      | Name          | Uploaded |
-      | 3  | ACME Downtown | blueprint.jpg | true     |
+      | ID | Unit         | Name          | Uploaded |
+      | 3  | Standard Apt | blueprint.jpg | true     |
     When I update unit "Standard Apt" with the following attributes:
       | Name                   | Std Apartment |
       | Bedrooms               | 2             |
@@ -88,9 +88,6 @@ Feature: Units Management
     And the following units:
       | Property      | Name         | Bedrooms | SizeM2 | MaxOccupancy | Count |
       | ACME Downtown | Standard Apt | 1        | 52     | 3            | 15    |
-    And the following images:
-      | ID | Property      | Name          | Uploaded |
-      | 3  | ACME Downtown | blueprint.jpg | true     |
     When I update unit "Standard Apt" with the following attributes:
       | Name     |  |
       | Bedrooms |  |
@@ -115,9 +112,6 @@ Feature: Units Management
     And the following units:
       | Property      | Name         | Bedrooms | SizeM2 | MaxOccupancy | Count |
       | ACME Downtown | Standard Apt | 1        | 52     | 3            | 15    |
-    And the following images:
-      | ID | Property      | Name          | Uploaded |
-      | 3  | ACME Downtown | blueprint.jpg | true     |
     When I update unit "Standard Apt" with the following attributes:
       | Name         | Std Apartment |
       | Bedrooms     | 2             |
@@ -128,3 +122,32 @@ Feature: Units Management
     And I should have the following units:
       | Property      | Name         | Bedrooms | SizeM2 | MaxOccupancy | Count |
       | ACME Downtown | Standard Apt | 1        | 52     | 3            | 15    |
+
+  Scenario: Updating a unit with a floor plan image that does not belong to me
+    Given the following accounts:
+      | Name  |
+      | Other |
+    And the following properties:
+      | ID | Account          | State | Name            |
+      | 1  | Diego Apartments | Draft | ACME Downtown   |
+      | 2  | Other            | Draft | ACME Apartments |
+    And the following units:
+      | Property        | Name               | Bedrooms | SizeM2 | MaxOccupancy | Count |
+      | ACME Downtown   | Standard Apt       | 1        | 52     | 3            | 15    |
+      | ACME Apartments | Standard Other Apt | 1        | 52     | 3            | 15    |
+    And the following images:
+      | ID | Unit               | Name          | Uploaded |
+      | 3  | Standard Other Apt | blueprint.jpg | true     |
+    When I update unit "Standard Apt" with the following attributes:
+      | Name             | Std Apartment |
+      | Bedrooms         | 2             |
+      | SizeM2           | 50            |
+      | MaxOccupancy     | 2             |
+      | Count            | 20            |
+      | FloorPlanImageID | 3             |
+    Then the system should respond with "UNPROCESSABLE ENTITY" and the following errors:
+      | floor plan image does not exist |
+    And I should have the following units:
+      | Property        | Name               | Bedrooms | SizeM2 | MaxOccupancy | Count |
+      | ACME Downtown   | Standard Apt       | 1        | 52     | 3            | 15    |
+      | ACME Apartments | Standard Other Apt | 1        | 52     | 3            | 15    |
