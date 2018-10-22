@@ -10,7 +10,7 @@ import (
 type City struct {
 	gorm.Model `json:"-"`
 	Name       string  `json:"name"`
-	CountryID  int     `json:"countryID"`
+	CountryID  uint    `json:"countryID"`
 	Country    Country `json:"-"`
 }
 

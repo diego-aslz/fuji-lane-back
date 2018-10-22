@@ -33,7 +33,7 @@ type PropertiesUpdateBody struct {
 	Address1        *string         `json:"address1"`
 	Address2        *string         `json:"address2"`
 	Address3        *string         `json:"address3"`
-	CityID          *int            `json:"cityID"`
+	CityID          *uint           `json:"cityID"`
 	PostalCode      *string         `json:"postalCode"`
 	MinimumStay     *string         `json:"minimumStay"`
 	Deposit         *string         `json:"deposit"`

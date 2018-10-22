@@ -12,7 +12,7 @@ type AccountsCreateBody struct {
 	UserName  string `json:"userName"`
 	Name      string `json:"name"`
 	Phone     string `json:"phone"`
-	CountryID int    `json:"countryID"`
+	CountryID uint   `json:"countryID"`
 }
 
 // AccountsCreate is reponsible for creating new accounts

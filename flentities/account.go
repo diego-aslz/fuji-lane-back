@@ -10,6 +10,6 @@ type Account struct {
 	Name       string   `json:"name"`
 	Phone      *string  `json:"phone"`
 	Status     int      `json:"-"`
-	CountryID  *int     `json:"countryID"`
+	CountryID  *uint    `json:"countryID"`
 	Country    *Country `json:"-"`
 }

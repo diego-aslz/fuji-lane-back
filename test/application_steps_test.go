@@ -48,6 +48,7 @@ func setupApplication() {
 	assist.RegisterParser(true, boolParser)
 	assist.RegisterParser(refStr("a"), strPtrParser)
 	assist.RegisterParser(refInt(1), intPtrParser)
+	assist.RegisterParser(refUint(1), uintPtrParser)
 
 	facebookClient = &mockedFacebookClient{tokens: map[string]flservices.FacebookTokenDetails{}}
 	application = flweb.NewApplication(facebookClient)
@@ -166,6 +167,20 @@ func intPtrParser(raw string) (interface{}, error) {
 	}
 
 	return &i, nil
+}
+
+func uintPtrParser(raw string) (interface{}, error) {
+	if raw == "" {
+		return nil, nil
+	}
+
+	i, err := strconv.Atoi(raw)
+	if err != nil {
+		return nil, err
+	}
+
+	ui := uint(i)
+	return &ui, nil
 }
 
 func itIsCurrently(timeExpr string) (err error) {

@@ -24,9 +24,9 @@ type Property struct {
 	Address2        *string    `json:"address2"`
 	Address3        *string    `json:"address3"`
 	PostalCode      *string    `json:"postalCode"`
-	CityID          *int       `json:"cityID"`
+	CityID          *uint      `json:"cityID"`
 	City            *City      `json:"-"`
-	CountryID       *int       `json:"countryID"`
+	CountryID       *uint      `json:"countryID"`
 	Country         *Country   `json:"-"`
 	Images          []*Image   `json:"images"`
 	MinimumStay     *string    `json:"minimumStay"`
