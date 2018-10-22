@@ -26,19 +26,19 @@ const (
 	CitiesPath = "/cities"
 	// CountriesPath for listing countries
 	CountriesPath = "/countries"
-	// ImagePath for accessing a specific image
+	// ImagePath to access a specific image
 	ImagePath = "/images/:id"
-	// ImagesPath for accessing images
+	// ImagesPath to access images
 	ImagesPath = "/images"
 	// ImagesUploadedPath for marking an image as uploaded
 	ImagesUploadedPath = "/images/:id/uploaded"
-	// PropertiesPath for properties management
+	// PropertiesPath to access properties
 	PropertiesPath = "/properties"
-	// PropertyPath to show property details
+	// PropertyPath to access a specific property
 	PropertyPath = "/properties/:id"
-	// UnitPath for accessing an individual unit
+	// UnitPath to access a specific unit
 	UnitPath = "/unit/:id"
-	// UnitsPath for accessing units
+	// UnitsPath to access units
 	UnitsPath = "/units"
 )
 
@@ -46,21 +46,26 @@ const (
 func (a *Application) AddRoutes(e *gin.Engine) {
 	a.route(e.GET, StatusPath, a.status)
 
-	a.route(e.POST, SignUpPath, a.signUp)
-	a.route(e.POST, SignInPath, a.signIn)
-	a.route(e.POST, FacebookSignInPath, a.facebookSignIn)
 	a.route(e.GET, RenewSessionPath, a.renewSession)
+	a.route(e.POST, FacebookSignInPath, a.facebookSignIn)
+	a.route(e.POST, SignInPath, a.signIn)
+	a.route(e.POST, SignUpPath, a.signUp)
+
+	a.route(e.GET, CitiesPath, a.citiesList)
+	a.route(e.GET, CountriesPath, a.countriesList)
 
 	a.route(e.POST, AccountsPath, a.accountsCreate)
-	a.route(e.GET, CountriesPath, a.countriesList)
+
 	a.route(e.GET, AmenityTypesPath, a.amenityTypesList)
-	a.route(e.GET, CitiesPath, a.citiesList)
-	a.route(e.POST, PropertiesPath, a.propertiesCreate)
+
 	a.route(e.GET, PropertyPath, a.propertiesShow)
+	a.route(e.POST, PropertiesPath, a.propertiesCreate)
 	a.route(e.PUT, PropertyPath, a.propertiesUpdate)
+
+	a.route(e.DELETE, ImagePath, a.imagesDestroy)
 	a.route(e.POST, ImagesPath, a.imagesCreate)
 	a.route(e.PUT, ImagesUploadedPath, a.imagesUploaded)
-	a.route(e.DELETE, ImagePath, a.imagesDestroy)
+
 	a.route(e.POST, UnitsPath, a.unitsCreate)
 	a.route(e.PUT, UnitPath, a.unitsUpdate)
 }
