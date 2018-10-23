@@ -1,6 +1,7 @@
 package flactions
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 	"strings"
@@ -16,6 +17,7 @@ import (
 // ImagesCreateBody is the request body for creating a property image
 type ImagesCreateBody struct {
 	PropertyID uint   `json:"propertyID"`
+	UnitID     uint   `json:"unitID"`
 	Name       string `json:"name"`
 	Size       int    `json:"size"`
 	Type       string `json:"type"`
@@ -40,18 +42,14 @@ type ImagesCreate struct {
 func (a *ImagesCreate) Perform(c Context) {
 	account := c.CurrentAccount()
 
-	property := &flentities.Property{}
-	err := c.Repository().Find(property, map[string]interface{}{"id": a.PropertyID, "account_id": account.ID}).Error
-	if gorm.IsRecordNotFoundError(err) {
-		c.RespondNotFound()
-		return
-	}
-	if err != nil {
-		c.ServerError(err)
-		return
+	collection := "properties"
+	id := a.PropertyID
+	if a.UnitID > 0 {
+		collection = "units"
+		id = a.UnitID
 	}
 
-	path := fmt.Sprintf("properties/%d/images/%s", a.PropertyID, flutils.GenerateRandomString(30, c.RandomSource()))
+	path := fmt.Sprintf("%s/%d/images/%s", collection, id, flutils.GenerateRandomString(30, c.RandomSource()))
 	url, err := a.GenerateURLToUploadPublicFile(path, a.Type, a.Size)
 
 	if err != nil {
@@ -61,11 +59,41 @@ func (a *ImagesCreate) Perform(c Context) {
 
 	a.Name = strings.Replace(a.Name, "/", "", -1)
 	image := &flentities.Image{
-		Name:       a.Name,
-		URL:        strings.Split(url, "?")[0],
-		Type:       a.Type,
-		Size:       a.Size,
-		PropertyID: &property.ID,
+		Name: a.Name,
+		URL:  strings.Split(url, "?")[0],
+		Type: a.Type,
+		Size: a.Size,
+	}
+
+	if a.PropertyID > 0 {
+		property := &flentities.Property{}
+		err := c.Repository().Find(property, map[string]interface{}{"id": a.PropertyID, "account_id": account.ID}).Error
+		if gorm.IsRecordNotFoundError(err) {
+			c.RespondError(http.StatusUnprocessableEntity, errors.New("Could not find Property"))
+			return
+		}
+		if err != nil {
+			c.ServerError(err)
+			return
+		}
+		image.PropertyID = &property.ID
+
+	} else if a.UnitID > 0 {
+		unit := &flentities.Unit{}
+		err := c.Repository().Preload("Property").Find(unit, map[string]interface{}{"id": a.UnitID}).Error
+		if gorm.IsRecordNotFoundError(err) || unit.Property == nil || unit.Property.AccountID != c.CurrentAccount().ID {
+			c.RespondError(http.StatusUnprocessableEntity, errors.New("Could not find Unit"))
+			return
+		}
+		if err != nil {
+			c.ServerError(err)
+			return
+		}
+		image.UnitID = &unit.ID
+
+	} else {
+		c.RespondError(http.StatusUnprocessableEntity, errors.New("Please provide either a Property or a Unit"))
+		return
 	}
 
 	if err = c.Repository().Save(image).Error; err != nil {

@@ -24,6 +24,7 @@ type imageRow struct {
 
 func imageToTableRow(r *flentities.Repository, i interface{}) (interface{}, error) {
 	image := i.(*flentities.Image)
+	row := &imageRow{Image: *image}
 
 	image.Property = &flentities.Property{}
 	err := r.Model(i).Association("Property").Find(image.Property).Error
@@ -31,11 +32,17 @@ func imageToTableRow(r *flentities.Repository, i interface{}) (interface{}, erro
 		return nil, err
 	}
 
-	row := &imageRow{Image: *image}
-
 	if image.Property.Name != nil {
 		row.Property = *image.Property.Name
 	}
+
+	image.Unit = &flentities.Unit{}
+	err = r.Model(i).Association("Unit").Find(image.Unit).Error
+	if err != nil && !gorm.IsRecordNotFoundError(err) {
+		return nil, err
+	}
+
+	row.Unit = image.Unit.Name
 
 	return row, nil
 }
@@ -45,19 +52,28 @@ func tableRowToImage(r *flentities.Repository, a interface{}) (interface{}, erro
 	return &row.Image, loadAssociationByName(&row.Image, "Property", row.Property, "Unit", row.Unit)
 }
 
-func requestPropertiesImagesCreate(table *gherkin.DataTable) error {
+func requestImagesCreate(table *gherkin.DataTable) error {
 	image, err := assist.ParseMap(table)
 	if err != nil {
 		return err
 	}
 
-	property := &flentities.Property{}
-	if err := findByName(property, image["Property"]); err != nil {
-		return err
+	body := flactions.ImagesCreateBody{}
+
+	if name, ok := image["Property"]; ok {
+		property := &flentities.Property{}
+		if err := findByName(property, name); err != nil {
+			return err
+		}
+		body.PropertyID = property.ID
+	} else {
+		unit := &flentities.Unit{}
+		if err := findByName(unit, image["Unit"]); err != nil {
+			return err
+		}
+		body.UnitID = unit.ID
 	}
 
-	body := flactions.ImagesCreateBody{}
-	body.PropertyID = property.ID
 	body.Name = image["Name"]
 	body.Size, err = strconv.Atoi(image["Size"])
 	body.Type = image["Type"]
@@ -115,7 +131,7 @@ func ImageContext(s *godog.Suite) {
 	s.Step(`^I should have the following images:$`, assertDatabaseRecordsStep(&[]*flentities.Image{}, imageToTableRow))
 	s.Step(`^the following images:$`, createFromTableStep(new(imageRow), tableRowToImage))
 	s.Step(`^I mark image "([^"]*)" as uploaded$`, requestImagesUploaded)
-	s.Step(`^I request an URL to upload the following image:$`, requestPropertiesImagesCreate)
+	s.Step(`^I request an URL to upload the following image:$`, requestImagesCreate)
 	s.Step(`^I remove the image "([^"]*)"$`, requestPropertiesImagesDestroy)
 	s.Step(`^I should have no images$`, assertNoDatabaseRecordsStep(&flentities.Image{}))
 	s.Step(`^the system should respond with "([^"]*)" and the following image:$`, assertResponseStatusAndImage)

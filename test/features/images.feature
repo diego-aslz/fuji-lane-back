@@ -4,7 +4,7 @@ Feature: Images Management
     Given the following configuration:
       | MAX_IMAGE_SIZE_MB | 20 |
 
-  Scenario: Obtaining a signed URL to upload a property image
+  Scenario Outline: Adding an image
     Given the following accounts:
       | Name             |
       | Diego Apartments |
@@ -12,20 +12,28 @@ Feature: Images Management
       | Account          | Email              | Name                 |
       | Diego Apartments | diego@selzlein.com | Diego Aguir Selzlein |
     And the following properties:
-      | ID | Account          | Name            |
-      | 20 | Diego Apartments | ACME Skyscraper |
+      | ID   | Account          | Name            |
+      | <ID> | Diego Apartments | ACME Skyscraper |
+    And the following units:
+      | ID   | Property        | Name         |
+      | <ID> | ACME Skyscraper | Standard Apt |
     And I am authenticated with "diego@selzlein.com"
     When I request an URL to upload the following image:
-      | Name     | build/ing.jpg   |
-      | Size     | 15000000        |
-      | Type     | image/jpeg      |
-      | Property | ACME Skyscraper |
+      | Name     | build/ing.jpg |
+      | Size     | 15000000      |
+      | Type     | image/jpeg    |
+      | <Target> | <Name>        |
     Then the system should respond with "OK" and the following image:
-      | Name | building.jpg                                                                                                                                                                                                                                                                                     |
-      | URL  | https://fujilane-test.s3.amazonaws.com/public/properties/20/images/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=CREDENTIAL&X-Amz-Date=DATE&X-Amz-Expires=3600&X-Amz-SignedHeaders=content-length%3Bcontent-type%3Bhost%3Bx-amz-acl&X-Amz-Signature=SIGNATURE |
+      | Name | building.jpg                                                                                                                                                                                                                                                                                         |
+      | URL  | https://fujilane-test.s3.amazonaws.com/public/<Collection>/<ID>/images/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=CREDENTIAL&X-Amz-Date=DATE&X-Amz-Expires=3600&X-Amz-SignedHeaders=content-length%3Bcontent-type%3Bhost%3Bx-amz-acl&X-Amz-Signature=SIGNATURE |
     And I should have the following images:
-      | Property        | Name         | URL                                                                                               | Uploaded | Type       | Size     |
-      | ACME Skyscraper | building.jpg | https://fujilane-test.s3.amazonaws.com/public/properties/20/images/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa | false    | image/jpeg | 15000000 |
+      | <Target> | Name         | URL                                                                                                   | Uploaded | Type       | Size     |
+      | <Name>   | building.jpg | https://fujilane-test.s3.amazonaws.com/public/<Collection>/<ID>/images/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa | false    | image/jpeg | 15000000 |
+
+    Examples:
+      | Target   | Name            | Collection | ID |
+      | Property | ACME Skyscraper | properties | 20 |
+      | Unit     | Standard Apt    | units      | 25 |
 
   Scenario: Validating file size
     Given the following accounts:
@@ -67,7 +75,7 @@ Feature: Images Management
     Then the system should respond with "PRECONDITION REQUIRED" and the following errors:
       | You need a company account to perform this action |
 
-  Scenario: Obtaining a signed URL to upload a property image for a property I don't have access to
+  Scenario Outline: Adding an image to a target I don't have access to
     Given the following accounts:
       | Name                |
       | Somebody Apartments |
@@ -78,13 +86,22 @@ Feature: Images Management
     And the following properties:
       | Account             | Name            |
       | Somebody Apartments | ACME Skyscraper |
+    And the following units:
+      | Property        | Name         |
+      | ACME Skyscraper | Standard Apt |
     And I am authenticated with "diego@selzlein.com"
     When I request an URL to upload the following image:
-      | Name     | building.jpg    |
-      | Size     | 15000000        |
-      | Type     | image/png       |
+      | Name     | building.jpg |
+      | Size     | 15000000     |
+      | Type     | image/png    |
+      | <Target> | <Name>       |
+    Then the system should respond with "UNPROCESSABLE ENTITY" and the following errors:
+      | Could not find <Target> |
+
+    Examples:
+      | Target   | Name            |
       | Property | ACME Skyscraper |
-    Then the system should respond with "NOT FOUND"
+      | Unit     | Standard Apt    |
 
   Scenario: Marking an image as uploaded
     Given the following accounts:
