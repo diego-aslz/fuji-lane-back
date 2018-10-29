@@ -76,7 +76,7 @@ Feature: Properties Management
             "uploaded":true
           }
         ],
-        "amenities": null
+        "amenities": []
       }
       """
 
