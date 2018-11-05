@@ -18,6 +18,17 @@ type unitRow struct {
 	Property string
 }
 
+func requestUnitsShow(name string) error {
+	unit := &flentities.Unit{}
+	if err := findByName(unit, name); err != nil {
+		return err
+	}
+
+	url := strings.Replace(flweb.UnitPath, ":id", fmt.Sprint(unit.ID), 1)
+
+	return performGETStep(url)()
+}
+
 func requestUnitsCreate(table *gherkin.DataTable) error {
 	unit, err := assist.ParseMap(table)
 	if err != nil {
@@ -106,10 +117,34 @@ func unitToTableRow(r *flentities.Repository, a interface{}) (interface{}, error
 	return row, nil
 }
 
+func updateUnit(name string, table *gherkin.DataTable) error {
+	unit := &flentities.Unit{}
+	if err := findByName(unit, name); err != nil {
+		return err
+	}
+
+	tbl, err := assist.ParseMap(table)
+	if err != nil {
+		return err
+	}
+
+	updates := map[string]interface{}{}
+	updates["FloorPlanImageID"], err = strconv.Atoi(tbl["FloorPlanImageID"])
+	if err != nil {
+		return err
+	}
+
+	return flentities.WithRepository(func(r *flentities.Repository) error {
+		return r.Model(unit).Updates(updates).Error
+	})
+}
+
 func UnitContext(s *godog.Suite) {
+	s.Step(`^unit "([^"]*)" has:$`, updateUnit)
 	s.Step(`^the following units:$`, createFromTableStep(new(unitRow), tableRowToUnit))
 	s.Step(`^I add the following unit:$`, requestUnitsCreate)
 	s.Step(`^I update unit "([^"]*)" with the following attributes:$`, requestUnitsUpdate)
 	s.Step(`^I should have the following units:$`, assertDatabaseRecordsStep(&[]*flentities.Unit{}, unitToTableRow))
 	s.Step(`^I should have no units$`, assertNoDatabaseRecordsStep(&flentities.Unit{}))
+	s.Step(`^I get details for unit "([^"]*)"$`, requestUnitsShow)
 }

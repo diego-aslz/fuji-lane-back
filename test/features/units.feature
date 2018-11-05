@@ -151,3 +151,56 @@ Feature: Units Management
       | Property        | Name               | Bedrooms | SizeM2 | MaxOccupancy | Count |
       | ACME Downtown   | Standard Apt       | 1        | 52     | 3            | 15    |
       | ACME Apartments | Standard Other Apt | 1        | 52     | 3            | 15    |
+
+  Scenario: Getting unit details
+    Given the following properties:
+      | ID | Account          | State | Name          |
+      | 1  | Diego Apartments | Draft | ACME Downtown |
+    And the following units:
+      | ID | Property      | Name         | Bedrooms | SizeM2 | MaxOccupancy | Count | BasePriceCents | OneNightPriceCents | OneWeekPriceCents | ThreeMonthsPriceCents | SixMonthsPriceCents | TwelveMonthsPriceCents |
+      | 2  | ACME Downtown | Standard Apt | 1        | 52     | 3            | 15    | 12000          | 11000              | 40000             | 350000                | 650000              | 1200000                |
+    And the following images:
+      | ID | Unit         | Name          | Uploaded | URL                                | Type       | Size |
+      | 3  | Standard Apt | blueprint.jpg | true     | https://s3.amazonaws.com/front.jpg | image/jpeg | 5000 |
+    And unit "Standard Apt" has:
+      | FloorPlanImageID | 3 |
+    When I get details for unit "Standard Apt"
+    Then the system should respond with "OK" and the following JSON:
+      """
+      {
+        "id": 2,
+        "propertyID": 1,
+        "name": "Standard Apt",
+        "bedrooms": 1,
+        "sizeM2": 52,
+        "maxOccupancy": 3,
+        "count": 15,
+        "basePriceCents": 12000,
+        "oneNightPriceCents": 11000,
+        "oneWeekPriceCents": 40000,
+        "threeMonthsPriceCents": 350000,
+        "sixMonthsPriceCents": 650000,
+        "twelveMonthsPriceCents": 1200000,
+        "floorPlanImage": {
+          "id": 3,
+          "name": "blueprint.jpg",
+          "type": "image/jpeg",
+          "size": 5000,
+          "url": "https://s3.amazonaws.com/front.jpg",
+          "uploaded": true
+        }
+      }
+      """
+
+  Scenario: Getting unit details for a unit the user does not have access to
+    Given the following accounts:
+      | Name            |
+      | John Apartments |
+    And the following properties:
+      | Account         | State | Name          |
+      | John Apartments | Draft | ACME Downtown |
+    And the following units:
+      | ID | Property      | Name         | Bedrooms | SizeM2 | MaxOccupancy | Count |
+      | 2  | ACME Downtown | Standard Apt | 1        | 52     | 3            | 15    |
+    When I get details for unit "Standard Apt"
+    Then the system should respond with "NOT FOUND"

@@ -8,7 +8,7 @@ import (
 	"github.com/nerde/fuji-lane-back/flentities"
 )
 
-// PropertiesShow creates properties that can hold units
+// PropertiesShow exposes details for a property
 type PropertiesShow struct{}
 
 // Perform executes the action
@@ -17,6 +17,7 @@ func (a *PropertiesShow) Perform(c Context) {
 
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
+		c.Diagnostics().AddError(err)
 		c.RespondNotFound()
 		return
 	}

@@ -37,7 +37,7 @@ const (
 	// PropertyPath to access a specific property
 	PropertyPath = "/properties/:id"
 	// UnitPath to access a specific unit
-	UnitPath = "/unit/:id"
+	UnitPath = "/units/:id"
 	// UnitsPath to access units
 	UnitsPath = "/units"
 )
@@ -66,6 +66,7 @@ func (a *Application) AddRoutes(e *gin.Engine) {
 	a.route(e.POST, ImagesPath, a.imagesCreate)
 	a.route(e.PUT, ImagesUploadedPath, a.imagesUploaded)
 
+	a.route(e.GET, UnitPath, a.unitsShow)
 	a.route(e.POST, UnitsPath, a.unitsCreate)
 	a.route(e.PUT, UnitPath, a.unitsUpdate)
 }
@@ -181,6 +182,13 @@ func (a *Application) unitsUpdate(c *Context) {
 			authenticateUser(
 				loadActionBody(
 					performAction))))(c)
+}
+
+func (a *Application) unitsShow(c *Context) {
+	withAction(&flactions.UnitsShow{},
+		withRepository(
+			authenticateUser(
+				performAction)))(c)
 }
 
 func (a *Application) imagesUploaded(c *Context) {
