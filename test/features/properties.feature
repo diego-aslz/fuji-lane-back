@@ -45,6 +45,9 @@ Feature: Properties Management
       | 1  | ACME Downtown | true     | front.jpg | https://s3.amazonaws.com/front.jpg | image/jpeg | 1000000 |
       | 2  | ACME Downtown | false    | back.jpg  | https://s3.amazonaws.com/back.jpg  | image/jpeg | 1000000 |
       | 3  | Other Prop    | true     | front.jpg | https://s3.amazonaws.com/front.jpg | image/jpeg | 1000000 |
+    And the following amenities:
+      | Property      | Type |
+      | ACME Downtown | gym  |
     When I get details for property "ACME Downtown"
     Then the system should respond with "OK" and the following JSON:
       """
@@ -76,7 +79,12 @@ Feature: Properties Management
             "uploaded":true
           }
         ],
-        "amenities": []
+        "amenities": [
+          {
+            "type": "gym",
+            "name": null
+          }
+        ]
       }
       """
 

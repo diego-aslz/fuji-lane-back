@@ -31,7 +31,7 @@ var AmenityTypes = []*AmenityType{
 
 // Amenity associates a Property or Unit to an amenity type
 type Amenity struct {
-	ID         uint      `json:"id"`
+	ID         uint      `json:"-"`
 	CreatedAt  time.Time `json:"-"`
 	PropertyID *uint     `json:"-"`
 	Property   *Property `json:"-"`

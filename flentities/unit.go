@@ -24,4 +24,5 @@ type Unit struct {
 	TwelveMonthsPriceCents *int       `json:"twelveMonthsPriceCents"`
 	FloorPlanImageID       *uint      `json:"-"`
 	FloorPlanImage         *Image     `json:"floorPlanImage"`
+	Amenities              []*Amenity `json:"amenities"`
 }

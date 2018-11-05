@@ -164,6 +164,9 @@ Feature: Units Management
       | 3  | Standard Apt | blueprint.jpg | true     | https://s3.amazonaws.com/front.jpg | image/jpeg | 5000 |
     And unit "Standard Apt" has:
       | FloorPlanImageID | 3 |
+    And the following amenities:
+      | Unit         | Type      |
+      | Standard Apt | bathrobes |
     When I get details for unit "Standard Apt"
     Then the system should respond with "OK" and the following JSON:
       """
@@ -188,7 +191,13 @@ Feature: Units Management
           "size": 5000,
           "url": "https://s3.amazonaws.com/front.jpg",
           "uploaded": true
-        }
+        },
+        "amenities": [
+          {
+            "type": "bathrobes",
+            "name": null
+          }
+        ]
       }
       """
 
