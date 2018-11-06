@@ -81,27 +81,6 @@ Feature: Units Management
       | Property      | Name          | Bedrooms | SizeM2 | MaxOccupancy | Count | BasePriceCents | OneNightPriceCents | OneWeekPriceCents | ThreeMonthsPriceCents | SixMonthsPriceCents | TwelveMonthsPriceCents | FloorPlanImageID |
       | ACME Downtown | Std Apartment | 2        | 50     | 2            | 20    | 12000          | 11000              | 40000             | 350000                | 650000              | 1200000                | 3                |
 
-  Scenario: Updating a unit with invalid attributes
-    Given the following properties:
-      | ID | Account          | State | Name          |
-      | 1  | Diego Apartments | Draft | ACME Downtown |
-    And the following units:
-      | Property      | Name         | Bedrooms | SizeM2 | MaxOccupancy | Count |
-      | ACME Downtown | Standard Apt | 1        | 52     | 3            | 15    |
-    When I update unit "Standard Apt" with the following attributes:
-      | Name     |  |
-      | Bedrooms |  |
-      | SizeM2   |  |
-      | Count    |  |
-    Then the system should respond with "UNPROCESSABLE ENTITY" and the following errors:
-      | name is required                |
-      | bedrooms is required            |
-      | size is required                |
-      | number of unit type is required |
-    And I should have the following units:
-      | Property      | Name         | Bedrooms | SizeM2 | MaxOccupancy | Count |
-      | ACME Downtown | Standard Apt | 1        | 52     | 3            | 15    |
-
   Scenario: Updating a unit that does not belong to me
     Given the following accounts:
       | Name  |
@@ -151,6 +130,35 @@ Feature: Units Management
       | Property        | Name               | Bedrooms | SizeM2 | MaxOccupancy | Count |
       | ACME Downtown   | Standard Apt       | 1        | 52     | 3            | 15    |
       | ACME Apartments | Standard Other Apt | 1        | 52     | 3            | 15    |
+
+  Scenario: Updating unit amenities
+    Given the following properties:
+      | ID | Account          | State | Name          |
+      | 1  | Diego Apartments | Draft | ACME Downtown |
+    And the following units:
+      | Property      | Name         | Bedrooms | SizeM2 | MaxOccupancy | Count |
+      | ACME Downtown | Standard Apt | 1        | 52     | 3            | 15    |
+    And the following amenities:
+      | Unit         | Type      |
+      | Standard Apt | bathrobes |
+      | Standard Apt | desk      |
+    And the following amenities:
+      | Unit         | Type   | Name   |
+      | Standard Apt | custom | Towels |
+      | Standard Apt | custom | Soap   |
+    When I update unit "Standard Apt" with the following amenities:
+      | Type             | Name             |
+      | desk             | Desk             |
+      | air_conditioning | Air Conditioning |
+      | custom           | Soap             |
+      | custom           | Windows          |
+    Then the system should respond with "OK"
+    And I should have the following amenities:
+      | Unit         | Type             | Name    |
+      | Standard Apt | desk             |         |
+      | Standard Apt | custom           | Soap    |
+      | Standard Apt | air_conditioning |         |
+      | Standard Apt | custom           | Windows |
 
   Scenario: Getting unit details
     Given the following properties:

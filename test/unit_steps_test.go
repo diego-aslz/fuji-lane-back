@@ -139,11 +139,31 @@ func updateUnit(name string, table *gherkin.DataTable) error {
 	})
 }
 
+func requestUnitsUpdateWithAmenities(name string, table *gherkin.DataTable) error {
+	b, err := assist.CreateSlice(new(flactions.AmenityBody), table)
+	if err != nil {
+		return err
+	}
+
+	unit := &flentities.Unit{}
+	if err = findByName(unit, name); err != nil {
+		return err
+	}
+
+	amenities := b.([]*flactions.AmenityBody)
+	updateBody := &flactions.UnitsUpdateBody{}
+	updateBody.Amenities = amenities
+	body, err := bodyFromObject(updateBody)
+
+	return perform("PUT", strings.Replace(flweb.UnitPath, ":id", fmt.Sprint(unit.ID), 1), body)
+}
+
 func UnitContext(s *godog.Suite) {
 	s.Step(`^unit "([^"]*)" has:$`, updateUnit)
 	s.Step(`^the following units:$`, createFromTableStep(new(unitRow), tableRowToUnit))
 	s.Step(`^I add the following unit:$`, requestUnitsCreate)
 	s.Step(`^I update unit "([^"]*)" with the following attributes:$`, requestUnitsUpdate)
+	s.Step(`^I update unit "([^"]*)" with the following amenities:$`, requestUnitsUpdateWithAmenities)
 	s.Step(`^I should have the following units:$`, assertDatabaseRecordsStep(&[]*flentities.Unit{}, unitToTableRow))
 	s.Step(`^I should have no units$`, assertNoDatabaseRecordsStep(&flentities.Unit{}))
 	s.Step(`^I get details for unit "([^"]*)"$`, requestUnitsShow)

@@ -22,17 +22,20 @@ type UnitsUpdateBody struct {
 	SixMonthsPriceCents    int    `json:"sixMonthsPriceCents"`
 	TwelveMonthsPriceCents int    `json:"twelveMonthsPriceCents"`
 	FloorPlanImageID       uint   `json:"floorPlainImageID"`
+	bodyWithAmenities
 }
 
 func (b *UnitsUpdateBody) toMap() (updates map[string]interface{}) {
 	updates = map[string]interface{}{}
 
-	updates["name"] = b.Name
-	updates["bedrooms"] = b.Bedrooms
-	updates["sizeM2"] = b.SizeM2
-	updates["count"] = b.Count
+	if b.Name != "" {
+		updates["name"] = b.Name
+	}
 
 	optionals := map[string]uint{
+		"bedrooms":               uint(b.Bedrooms),
+		"sizeM2":                 uint(b.SizeM2),
+		"count":                  uint(b.Count),
 		"MaxOccupancy":           uint(b.MaxOccupancy),
 		"BasePriceCents":         uint(b.BasePriceCents),
 		"OneNightPriceCents":     uint(b.OneNightPriceCents),
@@ -53,16 +56,6 @@ func (b *UnitsUpdateBody) toMap() (updates map[string]interface{}) {
 	return
 }
 
-// Validate the request body
-func (b *UnitsUpdateBody) Validate() []error {
-	return flentities.ValidateFields(
-		flentities.ValidateField("name", b.Name).Required(),
-		flentities.ValidateField("bedrooms", b.Bedrooms).Required(),
-		flentities.ValidateField("size", b.SizeM2).Required(),
-		flentities.ValidateField("number of unit type", b.Count).Required(),
-	)
-}
-
 // UnitsUpdate creates a new Unit
 type UnitsUpdate struct {
 	UnitsUpdateBody
@@ -73,7 +66,7 @@ func (a *UnitsUpdate) Perform(c Context) {
 	unit := &flentities.Unit{}
 
 	conditions := map[string]interface{}{"id": c.Param("id")}
-	err := c.Repository().Preload("Property").Find(unit, conditions).Error
+	err := c.Repository().Preload("Property").Preload("Amenities").Find(unit, conditions).Error
 	if gorm.IsRecordNotFoundError(err) {
 		c.Diagnostics().AddQuoted("reason", "Could not find unit")
 		c.RespondNotFound()
@@ -106,10 +99,37 @@ func (a *UnitsUpdate) Perform(c Context) {
 		}
 	}
 
-	if err := c.Repository().Model(unit).Updates(updates).Error; err != nil {
-		c.ServerError(err)
-		return
-	}
+	c.Repository().Transaction(func(tx *flentities.Repository) {
+		amenitiesToDelete, amenitiesToCreate := a.amenitiesDiff(unit.Amenities)
 
-	c.Respond(http.StatusOK, unit)
+		for _, am := range amenitiesToDelete {
+			if err := tx.Delete(am).Error; err != nil {
+				tx.Rollback()
+				c.ServerError(err)
+				return
+			}
+		}
+
+		for _, am := range amenitiesToCreate {
+			am.UnitID = &unit.ID
+			if err := tx.Create(am).Error; err != nil {
+				tx.Rollback()
+				c.ServerError(err)
+				return
+			}
+		}
+
+		if err := tx.Model(unit).Updates(updates).Error; err != nil {
+			tx.Rollback()
+			c.ServerError(err)
+			return
+		}
+
+		if err := tx.Commit().Error; err != nil {
+			c.ServerError(err)
+			return
+		}
+
+		c.Respond(http.StatusOK, unit)
+	})
 }

@@ -41,7 +41,9 @@ func requestPropertiesUpdateWithAmenities(id string, table *gherkin.DataTable) e
 	}
 
 	amenities := b.([]*flactions.AmenityBody)
-	body, err := bodyFromObject(&flactions.PropertiesUpdateBody{Amenities: &amenities})
+	updateBody := &flactions.PropertiesUpdateBody{}
+	updateBody.Amenities = amenities
+	body, err := bodyFromObject(updateBody)
 
 	return perform("PUT", strings.Replace(flweb.PropertyPath, ":id", id, 1), body)
 }
