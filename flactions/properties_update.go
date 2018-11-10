@@ -104,7 +104,7 @@ func (a *PropertiesUpdate) Perform(c Context) {
 			return
 		}
 
-		c.Respond(http.StatusOK, nil)
+		c.Respond(http.StatusOK, property)
 	})
 }
 
