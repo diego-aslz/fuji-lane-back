@@ -1,6 +1,7 @@
 package fujilane
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -71,8 +72,9 @@ func assertResponseStatusAndJSON(status string, rawJSON *gherkin.DocString) erro
 	}
 
 	if !reflect.DeepEqual(expectedBody, actualBody) {
-		return fmt.Errorf("Response body does not match:\nResponse: %s\nExpected: %s", response.Body.String(),
-			rawJSON.Content)
+		indented := &bytes.Buffer{}
+		json.Indent(indented, []byte(response.Body.String()), "", "  ")
+		return fmt.Errorf("Response body does not match:\nResponse: %s\nExpected: %s", indented.String(), rawJSON.Content)
 	}
 
 	return nil
