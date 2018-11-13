@@ -25,4 +25,5 @@ type Unit struct {
 	FloorPlanImageID       *uint      `json:"-"`
 	FloorPlanImage         *Image     `json:"floorPlanImage"`
 	Amenities              []*Amenity `json:"amenities"`
+	Images                 []*Image   `json:"images"`
 }

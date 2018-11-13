@@ -26,7 +26,7 @@ func (a *UnitsShow) Perform(c Context) {
 	conditions := map[string]interface{}{"id": id}
 
 	unit := &flentities.Unit{}
-	err = c.Repository().Preload("FloorPlanImage").Preload("Amenities").Where(conditions).Where(
+	err = c.Repository().Preload("FloorPlanImage").Preload("Amenities").Preload("Images").Where(conditions).Where(
 		"property_id IN (?)", userProperties.Select("id").QueryExpr()).Find(unit).Error
 
 	if err != nil {
