@@ -103,7 +103,30 @@ Feature: Images Management
       | Property | ACME Skyscraper |
       | Unit     | Standard Apt    |
 
-  Scenario: Marking an image as uploaded
+  Scenario: Marking a unit image as uploaded
+    Given the following accounts:
+      | Name             |
+      | Diego Apartments |
+    And the following users:
+      | Account          | Email              | Name                 |
+      | Diego Apartments | diego@selzlein.com | Diego Aguir Selzlein |
+    And the following properties:
+      | Account          | Name            |
+      | Diego Apartments | ACME Skyscraper |
+    And the following units:
+      | Property        | Name         |
+      | ACME Skyscraper | Standard Apt |
+    And the following images:
+      | Unit         | Name         | URL                                                                                               | Uploaded |
+      | Standard Apt | building.jpg | https://fujilane-test.s3.amazonaws.com/public/properties/20/images/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa | false    |
+    And I am authenticated with "diego@selzlein.com"
+    When I mark image "building.jpg" as uploaded
+    Then the system should respond with "OK"
+    And I should have the following images:
+      | Name         | Uploaded |
+      | building.jpg | true     |
+
+  Scenario: Marking a unit image as uploaded
     Given the following accounts:
       | Name             |
       | Diego Apartments |
@@ -123,7 +146,7 @@ Feature: Images Management
       | Name         | Uploaded |
       | building.jpg | true     |
 
-  Scenario: Removing an image
+  Scenario: Removing a property image
     Given the following accounts:
       | Name             |
       | Diego Apartments |
@@ -136,6 +159,27 @@ Feature: Images Management
     And the following images:
       | Property        | Name         | URL                                                                                               |
       | ACME Skyscraper | building.jpg | https://fujilane-test.s3.amazonaws.com/public/properties/20/images/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa |
+    And I am authenticated with "diego@selzlein.com"
+    When I remove the image "building.jpg"
+    Then the system should respond with "OK"
+    And I should have no images
+
+  Scenario: Removing an unit image
+    Given the following accounts:
+      | Name             |
+      | Diego Apartments |
+    And the following users:
+      | Account          | Email              | Name                 |
+      | Diego Apartments | diego@selzlein.com | Diego Aguir Selzlein |
+    And the following properties:
+      | Account          | Name            |
+      | Diego Apartments | ACME Skyscraper |
+    And the following units:
+      | Property        | Name         |
+      | ACME Skyscraper | Standard Apt |
+    And the following images:
+      | Unit         | Name         | URL                                                                                               |
+      | Standard Apt | building.jpg | https://fujilane-test.s3.amazonaws.com/public/properties/20/images/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa |
     And I am authenticated with "diego@selzlein.com"
     When I remove the image "building.jpg"
     Then the system should respond with "OK"

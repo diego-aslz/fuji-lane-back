@@ -19,7 +19,7 @@ func (a *ImagesDestroy) Perform(c Context) {
 
 	id := c.Param("id")
 	image := &flentities.Image{}
-	err := c.Repository().Preload("Property").Find(image, map[string]interface{}{"id": id}).Error
+	err := c.Repository().Preload("Property").Preload("Unit.Property").Find(image, map[string]interface{}{"id": id}).Error
 	if gorm.IsRecordNotFoundError(err) {
 		c.Diagnostics().AddQuoted("reason", "Could not find Image")
 		c.RespondNotFound()
@@ -30,7 +30,14 @@ func (a *ImagesDestroy) Perform(c Context) {
 		return
 	}
 
-	if uint(image.Property.AccountID) != account.ID {
+	var imageAccountID uint
+	if image.Property != nil {
+		imageAccountID = image.Property.AccountID
+	} else {
+		imageAccountID = image.Unit.Property.AccountID
+	}
+
+	if imageAccountID != account.ID {
 		c.Diagnostics().AddQuoted("reason", "Image belongs to another account")
 		c.RespondNotFound()
 		return
