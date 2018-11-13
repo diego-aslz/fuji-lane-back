@@ -26,7 +26,7 @@ func (a *UnitsShow) Perform(c Context) {
 	conditions := map[string]interface{}{"id": id}
 
 	unit := &flentities.Unit{}
-	err = c.Repository().Preload("FloorPlanImage").Preload("Amenities").Preload("Images").Where(conditions).Where(
+	err = c.Repository().Preload("Amenities").Preload("Images").Where(conditions).Where(
 		"property_id IN (?)", userProperties.Select("id").QueryExpr()).Find(unit).Error
 
 	if err != nil {
@@ -38,11 +38,13 @@ func (a *UnitsShow) Perform(c Context) {
 		return
 	}
 
-	if unit.FloorPlanImage != nil {
+	if unit.FloorPlanImageID != nil {
 		filteredImages := unit.Images[:0]
 
 		for _, img := range unit.Images {
-			if img.ID != *unit.FloorPlanImageID {
+			if img.ID == *unit.FloorPlanImageID {
+				unit.FloorPlanImage = img
+			} else {
 				filteredImages = append(filteredImages, img)
 			}
 		}

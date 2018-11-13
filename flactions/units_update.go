@@ -21,7 +21,7 @@ type UnitsUpdateBody struct {
 	ThreeMonthsPriceCents  int    `json:"threeMonthsPriceCents"`
 	SixMonthsPriceCents    int    `json:"sixMonthsPriceCents"`
 	TwelveMonthsPriceCents int    `json:"twelveMonthsPriceCents"`
-	FloorPlanImageID       uint   `json:"floorPlainImageID"`
+	FloorPlanImageID       uint   `json:"floorPlanImageID"`
 	bodyWithAmenities
 }
 
@@ -33,9 +33,9 @@ func (b *UnitsUpdateBody) toMap() (updates map[string]interface{}) {
 	}
 
 	optionals := map[string]uint{
-		"bedrooms":               uint(b.Bedrooms),
-		"sizeM2":                 uint(b.SizeM2),
-		"count":                  uint(b.Count),
+		"Bedrooms":               uint(b.Bedrooms),
+		"SizeM2":                 uint(b.SizeM2),
+		"Count":                  uint(b.Count),
 		"MaxOccupancy":           uint(b.MaxOccupancy),
 		"BasePriceCents":         uint(b.BasePriceCents),
 		"OneNightPriceCents":     uint(b.OneNightPriceCents),
