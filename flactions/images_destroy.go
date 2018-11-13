@@ -43,12 +43,12 @@ func (a *ImagesDestroy) Perform(c Context) {
 		return
 	}
 
-	if err = a.DeleteFile(image.URL); err != nil {
+	if err = c.Repository().RemoveImage(image); err != nil {
 		c.ServerError(err)
 		return
 	}
 
-	if err = c.Repository().Delete(image).Error; err != nil {
+	if err = a.DeleteFile(image.URL); err != nil {
 		c.ServerError(err)
 		return
 	}

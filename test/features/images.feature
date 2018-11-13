@@ -185,6 +185,39 @@ Feature: Images Management
     Then the system should respond with "OK"
     And I should have no images
 
+  Scenario: Removing a floor plan image
+    Given the following accounts:
+      | Name             |
+      | Diego Apartments |
+    And the following users:
+      | Account          | Email              | Name                 |
+      | Diego Apartments | diego@selzlein.com | Diego Aguir Selzlein |
+    And the following properties:
+      | Account          | Name            |
+      | Diego Apartments | ACME Skyscraper |
+    And the following units:
+      | Property        | Name         |
+      | ACME Skyscraper | Standard Apt |
+      | ACME Skyscraper | Double Apt   |
+    And the following images:
+      | ID | Unit         | Name          | URL                                                                                               |
+      | 3  | Standard Apt | building3.jpg | https://fujilane-test.s3.amazonaws.com/public/properties/20/images/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa |
+      | 4  | Double Apt   | building4.jpg | https://fujilane-test.s3.amazonaws.com/public/properties/20/images/bbbbbbbbbbbbbbbbbbbbbbbbbbbbbb |
+    And unit "Standard Apt" has:
+      | FloorPlanImageID | 3 |
+    And unit "Double Apt" has:
+      | FloorPlanImageID | 4 |
+    And I am authenticated with "diego@selzlein.com"
+    When I remove the image "building3.jpg"
+    Then the system should respond with "OK"
+    And I should have the following images:
+      | Name          |
+      | building4.jpg |
+    And I should have the following units:
+      | Property        | Name         | FloorPlanImageID |
+      | ACME Skyscraper | Standard Apt |                  |
+      | ACME Skyscraper | Double Apt   | 4                |
+
   Scenario: Removing an image that does not belong to me
     Given the following accounts:
       | Name             |

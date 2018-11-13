@@ -48,6 +48,27 @@ func (r *Repository) SignUp(email, password string) (u *User, err error) {
 	return u, r.Create(u).Error
 }
 
+// RemoveImage removes an image and nullifies references
+func (r *Repository) RemoveImage(image *Image) (err error) {
+	r.Transaction(func(t *Repository) {
+		err = t.Table("units").Where(map[string]interface{}{"floor_plan_image_id": image.ID}).
+			Updates(map[string]interface{}{"floor_plan_image_id": nil}).Error
+		if err != nil {
+			t.Rollback()
+			return
+		}
+
+		err = t.Delete(image).Error
+		if err != nil {
+			t.Rollback()
+			return
+		}
+
+		err = t.Commit().Error
+	})
+	return
+}
+
 // Transaction calls the callback function with a transactional Repository. Any panics will be rolled back
 func (r *Repository) Transaction(fn func(*Repository)) {
 	tx := r.Begin()

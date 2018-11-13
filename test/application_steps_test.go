@@ -123,7 +123,12 @@ func intPtrComparer(raw string, rawActual interface{}) error {
 }
 
 func uintPtrComparer(raw string, rawActual interface{}) error {
-	actual := fmt.Sprint(derefUint(rawActual.(*uint)))
+	actual := ""
+	actualUint := rawActual.(*uint)
+	if actualUint != nil {
+		actual = fmt.Sprint(*actualUint)
+	}
+
 	if raw == actual {
 		return nil
 	}
