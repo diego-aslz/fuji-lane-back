@@ -200,14 +200,7 @@ Feature: Units Management
           "url": "https://s3.amazonaws.com/front.jpg",
           "uploaded": true
         },
-        "images": [{
-          "id": 3,
-          "name": "blueprint.jpg",
-          "type": "image/jpeg",
-          "size": 5000,
-          "url": "https://s3.amazonaws.com/front.jpg",
-          "uploaded": true
-        }],
+        "images": [],
         "amenities": [
           {
             "type": "bathrobes",

@@ -38,5 +38,17 @@ func (a *UnitsShow) Perform(c Context) {
 		return
 	}
 
+	if unit.FloorPlanImage != nil {
+		filteredImages := unit.Images[:0]
+
+		for _, img := range unit.Images {
+			if img.ID != *unit.FloorPlanImageID {
+				filteredImages = append(filteredImages, img)
+			}
+		}
+
+		unit.Images = filteredImages
+	}
+
 	c.Respond(http.StatusOK, unit)
 }
