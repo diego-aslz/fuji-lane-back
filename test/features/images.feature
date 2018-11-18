@@ -3,15 +3,15 @@ Feature: Images Management
   Background:
     Given the following configuration:
       | MAX_IMAGE_SIZE_MB | 20 |
-
-  Scenario Outline: Adding an image
-    Given the following accounts:
+    And the following accounts:
       | Name             |
       | Diego Apartments |
     And the following users:
       | Account          | Email              | Name                 |
       | Diego Apartments | diego@selzlein.com | Diego Aguir Selzlein |
-    And the following properties:
+
+  Scenario Outline: Adding an image
+    Given the following properties:
       | ID   | Account          | Name            |
       | <ID> | Diego Apartments | ACME Skyscraper |
     And the following units:
@@ -37,13 +37,7 @@ Feature: Images Management
       | Unit     | Standard Apt    | units      | 25 |
 
   Scenario: Validating file size
-    Given the following accounts:
-      | Name             |
-      | Diego Apartments |
-    And the following users:
-      | Account          | Email              | Name                 |
-      | Diego Apartments | diego@selzlein.com | Diego Aguir Selzlein |
-    And the following properties:
+    Given the following properties:
       | ID | Account          | Name            |
       | 20 | Diego Apartments | ACME Skyscraper |
     And I am authenticated with "diego@selzlein.com"
@@ -63,12 +57,12 @@ Feature: Images Management
       | Name                |
       | Somebody Apartments |
     And the following users:
-      | Email              | Name                 |
-      | diego@selzlein.com | Diego Aguir Selzlein |
+      | Email               | Name  |
+      | noaccount@gmail.com | Diego |
     And the following properties:
       | Account             | Name            |
       | Somebody Apartments | ACME Skyscraper |
-    And I am authenticated with "diego@selzlein.com"
+    And I am authenticated with "noaccount@gmail.com"
     When I request an URL to upload the following image:
       | Name     | building.jpg    |
       | Size     | 15000000        |
@@ -82,10 +76,6 @@ Feature: Images Management
     Given the following accounts:
       | Name                |
       | Somebody Apartments |
-      | Diego Apartments    |
-    And the following users:
-      | Account          | Email              | Name                 |
-      | Diego Apartments | diego@selzlein.com | Diego Aguir Selzlein |
     And the following properties:
       | Account             | Name            |
       | Somebody Apartments | ACME Skyscraper |
@@ -108,13 +98,7 @@ Feature: Images Management
       | Unit     | Standard Apt    |
 
   Scenario: Marking a unit image as uploaded
-    Given the following accounts:
-      | Name             |
-      | Diego Apartments |
-    And the following users:
-      | Account          | Email              | Name                 |
-      | Diego Apartments | diego@selzlein.com | Diego Aguir Selzlein |
-    And the following properties:
+    Given the following properties:
       | Account          | Name            |
       | Diego Apartments | ACME Skyscraper |
     And the following units:
@@ -131,13 +115,7 @@ Feature: Images Management
       | building.jpg | true     |
 
   Scenario: Marking a unit image as uploaded
-    Given the following accounts:
-      | Name             |
-      | Diego Apartments |
-    And the following users:
-      | Account          | Email              | Name                 |
-      | Diego Apartments | diego@selzlein.com | Diego Aguir Selzlein |
-    And the following properties:
+    Given the following properties:
       | Account          | Name            |
       | Diego Apartments | ACME Skyscraper |
     And the following images:
@@ -151,13 +129,7 @@ Feature: Images Management
       | building.jpg | true     |
 
   Scenario: Removing a property image
-    Given the following accounts:
-      | Name             |
-      | Diego Apartments |
-    And the following users:
-      | Account          | Email              | Name                 |
-      | Diego Apartments | diego@selzlein.com | Diego Aguir Selzlein |
-    And the following properties:
+    Given the following properties:
       | Account          | Name            |
       | Diego Apartments | ACME Skyscraper |
     And the following images:
@@ -169,13 +141,7 @@ Feature: Images Management
     And I should have no images
 
   Scenario: Removing an unit image
-    Given the following accounts:
-      | Name             |
-      | Diego Apartments |
-    And the following users:
-      | Account          | Email              | Name                 |
-      | Diego Apartments | diego@selzlein.com | Diego Aguir Selzlein |
-    And the following properties:
+    Given the following properties:
       | Account          | Name            |
       | Diego Apartments | ACME Skyscraper |
     And the following units:
@@ -190,13 +156,7 @@ Feature: Images Management
     And I should have no images
 
   Scenario: Removing a floor plan image
-    Given the following accounts:
-      | Name             |
-      | Diego Apartments |
-    And the following users:
-      | Account          | Email              | Name                 |
-      | Diego Apartments | diego@selzlein.com | Diego Aguir Selzlein |
-    And the following properties:
+    Given the following properties:
       | Account          | Name            |
       | Diego Apartments | ACME Skyscraper |
     And the following units:
@@ -224,12 +184,8 @@ Feature: Images Management
 
   Scenario: Removing an image that does not belong to me
     Given the following accounts:
-      | Name             |
-      | Diego Apartments |
-      | Other Acc        |
-    And the following users:
-      | Account          | Email              | Name                 |
-      | Diego Apartments | diego@selzlein.com | Diego Aguir Selzlein |
+      | Name      |
+      | Other Acc |
     And the following properties:
       | Account   | Name            |
       | Other Acc | ACME Skyscraper |
