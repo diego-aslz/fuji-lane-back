@@ -59,7 +59,7 @@ func assertDatabaseRecordsStep(slice interface{}, decorators ...entityDecorator)
 
 func assertDatabaseRecords(slice interface{}, table *gherkin.DataTable, decorators ...entityDecorator) error {
 	return flentities.WithRepository(func(r *flentities.Repository) error {
-		err := r.Find(slice).Error
+		err := r.Order("id").Find(slice).Error
 		if err != nil {
 			return err
 		}

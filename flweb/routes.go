@@ -28,6 +28,8 @@ const (
 	CountriesPath = "/countries"
 	// ImagePath to access a specific image
 	ImagePath = "/images/:id"
+	// ImagesSortPath to access images
+	ImagesSortPath = "/images/sort"
 	// ImagesPath to access images
 	ImagesPath = "/images"
 	// ImagesUploadedPath for marking an image as uploaded
@@ -64,6 +66,7 @@ func (a *Application) AddRoutes(e *gin.Engine) {
 
 	a.route(e.DELETE, ImagePath, a.imagesDestroy)
 	a.route(e.POST, ImagesPath, a.imagesCreate)
+	a.route(e.POST, ImagesSortPath, a.imagesSort)
 	a.route(e.PUT, ImagesUploadedPath, a.imagesUploaded)
 
 	a.route(e.GET, UnitPath, a.unitsShow)
@@ -189,6 +192,14 @@ func (a *Application) unitsShow(c *Context) {
 		withRepository(
 			authenticateUser(
 				performAction)))(c)
+}
+
+func (a *Application) imagesSort(c *Context) {
+	withAction(&flactions.ImagesSort{},
+		withRepository(
+			authenticateUser(
+				requireAccount(
+					performAction))))(c)
 }
 
 func (a *Application) imagesUploaded(c *Context) {

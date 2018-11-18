@@ -198,3 +198,40 @@ Feature: Images Management
     And I should have the following images:
       | Name         |
       | building.jpg |
+
+  Scenario: Sorting my images
+    Given the following properties:
+      | ID | Account          | Name            |
+      | 5  | Diego Apartments | ACME Skyscraper |
+    And the following images:
+      | ID | Position | Property        | Name      | URL                                                                                               |
+      | 5  | 1        | ACME Skyscraper | front.jpg | https://fujilane-test.s3.amazonaws.com/public/properties/20/images/aaa |
+      | 10 | 2        | ACME Skyscraper | back.jpg  | https://fujilane-test.s3.amazonaws.com/public/properties/20/images/bbb |
+    And I am authenticated with "diego@selzlein.com"
+    When I sort images to be like:
+      | back.jpg  |
+      | front.jpg |
+    Then I should have the following images:
+      | ID | Position | Name      |
+      | 5  | 2        | front.jpg |
+      | 10 | 1        | back.jpg  |
+
+  Scenario: Sorting images that do not belong to me
+    Given the following accounts:
+      | Name      |
+      | Other Acc |
+    And the following properties:
+      | Account   | Name            |
+      | Other Acc | ACME Skyscraper |
+    And the following images:
+      | ID | Position | Property        | Name      | URL                                                                                               |
+      | 5  | 1        | ACME Skyscraper | front.jpg | https://fujilane-test.s3.amazonaws.com/public/properties/20/images/aaa |
+      | 10 | 2        | ACME Skyscraper | back.jpg  | https://fujilane-test.s3.amazonaws.com/public/properties/20/images/bbb |
+    And I am authenticated with "diego@selzlein.com"
+    When I sort images to be like:
+      | back.jpg  |
+      | front.jpg |
+    Then I should have the following images:
+      | ID | Position | Name      |
+      | 5  | 1        | front.jpg |
+      | 10 | 2        | back.jpg  |

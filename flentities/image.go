@@ -20,3 +20,8 @@ type Image struct {
 	Unit       *Unit     `json:"-"`
 	Position   int       `json:"position"`
 }
+
+// BelongsTo determines if this image belongs to the given account by its ID
+func (i Image) BelongsTo(accountID uint) bool {
+	return i.Property != nil && i.Property.AccountID == accountID || i.Unit != nil && i.Unit.Property != nil && i.Unit.Property.AccountID == accountID
+}

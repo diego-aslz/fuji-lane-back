@@ -101,6 +101,24 @@ func requestImagesUploaded(name string) error {
 	return perform("PUT", path, nil)
 }
 
+func requestImagesSort(table *gherkin.DataTable) error {
+	ids := []uint{}
+	for _, row := range table.Rows {
+		image := &flentities.Image{}
+		if err := findByName(image, row.Cells[0].Value); err != nil {
+			return err
+		}
+		ids = append(ids, image.ID)
+	}
+
+	body, err := bodyFromObject(ids)
+	if err != nil {
+		return err
+	}
+
+	return perform("POST", flweb.ImagesSortPath, body)
+}
+
 func requestPropertiesImagesDestroy(name string) error {
 	image := &flentities.Image{}
 	if err := findByName(image, name); err != nil {
@@ -136,6 +154,7 @@ func ImageContext(s *godog.Suite) {
 	s.Step(`^I should have the following images:$`, assertDatabaseRecordsStep(&[]*flentities.Image{}, imageToTableRow))
 	s.Step(`^the following images:$`, createFromTableStep(new(imageRow), tableRowToImage))
 	s.Step(`^I mark image "([^"]*)" as uploaded$`, requestImagesUploaded)
+	s.Step(`^I sort images to be like:$`, requestImagesSort)
 	s.Step(`^I request an URL to upload the following image:$`, requestImagesCreate)
 	s.Step(`^I remove the image "([^"]*)"$`, requestPropertiesImagesDestroy)
 	s.Step(`^I should have no images$`, assertNoDatabaseRecordsStep(&flentities.Image{}))

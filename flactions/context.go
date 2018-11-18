@@ -13,6 +13,8 @@ type Context interface {
 	Diagnostics() *fldiagnostics.Diagnostics
 	Now() time.Time
 
+	BindJSON(interface{}) error
+
 	CurrentAccount() *flentities.Account
 	CurrentUser() *flentities.User
 	CurrentSession() *flentities.Session
