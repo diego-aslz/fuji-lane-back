@@ -53,7 +53,7 @@ func (a *UnitsCreate) Perform(c Context) {
 		Property:     property,
 		Name:         a.Name,
 		Bedrooms:     a.Bedrooms,
-		SizeM2:       &a.SizeM2,
+		SizeM2:       a.SizeM2,
 		MaxOccupancy: &a.MaxOccupancy,
 		Count:        a.Count,
 	}
