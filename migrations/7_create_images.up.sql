@@ -8,7 +8,8 @@ CREATE TABLE images(
   url varchar not null,
   property_id integer references properties,
   unit_id integer references units check (property_id is not null or unit_id is not null),
-  uploaded boolean default false
+  uploaded boolean default false,
+  position smallint
 );
 
 ALTER TABLE units ADD floor_plan_image_id int references images;

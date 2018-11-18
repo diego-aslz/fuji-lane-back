@@ -41,10 +41,11 @@ Feature: Properties Management
       | 1  | Diego Apartments | Draft | ACME Downtown | Add. One | Add. Two | Add. Three | Osaka | 223344     | Japan   | 3           | 300     | 50       | IGU            | Ines          | Pharmacy        | Good place |
       | 2  | Other            | Draft | Other Prop    | Add. One | Add. Two | Add. Three | Osaka | 223344     | Japan   | 4           | 350     | 50       | IGU            | Ines          | Restaurant      | Nice place |
     And the following images:
-      | ID | Property      | Uploaded | Name      | URL                                | Type       | Size    |
-      | 1  | ACME Downtown | true     | front.jpg | https://s3.amazonaws.com/front.jpg | image/jpeg | 1000000 |
-      | 2  | ACME Downtown | false    | back.jpg  | https://s3.amazonaws.com/back.jpg  | image/jpeg | 1000000 |
-      | 3  | Other Prop    | true     | front.jpg | https://s3.amazonaws.com/front.jpg | image/jpeg | 1000000 |
+      | ID | Property      | Uploaded | Name      | URL                                | Type       | Size    | Position |
+      | 1  | ACME Downtown | true     | front.jpg | https://s3.amazonaws.com/front.jpg | image/jpeg | 1000000 | 2        |
+      | 2  | ACME Downtown | false    | back.jpg  | https://s3.amazonaws.com/back.jpg  | image/jpeg | 1000000 | 2        |
+      | 3  | Other Prop    | true     | front.jpg | https://s3.amazonaws.com/front.jpg | image/jpeg | 1000000 | 2        |
+      | 4  | ACME Downtown | true     | back.jpg  | https://s3.amazonaws.com/back.jpg  | image/jpeg | 1000000 | 1        |
     And the following amenities:
       | Property      | Type |
       | ACME Downtown | gym  |
@@ -71,12 +72,21 @@ Feature: Properties Management
         "overview": "Good place",
         "images": [
           {
+            "id": 4,
+            "name": "back.jpg",
+            "type": "image/jpeg",
+            "size": 1000000,
+            "url": "https://s3.amazonaws.com/back.jpg",
+            "uploaded": true,
+            "position": 1
+          }, {
             "id": 1,
             "name": "front.jpg",
             "type": "image/jpeg",
             "size": 1000000,
             "url": "https://s3.amazonaws.com/front.jpg",
-            "uploaded":true
+            "uploaded": true,
+            "position": 2
           }
         ],
         "amenities": [

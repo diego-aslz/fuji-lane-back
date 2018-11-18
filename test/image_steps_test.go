@@ -75,9 +75,14 @@ func requestImagesCreate(table *gherkin.DataTable) error {
 	}
 
 	body.Name = image["Name"]
-	body.Size, err = strconv.Atoi(image["Size"])
 	body.Type = image["Type"]
 
+	body.Size, err = strconv.Atoi(image["Size"])
+	if err != nil {
+		return err
+	}
+
+	body.Position, err = strconv.Atoi(image["Position"])
 	if err != nil {
 		return err
 	}

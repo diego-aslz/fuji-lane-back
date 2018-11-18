@@ -21,6 +21,7 @@ type ImagesCreateBody struct {
 	Name       string `json:"name"`
 	Size       int    `json:"size"`
 	Type       string `json:"type"`
+	Position   int    `json:"position"`
 }
 
 // Validate the request body
@@ -59,10 +60,11 @@ func (a *ImagesCreate) Perform(c Context) {
 
 	a.Name = strings.Replace(a.Name, "/", "", -1)
 	image := &flentities.Image{
-		Name: a.Name,
-		URL:  strings.Split(url, "?")[0],
-		Type: a.Type,
-		Size: a.Size,
+		Name:     a.Name,
+		URL:      strings.Split(url, "?")[0],
+		Type:     a.Type,
+		Size:     a.Size,
+		Position: a.Position,
 	}
 
 	if a.PropertyID > 0 {

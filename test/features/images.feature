@@ -23,12 +23,13 @@ Feature: Images Management
       | Size     | 15000000      |
       | Type     | image/jpeg    |
       | <Target> | <Name>        |
+      | Position | 3             |
     Then the system should respond with "OK" and the following image:
       | Name | building.jpg                                                                                                                                                                                                                                                                                         |
       | URL  | https://fujilane-test.s3.amazonaws.com/public/<Collection>/<ID>/images/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=CREDENTIAL&X-Amz-Date=DATE&X-Amz-Expires=3600&X-Amz-SignedHeaders=content-length%3Bcontent-type%3Bhost%3Bx-amz-acl&X-Amz-Signature=SIGNATURE |
     And I should have the following images:
-      | <Target> | Name         | URL                                                                                                   | Uploaded | Type       | Size     |
-      | <Name>   | building.jpg | https://fujilane-test.s3.amazonaws.com/public/<Collection>/<ID>/images/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa | false    | image/jpeg | 15000000 |
+      | <Target> | Name         | URL                                                                                                   | Uploaded | Type       | Size     | Position |
+      | <Name>   | building.jpg | https://fujilane-test.s3.amazonaws.com/public/<Collection>/<ID>/images/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa | false    | image/jpeg | 15000000 | 3        |
 
     Examples:
       | Target   | Name            | Collection | ID |
@@ -51,6 +52,7 @@ Feature: Images Management
       | Size     | 25000000        |
       | Type     | text/csv        |
       | Property | ACME Skyscraper |
+      | Position | 1               |
     Then the system should respond with "UNPROCESSABLE ENTITY" and the following errors:
       | name is required                           |
       | Invalid size: maximum is 20971520          |
@@ -72,6 +74,7 @@ Feature: Images Management
       | Size     | 15000000        |
       | Type     | image/png       |
       | Property | ACME Skyscraper |
+      | Position | 1               |
     Then the system should respond with "PRECONDITION REQUIRED" and the following errors:
       | You need a company account to perform this action |
 
@@ -95,6 +98,7 @@ Feature: Images Management
       | Size     | 15000000     |
       | Type     | image/png    |
       | <Target> | <Name>       |
+      | Position | 1            |
     Then the system should respond with "UNPROCESSABLE ENTITY" and the following errors:
       | Could not find <Target> |
 

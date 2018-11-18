@@ -168,8 +168,11 @@ Feature: Units Management
       | ID | Property      | Name         | Bedrooms | SizeM2 | MaxOccupancy | Count | BasePriceCents | OneNightPriceCents | OneWeekPriceCents | ThreeMonthsPriceCents | SixMonthsPriceCents | TwelveMonthsPriceCents |
       | 2  | ACME Downtown | Standard Apt | 1        | 52     | 3            | 15    | 12000          | 11000              | 40000             | 350000                | 650000              | 1200000                |
     And the following images:
-      | ID | Unit         | Name          | Uploaded | URL                                | Type       | Size |
-      | 3  | Standard Apt | blueprint.jpg | true     | https://s3.amazonaws.com/front.jpg | image/jpeg | 5000 |
+      | ID | Unit         | Name          | Uploaded | URL                                 | Type       | Size | Position |
+      | 3  | Standard Apt | blueprint.jpg | true     | https://s3.amazonaws.com/blue.jpg   | image/jpeg | 5000 | 0        |
+      | 4  | Standard Apt | front.jpg     | true     | https://s3.amazonaws.com/front.jpg  | image/jpeg | 5000 | 2        |
+      | 5  | Standard Apt | back.jpg      | true     | https://s3.amazonaws.com/back.jpg   | image/jpeg | 5000 | 1        |
+      | 6  | Standard Apt | failed.jpg    | false    | https://s3.amazonaws.com/failed.jpg | image/jpeg | 5000 | 3        |
     And unit "Standard Apt" has:
       | FloorPlanImageID | 3 |
     And the following amenities:
@@ -197,10 +200,29 @@ Feature: Units Management
           "name": "blueprint.jpg",
           "type": "image/jpeg",
           "size": 5000,
-          "url": "https://s3.amazonaws.com/front.jpg",
-          "uploaded": true
+          "url": "https://s3.amazonaws.com/blue.jpg",
+          "uploaded": true,
+          "position": 0
         },
-        "images": [],
+        "images": [
+          {
+            "id": 5,
+            "name": "back.jpg",
+            "type": "image/jpeg",
+            "size": 5000,
+            "url": "https://s3.amazonaws.com/back.jpg",
+            "uploaded": true,
+            "position": 1
+          }, {
+            "id": 4,
+            "name": "front.jpg",
+            "type": "image/jpeg",
+            "size": 5000,
+            "url": "https://s3.amazonaws.com/front.jpg",
+            "uploaded": true,
+            "position": 2
+          }
+        ],
         "amenities": [
           {
             "type": "bathrobes",

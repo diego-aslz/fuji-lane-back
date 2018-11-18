@@ -26,8 +26,8 @@ func (a *UnitsShow) Perform(c Context) {
 	conditions := map[string]interface{}{"id": id}
 
 	unit := &flentities.Unit{}
-	err = c.Repository().Preload("Amenities").Preload("Images").Where(conditions).Where(
-		"property_id IN (?)", userProperties.Select("id").QueryExpr()).Find(unit).Error
+	err = c.Repository().Preload("Amenities").Preload("Images", flentities.Image{Uploaded: true}, imagesDefaultOrder).
+		Where(conditions).Where("property_id IN (?)", userProperties.Select("id").QueryExpr()).Find(unit).Error
 
 	if err != nil {
 		if gorm.IsRecordNotFoundError(err) {
