@@ -31,7 +31,7 @@ type Property struct {
 	Latitude        float32    `json:"latitude"`
 	Longitude       float32    `json:"longitude"`
 	Images          []*Image   `json:"images"`
-	MinimumStay     *string    `json:"minimumStay"`
+	MinimumStay     *int       `json:"minimumStay"`
 	Deposit         *string    `json:"deposit"`
 	Cleaning        *string    `json:"cleaning"`
 	NearestAirport  *string    `json:"nearestAirport"`

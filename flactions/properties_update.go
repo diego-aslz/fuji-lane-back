@@ -18,7 +18,7 @@ type PropertiesUpdateBody struct {
 	Latitude        *float32 `json:"latitude"`
 	Longitude       *float32 `json:"longitude"`
 	PostalCode      *string  `json:"postalCode"`
-	MinimumStay     *string  `json:"minimumStay"`
+	MinimumStay     *int     `json:"minimumStay"`
 	Deposit         *string  `json:"deposit"`
 	Cleaning        *string  `json:"cleaning"`
 	NearestAirport  *string  `json:"nearestAirport"`
@@ -83,6 +83,10 @@ func (a *PropertiesUpdate) Perform(c Context) {
 		updates["longitude"] = *a.Longitude
 	}
 
+	if a.MinimumStay != nil {
+		updates["MinimumStay"] = *a.MinimumStay
+	}
+
 	c.Repository().Transaction(func(tx *flentities.Repository) {
 		amenitiesToDelete, amenitiesToCreate := a.amenitiesDiff(property.Amenities)
 
@@ -125,7 +129,6 @@ func (a *PropertiesUpdate) bodyMap() map[string]*string {
 		"address2":         a.Address2,
 		"address3":         a.Address3,
 		"postal_code":      a.PostalCode,
-		"minimum_stay":     a.MinimumStay,
 		"deposit":          a.Deposit,
 		"cleaning":         a.Cleaning,
 		"nearest_airport":  a.NearestAirport,

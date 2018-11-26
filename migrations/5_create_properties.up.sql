@@ -14,7 +14,7 @@ CREATE TABLE properties(
   country_id int references countries,
   latitude decimal,
   longitude decimal,
-  minimum_stay varchar,
+  minimum_stay smallint,
   deposit varchar,
   cleaning varchar,
   nearest_airport varchar,

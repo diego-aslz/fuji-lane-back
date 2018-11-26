@@ -65,7 +65,7 @@ Feature: Properties Management
         "countryID":  2,
         "latitude": 0,
         "longitude": 0,
-        "minimumStay": "3",
+        "minimumStay": 3,
         "deposit": "300",
         "cleaning": "50",
         "nearestAirport": "IGU",
@@ -121,7 +121,7 @@ Feature: Properties Management
       | Address3        | Add. Three    |
       | CityID          | 3             |
       | PostalCode      | 223344        |
-      | MinimumStay     | 3 days        |
+      | MinimumStay     | 3             |
       | Deposit         | 150           |
       | Cleaning        | daily         |
       | NearestAirport  | IGU           |
@@ -133,7 +133,7 @@ Feature: Properties Management
     Then the system should respond with "OK"
     And I should have the following properties:
       | Account          | State | Name          | Address1 | Address2 | Address3   | City  | PostalCode | Country | MinimumStay | Deposit | Cleaning | NearestAirport | NearestSubway | NearbyLocations | Overview   | Latitude | Longitude |
-      | Diego Apartments | draft | ACME Downtown | Add. One | Add. Two | Add. Three | Osaka | 223344     | Japan   | 3 days      | 150     | daily    | IGU            | Central Park  | Pharmacy        | Nice place | 34.69374 | 135.50218 |
+      | Diego Apartments | draft | ACME Downtown | Add. One | Add. Two | Add. Three | Osaka | 223344     | Japan   | 3           | 150     | daily    | IGU            | Central Park  | Pharmacy        | Nice place | 34.69374 | 135.50218 |
 
   Scenario: Updating a property that does not belong to me
     Given the following accounts:
