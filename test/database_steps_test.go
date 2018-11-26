@@ -158,6 +158,14 @@ func refInt(i int) *int {
 	return &i
 }
 
+func refFloat(f float32) *float32 {
+	if f == 0 {
+		return nil
+	}
+
+	return &f
+}
+
 func refTime(t time.Time) *time.Time {
 	if t.IsZero() {
 		return nil

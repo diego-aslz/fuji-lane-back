@@ -12,6 +12,8 @@ CREATE TABLE properties(
   city_id int references cities,
   postal_code varchar,
   country_id int references countries,
+  latitude decimal,
+  longitude decimal,
   minimum_stay varchar,
   deposit varchar,
   cleaning varchar,

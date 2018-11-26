@@ -43,11 +43,13 @@ func setupApplication() {
 	assist.RegisterComparer(uint(0), uintComparer)
 	assist.RegisterComparer(refStr("a"), strPtrComparer)
 	assist.RegisterComparer(refInt(1), intPtrComparer)
+	assist.RegisterComparer(float32(1.0), floatComparer)
 	assist.RegisterComparer(refUint(1), uintPtrComparer)
 	assist.RegisterParser(uint(0), uintParser)
 	assist.RegisterParser(true, boolParser)
 	assist.RegisterParser(refStr("a"), strPtrParser)
 	assist.RegisterParser(refInt(1), intPtrParser)
+	assist.RegisterParser(refFloat(1), floatPtrParser)
 	assist.RegisterParser(refUint(1), uintPtrParser)
 
 	facebookClient = &mockedFacebookClient{tokens: map[string]flservices.FacebookTokenDetails{}}
@@ -122,6 +124,22 @@ func intPtrComparer(raw string, rawActual interface{}) error {
 	return fmt.Errorf("Expected %s, but got %s", raw, actual)
 }
 
+func floatComparer(raw string, rawActual interface{}) error {
+	expected, err := floatPtrParser(raw)
+	if err != nil {
+		return err
+	}
+
+	f := expected.(*float32)
+	ac := rawActual.(float32)
+
+	if *f == ac {
+		return nil
+	}
+
+	return fmt.Errorf("Expected %s, but got %f", raw, ac)
+}
+
 func uintPtrComparer(raw string, rawActual interface{}) error {
 	actual := ""
 	actualUint := rawActual.(*uint)
@@ -172,6 +190,21 @@ func intPtrParser(raw string) (interface{}, error) {
 	}
 
 	return &i, nil
+}
+
+func floatPtrParser(raw string) (interface{}, error) {
+	if raw == "" {
+		return nil, nil
+	}
+
+	i, err := strconv.ParseFloat(raw, 32)
+	if err != nil {
+		return nil, err
+	}
+
+	f := float32(i)
+
+	return &f, nil
 }
 
 func uintPtrParser(raw string) (interface{}, error) {

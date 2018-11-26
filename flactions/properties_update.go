@@ -10,19 +10,21 @@ import (
 
 // PropertiesUpdateBody is the request body for creating a property image
 type PropertiesUpdateBody struct {
-	Name            *string `json:"name"`
-	Address1        *string `json:"address1"`
-	Address2        *string `json:"address2"`
-	Address3        *string `json:"address3"`
-	CityID          *uint   `json:"cityID"`
-	PostalCode      *string `json:"postalCode"`
-	MinimumStay     *string `json:"minimumStay"`
-	Deposit         *string `json:"deposit"`
-	Cleaning        *string `json:"cleaning"`
-	NearestAirport  *string `json:"nearestAirport"`
-	NearestSubway   *string `json:"nearestSubway"`
-	NearbyLocations *string `json:"nearbyLocations"`
-	Overview        *string `json:"overview"`
+	Name            *string  `json:"name"`
+	Address1        *string  `json:"address1"`
+	Address2        *string  `json:"address2"`
+	Address3        *string  `json:"address3"`
+	CityID          *uint    `json:"cityID"`
+	Latitude        *float32 `json:"latitude"`
+	Longitude       *float32 `json:"longitude"`
+	PostalCode      *string  `json:"postalCode"`
+	MinimumStay     *string  `json:"minimumStay"`
+	Deposit         *string  `json:"deposit"`
+	Cleaning        *string  `json:"cleaning"`
+	NearestAirport  *string  `json:"nearestAirport"`
+	NearestSubway   *string  `json:"nearestSubway"`
+	NearbyLocations *string  `json:"nearbyLocations"`
+	Overview        *string  `json:"overview"`
 	bodyWithAmenities
 }
 
@@ -71,6 +73,14 @@ func (a *PropertiesUpdate) Perform(c Context) {
 
 		updates["city_id"] = city.ID
 		updates["country_id"] = city.CountryID
+	}
+
+	if a.Latitude != nil {
+		updates["latitude"] = *a.Latitude
+	}
+
+	if a.Longitude != nil {
+		updates["longitude"] = *a.Longitude
 	}
 
 	c.Repository().Transaction(func(tx *flentities.Repository) {

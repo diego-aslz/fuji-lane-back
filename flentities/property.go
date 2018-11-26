@@ -28,6 +28,8 @@ type Property struct {
 	City            *City      `json:"-"`
 	CountryID       *uint      `json:"countryID"`
 	Country         *Country   `json:"-"`
+	Latitude        float32    `json:"latitude"`
+	Longitude       float32    `json:"longitude"`
 	Images          []*Image   `json:"images"`
 	MinimumStay     *string    `json:"minimumStay"`
 	Deposit         *string    `json:"deposit"`
