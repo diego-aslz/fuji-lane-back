@@ -4,15 +4,15 @@ Feature: Units Management
     Given the following accounts:
       | Name             |
       | Diego Apartments |
+    And the following properties:
+      | ID | Account          | Name          |
+      | 1  | Diego Apartments | ACME Downtown |
     And the following users:
       | Account          | Email              | Name                 |
       | Diego Apartments | diego@selzlein.com | Diego Aguir Selzlein |
     And I am authenticated with "diego@selzlein.com"
 
   Scenario: Adding a unit to my property
-    Given the following properties:
-      | ID | Account          | State | Name          |
-      | 1  | Diego Apartments | Draft | ACME Downtown |
     When I add the following unit:
       | Property     | ACME Downtown |
       | Name         | Standard Apt  |
@@ -25,7 +25,7 @@ Feature: Units Management
       | Property      | Name         | Bedrooms | SizeM2 | MaxOccupancy | Count |
       | ACME Downtown | Standard Apt | 1        | 52     | 3            | 15    |
 
-  Scenario: Adding an invalid unit to my property
+  Scenario: Adding an invalid unit
     When I add the following unit:
       | MaxOccupancy | 3 |
     Then the system should respond with "UNPROCESSABLE ENTITY" and the following errors:
@@ -41,23 +41,20 @@ Feature: Units Management
       | Name  |
       | Other |
     And the following properties:
-      | ID | Account | State | Name          |
-      | 1  | Other   | Draft | ACME Downtown |
+      | ID | Account | Name        |
+      | 2  | Other   | ACME Uptown |
     When I add the following unit:
-      | Property     | ACME Downtown |
-      | Name         | Standard Apt  |
-      | Bedrooms     | 1             |
-      | SizeM2       | 52            |
-      | MaxOccupancy | 3             |
-      | Count        | 15            |
+      | Property     | ACME Uptown  |
+      | Name         | Standard Apt |
+      | Bedrooms     | 1            |
+      | SizeM2       | 52           |
+      | MaxOccupancy | 3            |
+      | Count        | 15           |
     Then the system should respond with "NOT FOUND"
     And I should have no units
 
   Scenario: Updating a unit
-    Given the following properties:
-      | ID | Account          | State | Name          |
-      | 1  | Diego Apartments | Draft | ACME Downtown |
-    And the following units:
+    Given the following units:
       | Property      | Name         | Bedrooms | SizeM2 | MaxOccupancy | Count |
       | ACME Downtown | Standard Apt | 1        | 52     | 3            | 15    |
     And the following images:
@@ -86,11 +83,11 @@ Feature: Units Management
       | Name  |
       | Other |
     And the following properties:
-      | ID | Account | State | Name          |
-      | 1  | Other   | Draft | ACME Downtown |
+      | ID | Account | Name        |
+      | 2  | Other   | ACME Uptown |
     And the following units:
-      | Property      | Name         | Bedrooms | SizeM2 | MaxOccupancy | Count |
-      | ACME Downtown | Standard Apt | 1        | 52     | 3            | 15    |
+      | Property    | Name         | Bedrooms | SizeM2 | MaxOccupancy | Count |
+      | ACME Uptown | Standard Apt | 1        | 52     | 3            | 15    |
     When I update unit "Standard Apt" with the following attributes:
       | Name         | Std Apartment |
       | Bedrooms     | 2             |
@@ -99,17 +96,16 @@ Feature: Units Management
       | Count        | 20            |
     Then the system should respond with "NOT FOUND"
     And I should have the following units:
-      | Property      | Name         | Bedrooms | SizeM2 | MaxOccupancy | Count |
-      | ACME Downtown | Standard Apt | 1        | 52     | 3            | 15    |
+      | Property    | Name         | Bedrooms | SizeM2 | MaxOccupancy | Count |
+      | ACME Uptown | Standard Apt | 1        | 52     | 3            | 15    |
 
   Scenario: Updating a unit with a floor plan image that does not belong to me
     Given the following accounts:
       | Name  |
       | Other |
     And the following properties:
-      | ID | Account          | State | Name            |
-      | 1  | Diego Apartments | Draft | ACME Downtown   |
-      | 2  | Other            | Draft | ACME Apartments |
+      | ID | Account | Name            |
+      | 2  | Other   | ACME Apartments |
     And the following units:
       | Property        | Name               | Bedrooms | SizeM2 | MaxOccupancy | Count |
       | ACME Downtown   | Standard Apt       | 1        | 52     | 3            | 15    |
@@ -132,10 +128,7 @@ Feature: Units Management
       | ACME Apartments | Standard Other Apt | 1        | 52     | 3            | 15    |
 
   Scenario: Updating unit amenities
-    Given the following properties:
-      | ID | Account          | State | Name          |
-      | 1  | Diego Apartments | Draft | ACME Downtown |
-    And the following units:
+    Given the following units:
       | Property      | Name         | Bedrooms | SizeM2 | MaxOccupancy | Count |
       | ACME Downtown | Standard Apt | 1        | 52     | 3            | 15    |
     And the following amenities:
@@ -161,10 +154,7 @@ Feature: Units Management
       | Standard Apt | custom           | Windows |
 
   Scenario: Getting unit details
-    Given the following properties:
-      | ID | Account          | State | Name          |
-      | 1  | Diego Apartments | Draft | ACME Downtown |
-    And the following units:
+    Given the following units:
       | ID | Property      | Name         | Bedrooms | SizeM2 | MaxOccupancy | Count | BasePriceCents | OneNightPriceCents | OneWeekPriceCents | ThreeMonthsPriceCents | SixMonthsPriceCents | TwelveMonthsPriceCents |
       | 2  | ACME Downtown | Standard Apt | 1        | 52     | 3            | 15    | 12000          | 11000              | 40000             | 350000                | 650000              | 1200000                |
     And the following images:
@@ -183,6 +173,7 @@ Feature: Units Management
       """
       {
         "id": 2,
+        "publishedAt": null,
         "propertyID": 1,
         "name": "Standard Apt",
         "bedrooms": 1,
@@ -237,10 +228,10 @@ Feature: Units Management
       | Name            |
       | John Apartments |
     And the following properties:
-      | Account         | State | Name          |
-      | John Apartments | Draft | ACME Downtown |
+      | Account         | Name        |
+      | John Apartments | ACME Uptown |
     And the following units:
-      | ID | Property      | Name         | Bedrooms | SizeM2 | MaxOccupancy | Count |
-      | 2  | ACME Downtown | Standard Apt | 1        | 52     | 3            | 15    |
+      | ID | Property    | Name         | Bedrooms | SizeM2 | MaxOccupancy | Count |
+      | 2  | ACME Uptown | Standard Apt | 1        | 52     | 3            | 15    |
     When I get details for unit "Standard Apt"
     Then the system should respond with "NOT FOUND"

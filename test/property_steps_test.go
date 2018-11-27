@@ -14,7 +14,6 @@ import (
 type propertyRow struct {
 	flentities.Property
 	Account string
-	State   string
 	City    string
 	Country string
 }
@@ -62,11 +61,6 @@ func requestPropertiesShow(name string) error {
 func tableRowToProperty(r *flentities.Repository, a interface{}) (interface{}, error) {
 	row := a.(*propertyRow)
 
-	switch row.State {
-	default:
-		row.Property.StateID = flentities.PropertyStateDraft
-	}
-
 	return &row.Property, loadAssociationByName(&row.Property,
 		"Account", row.Account,
 		"City", row.City,
@@ -92,7 +86,6 @@ func propertyToTableRow(r *flentities.Repository, p interface{}) (interface{}, e
 
 	row := &propertyRow{
 		Property: *property,
-		State:    property.State(),
 		Account:  property.Account.Name,
 		City:     property.City.Name,
 		Country:  property.Country.Name,

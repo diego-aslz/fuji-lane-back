@@ -13,7 +13,7 @@ type PropertiesCreate struct{}
 func (a *PropertiesCreate) Perform(c Context) {
 	user := c.CurrentUser()
 
-	property := &flentities.Property{AccountID: *user.AccountID, StateID: flentities.PropertyStateDraft}
+	property := &flentities.Property{AccountID: *user.AccountID}
 
 	if err := c.Repository().Create(property).Error; err != nil {
 		c.ServerError(err)

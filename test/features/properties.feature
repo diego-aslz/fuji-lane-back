@@ -19,8 +19,8 @@ Feature: Properties Management
     When I add a new property
     Then the system should respond with "CREATED"
     And I should have the following properties:
-      | Account          | State |
-      | Diego Apartments | draft |
+      | Account          |
+      | Diego Apartments |
 
   Scenario: Adding a new property without having an Account
     Given the following users:
@@ -37,9 +37,9 @@ Feature: Properties Management
       | Name  |
       | Other |
     And the following properties:
-      | ID | Account          | State | Name          | Address1 | Address2 | Address3   | City  | PostalCode | Country | MinimumStay | Deposit | Cleaning | NearestAirport | NearestSubway | NearbyLocations | Overview   |
-      | 1  | Diego Apartments | Draft | ACME Downtown | Add. One | Add. Two | Add. Three | Osaka | 223344     | Japan   | 3           | 300     | 50       | IGU            | Ines          | Pharmacy        | Good place |
-      | 2  | Other            | Draft | Other Prop    | Add. One | Add. Two | Add. Three | Osaka | 223344     | Japan   | 4           | 350     | 50       | IGU            | Ines          | Restaurant      | Nice place |
+      | ID | Account          | Name          | Address1 | Address2 | Address3   | City  | PostalCode | Country | MinimumStay | Deposit | Cleaning | NearestAirport | NearestSubway | NearbyLocations | Overview   |
+      | 1  | Diego Apartments | ACME Downtown | Add. One | Add. Two | Add. Three | Osaka | 223344     | Japan   | 3           | 300     | 50       | IGU            | Ines          | Pharmacy        | Good place |
+      | 2  | Other            | Other Prop    | Add. One | Add. Two | Add. Three | Osaka | 223344     | Japan   | 4           | 350     | 50       | IGU            | Ines          | Restaurant      | Nice place |
     And the following images:
       | ID | Property      | Uploaded | Name      | URL                                | Type       | Size    | Position |
       | 1  | ACME Downtown | true     | front.jpg | https://s3.amazonaws.com/front.jpg | image/jpeg | 1000000 | 2        |
@@ -54,12 +54,11 @@ Feature: Properties Management
       """
       {
         "id": 1,
-        "state": "draft",
+        "publishedAt": null,
         "name": "ACME Downtown",
         "address1": "Add. One",
         "address2": "Add. Two",
         "address3": "Add. Three",
-        "postalCode": "223344",
         "cityID": 3,
         "postalCode": "223344",
         "countryID":  2,
@@ -105,15 +104,15 @@ Feature: Properties Management
       | Name            |
       | John Apartments |
     And the following properties:
-      | Account         | State | Name          | Address1 | Address2 | Address3   | City  | PostalCode | Country |
-      | John Apartments | Draft | ACME Downtown | Add. One | Add. Two | Add. Three | Osaka | 223344     | Japan   |
+      | Account         | Name          | Address1 | Address2 | Address3   | City  | PostalCode | Country |
+      | John Apartments | ACME Downtown | Add. One | Add. Two | Add. Three | Osaka | 223344     | Japan   |
     When I get details for property "ACME Downtown"
     Then the system should respond with "NOT FOUND"
 
   Scenario: Updating my property
     Given the following properties:
-      | ID | Account          | State |
-      | 1  | Diego Apartments | Draft |
+      | ID | Account          |
+      | 1  | Diego Apartments |
     When I update the property "1" with the following details:
       | Name            | ACME Downtown |
       | Address1        | Add. One      |
@@ -132,27 +131,27 @@ Feature: Properties Management
       | Longitude       | 135.50218     |
     Then the system should respond with "OK"
     And I should have the following properties:
-      | Account          | State | Name          | Address1 | Address2 | Address3   | City  | PostalCode | Country | MinimumStay | Deposit | Cleaning | NearestAirport | NearestSubway | NearbyLocations | Overview   | Latitude | Longitude |
-      | Diego Apartments | draft | ACME Downtown | Add. One | Add. Two | Add. Three | Osaka | 223344     | Japan   | 3           | 150     | daily    | IGU            | Central Park  | Pharmacy        | Nice place | 34.69374 | 135.50218 |
+      | Account          | Name          | Address1 | Address2 | Address3   | City  | PostalCode | Country | MinimumStay | Deposit | Cleaning | NearestAirport | NearestSubway | NearbyLocations | Overview   | Latitude | Longitude |
+      | Diego Apartments | ACME Downtown | Add. One | Add. Two | Add. Three | Osaka | 223344     | Japan   | 3           | 150     | daily    | IGU            | Central Park  | Pharmacy        | Nice place | 34.69374 | 135.50218 |
 
   Scenario: Updating a property that does not belong to me
     Given the following accounts:
       | Name             |
       | Other Apartments |
     And the following properties:
-      | ID | Account          | State |
-      | 1  | Other Apartments | Draft |
+      | ID | Account          |
+      | 1  | Other Apartments |
     When I update the property "1" with the following details:
       | Name | ACME Downtown |
     Then the system should respond with "NOT FOUND"
     And I should have the following properties:
-      | Account          | State | Name |
-      | Other Apartments | draft |      |
+      | Account          | Name |
+      | Other Apartments |      |
 
   Scenario: Updating property amenities
     Given the following properties:
-      | ID | Account          | State | Name          |
-      | 1  | Diego Apartments | Draft | ACME Downtown |
+      | ID | Account          | Name          |
+      | 1  | Diego Apartments | ACME Downtown |
     And the following amenities:
       | Property      | Type |
       | ACME Downtown | gym  |
@@ -177,8 +176,8 @@ Feature: Properties Management
 
   Scenario: Updating property with invalid or duplicated amenities
     Given the following properties:
-      | ID | Account          | State | Name          |
-      | 1  | Diego Apartments | Draft | ACME Downtown |
+      | ID | Account          | Name          |
+      | 1  | Diego Apartments | ACME Downtown |
     When I update the property "1" with the following amenities:
       | Type    | Name    |
       | invalid | Invalid |
