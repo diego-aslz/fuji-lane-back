@@ -54,6 +54,10 @@ func (u *Unit) CanBePublished() []error {
 		errs = append(errs, errors.New("Number of Unit Type is required"))
 	}
 
+	if u.Amenities == nil || len(u.Amenities) == 0 {
+		errs = append(errs, errors.New("At least one amenity is required"))
+	}
+
 	if len(u.Images) < 1 {
 		errs = append(errs, errors.New("At least one image is required"))
 	}

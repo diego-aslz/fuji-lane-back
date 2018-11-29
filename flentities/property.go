@@ -51,6 +51,10 @@ func (p *Property) CanBePublished() []error {
 		errs = append(errs, errors.New("Address is incomplete"))
 	}
 
+	if p.Amenities == nil || len(p.Amenities) == 0 {
+		errs = append(errs, errors.New("At least one amenity is required"))
+	}
+
 	if len(p.Images) < 1 {
 		errs = append(errs, errors.New("At least one image is required"))
 	}

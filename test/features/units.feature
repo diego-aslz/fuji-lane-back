@@ -243,6 +243,9 @@ Feature: Units Management
     And the following images:
       | ID | Unit         | Uploaded | Name      | URL                                | Type       | Size    | Position |
       | 1  | Standard Apt | true     | front.jpg | https://s3.amazonaws.com/front.jpg | image/jpeg | 1000000 | 1        |
+    And the following amenities:
+      | Unit         | Type      |
+      | Standard Apt | bathrobes |
     And it is currently "05 Jun 18 08:00"
     When I publish unit "2"
     Then the system should respond with "OK"
@@ -259,11 +262,12 @@ Feature: Units Management
       | 1  | 1          | false    | front.jpg | https://s3.amazonaws.com/front.jpg | image/jpeg | 1000000 | 2        |
     When I publish unit "2"
     Then the system should respond with "UNPROCESSABLE ENTITY" and the following errors:
-      | Name is required                |
-      | Bedrooms is required            |
-      | Size is required                |
-      | Number of Unit Type is required |
-      | At least one image is required  |
+      | Name is required                 |
+      | Bedrooms is required             |
+      | Size is required                 |
+      | Number of Unit Type is required  |
+      | At least one amenity is required |
+      | At least one image is required   |
     And I should have the following units:
       | ID | Name | PublishedAt |
       | 2  |      |             |

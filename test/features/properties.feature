@@ -196,6 +196,9 @@ Feature: Properties Management
     And the following images:
       | ID | Property      | Uploaded | Name      | URL                                | Type       | Size    | Position |
       | 1  | ACME Downtown | true     | front.jpg | https://s3.amazonaws.com/front.jpg | image/jpeg | 1000000 | 1        |
+    And the following amenities:
+      | Property      | Type   | Name      |
+      | ACME Downtown | custom | Breakfast |
     And it is currently "05 Jun 18 08:00"
     When I publish property "1"
     Then the system should respond with "OK"
@@ -212,9 +215,10 @@ Feature: Properties Management
       | 1  | 1          | false    | front.jpg | https://s3.amazonaws.com/front.jpg | image/jpeg | 1000000 | 2        |
     When I publish property "1"
     Then the system should respond with "UNPROCESSABLE ENTITY" and the following errors:
-      | Name is required               |
-      | Address is incomplete          |
-      | At least one image is required |
+      | Name is required                 |
+      | Address is incomplete            |
+      | At least one amenity is required |
+      | At least one image is required   |
     And I should have the following properties:
       | ID | Account          | PublishedAt |
       | 1  | Diego Apartments |             |
