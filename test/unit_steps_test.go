@@ -158,6 +158,12 @@ func requestUnitsUpdateWithAmenities(name string, table *gherkin.DataTable) erro
 	return perform("PUT", strings.Replace(flweb.UnitPath, ":id", fmt.Sprint(unit.ID), 1), body)
 }
 
+func requestUnitsPublish(id string) error {
+	url := strings.Replace(flweb.UnitsPublishPath, ":id", id, 1)
+
+	return perform("PUT", url, nil)
+}
+
 func UnitContext(s *godog.Suite) {
 	s.Step(`^unit "([^"]*)" has:$`, updateUnit)
 	s.Step(`^the following units:$`, createFromTableStep(new(unitRow), tableRowToUnit))
@@ -167,4 +173,5 @@ func UnitContext(s *godog.Suite) {
 	s.Step(`^I should have the following units:$`, assertDatabaseRecordsStep(&[]*flentities.Unit{}, unitToTableRow))
 	s.Step(`^I should have no units$`, assertNoDatabaseRecordsStep(&flentities.Unit{}))
 	s.Step(`^I get details for unit "([^"]*)"$`, requestUnitsShow)
+	s.Step(`^I publish unit "([^"]*)"$`, requestUnitsPublish)
 }

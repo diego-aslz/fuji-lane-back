@@ -36,7 +36,7 @@ const (
 	ImagesUploadedPath = "/images/:id/uploaded"
 	// PropertiesPath to access properties
 	PropertiesPath = "/properties"
-	// PropertiesPublishPath to access properties
+	// PropertiesPublishPath to publish a property
 	PropertiesPublishPath = "/properties/:id/publish"
 	// PropertyPath to access a specific property
 	PropertyPath = "/properties/:id"
@@ -44,6 +44,8 @@ const (
 	UnitPath = "/units/:id"
 	// UnitsPath to access units
 	UnitsPath = "/units"
+	// UnitsPublishPath to publish a unit
+	UnitsPublishPath = "/units/:id/publish"
 )
 
 // AddRoutes to a Gin Engine
@@ -75,6 +77,7 @@ func (a *Application) AddRoutes(e *gin.Engine) {
 	a.route(e.GET, UnitPath, a.unitsShow)
 	a.route(e.POST, UnitsPath, a.unitsCreate)
 	a.route(e.PUT, UnitPath, a.unitsUpdate)
+	a.route(e.PUT, UnitsPublishPath, a.unitsPublish)
 }
 
 type ginMethod func(string, ...gin.HandlerFunc) gin.IRoutes
@@ -195,6 +198,14 @@ func (a *Application) unitsUpdate(c *Context) {
 		withRepository(
 			authenticateUser(
 				loadActionBody(
+					performAction))))(c)
+}
+
+func (a *Application) unitsPublish(c *Context) {
+	withAction(&flactions.UnitsPublish{},
+		withRepository(
+			authenticateUser(
+				requireAccount(
 					performAction))))(c)
 }
 

@@ -8,11 +8,13 @@ import (
 	"github.com/nerde/fuji-lane-back/flentities"
 )
 
-// UnitsShow exposes details for a unit
-type UnitsShow struct{}
+// UnitsPublish marks a property as published, allowing it to appear in search results
+type UnitsPublish struct{}
 
 // Perform executes the action
-func (a *UnitsShow) Perform(c Context) {
+func (a *UnitsPublish) Perform(c Context) {
+	user := c.CurrentUser()
+
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		c.Diagnostics().AddError(err)
@@ -20,11 +22,10 @@ func (a *UnitsShow) Perform(c Context) {
 		return
 	}
 
-	user := c.CurrentUser()
 	properties := c.Repository().UserProperties(user).Select("id")
 
 	unit := &flentities.Unit{}
-	err = c.Repository().Preload("Amenities").Preload("Images", flentities.Image{Uploaded: true}, imagesDefaultOrder).
+	err = c.Repository().Preload("Amenities").Preload("Images", flentities.Image{Uploaded: true}).
 		Where(map[string]interface{}{"id": id}).Where("property_id IN (?)", properties.QueryExpr()).Find(unit).Error
 
 	if err != nil {
@@ -36,19 +37,16 @@ func (a *UnitsShow) Perform(c Context) {
 		return
 	}
 
-	if unit.FloorPlanImageID != nil {
-		filteredImages := unit.Images[:0]
-
-		for _, img := range unit.Images {
-			if img.ID == *unit.FloorPlanImageID {
-				unit.FloorPlanImage = img
-			} else {
-				filteredImages = append(filteredImages, img)
-			}
-		}
-
-		unit.Images = filteredImages
+	errs := unit.CanBePublished()
+	if len(errs) > 0 {
+		c.RespondError(http.StatusUnprocessableEntity, errs...)
+		return
 	}
 
-	c.Respond(http.StatusOK, unit)
+	if err = c.Repository().Model(unit).Updates(map[string]interface{}{"PublishedAt": c.Now()}).Error; err != nil {
+		c.ServerError(err)
+		return
+	}
+
+	c.Respond(http.StatusOK, nil)
 }

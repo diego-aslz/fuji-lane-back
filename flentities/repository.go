@@ -69,6 +69,11 @@ func (r *Repository) RemoveImage(image *Image) (err error) {
 	return
 }
 
+// UserProperties returns a *gorm.DB which selects all Properties the given user owns.
+func (r *Repository) UserProperties(u *User) *gorm.DB {
+	return r.Table("properties").Where(map[string]interface{}{"account_id": *u.AccountID})
+}
+
 // Transaction calls the callback function with a transactional Repository. Any panics will be rolled back
 func (r *Repository) Transaction(fn func(*Repository)) {
 	tx := r.Begin()

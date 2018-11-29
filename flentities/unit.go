@@ -1,6 +1,11 @@
 package flentities
 
-import "time"
+import (
+	"errors"
+	"time"
+
+	"github.com/nerde/fuji-lane-back/flutils"
+)
 
 // Unit represents a type of rentable unit inside a Property. An individual property can have multiple units at
 // different prices for rent
@@ -27,4 +32,31 @@ type Unit struct {
 	FloorPlanImage         *Image     `json:"floorPlanImage"`
 	Amenities              []*Amenity `json:"amenities"`
 	Images                 []*Image   `json:"images"`
+}
+
+// CanBePublished checks if this unit can be marked as published and start showing up in search results
+func (u *Unit) CanBePublished() []error {
+	errs := []error{}
+
+	if flutils.IsBlankStr(&u.Name) {
+		errs = append(errs, errors.New("Name is required"))
+	}
+
+	if u.Bedrooms == 0 {
+		errs = append(errs, errors.New("Bedrooms is required"))
+	}
+
+	if u.SizeM2 == 0 {
+		errs = append(errs, errors.New("Size is required"))
+	}
+
+	if u.Count == 0 {
+		errs = append(errs, errors.New("Number of Unit Type is required"))
+	}
+
+	if len(u.Images) < 1 {
+		errs = append(errs, errors.New("At least one image is required"))
+	}
+
+	return errs
 }
