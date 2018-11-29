@@ -34,7 +34,7 @@ type Context interface {
 
 	// RespondError sets the HTTP response status with the given parameter and generates an error response. The client
 	// will be sent the error message
-	RespondError(status int, err error)
+	RespondError(status int, err ...error)
 
 	// ServerError handles internal errors that should not be exposed to the client. It sends status 500 and a generic
 	// error message to the client

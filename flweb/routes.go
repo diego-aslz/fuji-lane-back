@@ -36,6 +36,8 @@ const (
 	ImagesUploadedPath = "/images/:id/uploaded"
 	// PropertiesPath to access properties
 	PropertiesPath = "/properties"
+	// PropertiesPublishPath to access properties
+	PropertiesPublishPath = "/properties/:id/publish"
 	// PropertyPath to access a specific property
 	PropertyPath = "/properties/:id"
 	// UnitPath to access a specific unit
@@ -63,6 +65,7 @@ func (a *Application) AddRoutes(e *gin.Engine) {
 	a.route(e.GET, PropertyPath, a.propertiesShow)
 	a.route(e.POST, PropertiesPath, a.propertiesCreate)
 	a.route(e.PUT, PropertyPath, a.propertiesUpdate)
+	a.route(e.PUT, PropertiesPublishPath, a.propertiesPublish)
 
 	a.route(e.DELETE, ImagePath, a.imagesDestroy)
 	a.route(e.POST, ImagesPath, a.imagesCreate)
@@ -153,6 +156,14 @@ func (a *Application) propertiesUpdate(c *Context) {
 				requireAccount(
 					loadActionBody(
 						performAction)))))(c)
+}
+
+func (a *Application) propertiesPublish(c *Context) {
+	withAction(&flactions.PropertiesPublish{},
+		withRepository(
+			authenticateUser(
+				requireAccount(
+					performAction))))(c)
 }
 
 func (a *Application) propertiesShow(c *Context) {

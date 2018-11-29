@@ -39,6 +39,7 @@ func setupApplication() {
 
 	assist = assistdog.NewDefault()
 	assist.RegisterComparer(time.Time{}, timeComparer)
+	assist.RegisterComparer(&time.Time{}, timePtrComparer)
 	assist.RegisterComparer(true, boolComparer)
 	assist.RegisterComparer(uint(0), uintComparer)
 	assist.RegisterComparer(refStr("a"), strPtrComparer)
@@ -50,6 +51,7 @@ func setupApplication() {
 	assist.RegisterParser(refStr("a"), strPtrParser)
 	assist.RegisterParser(refInt(1), intPtrParser)
 	assist.RegisterParser(refFloat(1), floatPtrParser)
+	assist.RegisterParser(float32(1.0), floatParser)
 	assist.RegisterParser(refUint(1), uintPtrParser)
 
 	facebookClient = &mockedFacebookClient{tokens: map[string]flservices.FacebookTokenDetails{}}
@@ -82,6 +84,23 @@ func timeComparer(raw string, rawActual interface{}) error {
 	}
 
 	return nil
+}
+
+func timePtrComparer(raw string, rawActual interface{}) error {
+	at, ok := rawActual.(*time.Time)
+	if !ok {
+		return fmt.Errorf("%v is not *time.Time", rawActual)
+	}
+
+	if at == nil {
+		if raw == "" {
+			return nil
+		}
+
+		return fmt.Errorf("Expected %v, but got NULL", raw)
+	}
+
+	return timeComparer(raw, *at)
 }
 
 func uintComparer(raw string, rawActual interface{}) error {
@@ -193,6 +212,18 @@ func intPtrParser(raw string) (interface{}, error) {
 }
 
 func floatPtrParser(raw string) (interface{}, error) {
+	f, err := floatParser(raw)
+
+	if err != nil {
+		return nil, err
+	}
+
+	fl := f.(float32)
+
+	return &fl, err
+}
+
+func floatParser(raw string) (interface{}, error) {
 	if raw == "" {
 		return nil, nil
 	}
@@ -204,7 +235,7 @@ func floatPtrParser(raw string) (interface{}, error) {
 
 	f := float32(i)
 
-	return &f, nil
+	return f, nil
 }
 
 func uintPtrParser(raw string) (interface{}, error) {

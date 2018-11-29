@@ -58,6 +58,12 @@ func requestPropertiesShow(name string) error {
 	return performGETStep(url)()
 }
 
+func requestPropertiesPublish(id string) error {
+	url := strings.Replace(flweb.PropertiesPublishPath, ":id", id, 1)
+
+	return perform("PUT", url, nil)
+}
+
 func tableRowToProperty(r *flentities.Repository, a interface{}) (interface{}, error) {
 	row := a.(*propertyRow)
 
@@ -98,6 +104,7 @@ func PropertyContext(s *godog.Suite) {
 	s.Step(`^I add a new property$`, requestPropertiesCreate)
 	s.Step(`^I update the property "([^"]*)" with the following details:$`, requestPropertiesUpdate)
 	s.Step(`^I update the property "([^"]*)" with the following amenities:$`, requestPropertiesUpdateWithAmenities)
+	s.Step(`^I publish property "([^"]*)"$`, requestPropertiesPublish)
 	s.Step(`^the following properties:$`, createFromTableStep(new(propertyRow), tableRowToProperty))
 	s.Step(`^I should have the following properties:$`, assertDatabaseRecordsStep(&[]*flentities.Property{}, propertyToTableRow))
 	s.Step(`^I should have no properties$`, assertNoDatabaseRecordsStep(&flentities.Property{}))

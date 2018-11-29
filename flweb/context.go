@@ -49,9 +49,14 @@ func (c *Context) RespondNotFound() {
 }
 
 // RespondError creates an error response with the given error
-func (c *Context) RespondError(status int, err error) {
-	c.Diagnostics().AddQuoted("response_error", err.Error())
-	c.JSON(status, c.errorsBody([]error{err}))
+func (c *Context) RespondError(status int, errs ...error) {
+	messages := []string{}
+	for _, err := range errs {
+		messages = append(messages, err.Error())
+	}
+
+	c.Diagnostics().AddJSON("response_errors", messages)
+	c.JSON(status, c.errorsBody(errs))
 }
 
 func (c *Context) errorsBody(errs []error) map[string]interface{} {

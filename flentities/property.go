@@ -1,7 +1,10 @@
 package flentities
 
 import (
+	"errors"
 	"time"
+
+	"github.com/nerde/fuji-lane-back/flutils"
 )
 
 // Property contains address and can have multiple units that can be booked
@@ -33,4 +36,29 @@ type Property struct {
 	NearbyLocations *string    `json:"nearbyLocations"`
 	Overview        *string    `json:"overview"`
 	Amenities       []*Amenity `json:"amenities"`
+	Units           []*Unit    `json:"-"`
+}
+
+// CanBePublished checks if this property can be marked as published and start showing up in search results
+func (p *Property) CanBePublished() []error {
+	errs := []error{}
+
+	if flutils.IsBlankStr(p.Name) {
+		errs = append(errs, errors.New("Name is required"))
+	}
+
+	if p.isMissingAddress() {
+		errs = append(errs, errors.New("Address is incomplete"))
+	}
+
+	if len(p.Images) < 1 {
+		errs = append(errs, errors.New("At least one image is required"))
+	}
+
+	return errs
+}
+
+func (p *Property) isMissingAddress() bool {
+	return flutils.IsBlankStr(p.Address1) || flutils.IsBlankStr(p.PostalCode) || flutils.IsBlankUint(p.CityID) ||
+		p.Latitude == 0 || p.Longitude == 0
 }

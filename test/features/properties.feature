@@ -188,3 +188,33 @@ Feature: Properties Management
     And I should have the following amenities:
       | Property      | Type   | Name   |
       | ACME Downtown | custom | Casino |
+
+  Scenario: Publishing my property
+    Given the following properties:
+      | ID | Account          | Name          | Address1 | Address2 | Address3   | CityID | PostalCode | MinimumStay | Deposit | Cleaning | NearestAirport | NearestSubway | NearbyLocations | Overview   | Latitude | Longitude |
+      | 1  | Diego Apartments | ACME Downtown | Add. One | Add. Two | Add. Three | 3      | 223344     | 3           | 150     | daily    | IGU            | Central Park  | Pharmacy        | Nice place | 34.69374 | 135.50218 |
+    And the following images:
+      | ID | Property      | Uploaded | Name      | URL                                | Type       | Size    | Position |
+      | 1  | ACME Downtown | true     | front.jpg | https://s3.amazonaws.com/front.jpg | image/jpeg | 1000000 | 1        |
+    And it is currently "05 Jun 18 08:00"
+    When I publish property "1"
+    Then the system should respond with "OK"
+    And I should have the following properties:
+      | ID | Account          | Name          | PublishedAt          |
+      | 1  | Diego Apartments | ACME Downtown | 2018-06-05T08:00:00Z |
+
+  Scenario: Publishing a property with missing information
+    Given the following properties:
+      | ID | Account          |
+      | 1  | Diego Apartments |
+    And the following images:
+      | ID | PropertyID | Uploaded | Name      | URL                                | Type       | Size    | Position |
+      | 1  | 1          | false    | front.jpg | https://s3.amazonaws.com/front.jpg | image/jpeg | 1000000 | 2        |
+    When I publish property "1"
+    Then the system should respond with "UNPROCESSABLE ENTITY" and the following errors:
+      | Name is required               |
+      | Address is incomplete          |
+      | At least one image is required |
+    And I should have the following properties:
+      | ID | Account          | PublishedAt |
+      | 1  | Diego Apartments |             |
