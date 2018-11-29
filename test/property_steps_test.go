@@ -109,4 +109,5 @@ func PropertyContext(s *godog.Suite) {
 	s.Step(`^I should have the following properties:$`, assertDatabaseRecordsStep(&[]*flentities.Property{}, propertyToTableRow))
 	s.Step(`^I should have no properties$`, assertNoDatabaseRecordsStep(&flentities.Property{}))
 	s.Step(`^I get details for property "([^"]*)"$`, requestPropertiesShow)
+	s.Step(`^I list my properties$`, performGETStep(flweb.PropertiesPath))
 }

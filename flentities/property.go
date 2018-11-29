@@ -36,7 +36,7 @@ type Property struct {
 	NearbyLocations *string    `json:"nearbyLocations"`
 	Overview        *string    `json:"overview"`
 	Amenities       []*Amenity `json:"amenities"`
-	Units           []*Unit    `json:"-"`
+	Units           []*Unit    `json:"units"`
 }
 
 // CanBePublished checks if this property can be marked as published and start showing up in search results

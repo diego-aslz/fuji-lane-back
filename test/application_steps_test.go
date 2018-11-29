@@ -22,6 +22,7 @@ var assist *assistdog.Assist
 var appTime time.Time
 
 const timeFormat = "02 Jan 06 15:04"
+const fullTimeFormat = "2006-01-02T15:04:05Z"
 
 type fakeRandSource struct{}
 
@@ -53,6 +54,7 @@ func setupApplication() {
 	assist.RegisterParser(refFloat(1), floatPtrParser)
 	assist.RegisterParser(float32(1.0), floatParser)
 	assist.RegisterParser(refUint(1), uintPtrParser)
+	assist.RegisterParser(&time.Time{}, timePtrParser)
 
 	facebookClient = &mockedFacebookClient{tokens: map[string]flservices.FacebookTokenDetails{}}
 	application = flweb.NewApplication(facebookClient)
@@ -250,6 +252,19 @@ func uintPtrParser(raw string) (interface{}, error) {
 
 	ui := uint(i)
 	return &ui, nil
+}
+
+func timePtrParser(raw string) (interface{}, error) {
+	if raw == "" {
+		return nil, nil
+	}
+
+	i, err := time.Parse(fullTimeFormat, raw)
+	if err != nil {
+		return nil, err
+	}
+
+	return &i, nil
 }
 
 func itIsCurrently(timeExpr string) (err error) {

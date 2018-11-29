@@ -61,7 +61,7 @@ Feature: Properties Management
         "address3": "Add. Three",
         "cityID": 3,
         "postalCode": "223344",
-        "countryID":  2,
+        "countryID": 2,
         "latitude": 0,
         "longitude": 0,
         "minimumStay": 3,
@@ -95,7 +95,8 @@ Feature: Properties Management
             "type": "gym",
             "name": null
           }
-        ]
+        ],
+        "units": null
       }
       """
 
@@ -222,3 +223,125 @@ Feature: Properties Management
     And I should have the following properties:
       | ID | Account          | PublishedAt |
       | 1  | Diego Apartments |             |
+
+  Scenario: Listing my properties
+    Given the following accounts:
+      | Name              |
+      | Antoni Apartments |
+    And the following properties:
+      | ID | Account           | Name          | Address1                | Address2 | CityID | PostalCode | PublishedAt          |
+      | 1  | Diego Apartments  | ACME Downtown | 88 Tai Tam Reservoir Rd | Tai Tam  | 3      | 111        | 2018-06-05T08:00:00Z |
+      | 2  | Diego Apartments  | ACME Uptown   | 90 Tai Tam Reservoir Rd | Tai Tam  | 3      | 222        | 2018-06-05T08:00:00Z |
+      | 3  | Antoni Apartments | ACME          | Add. One                | Add. Two | 3      | 333        | 2018-06-05T08:00:00Z |
+    And the following images:
+      | ID | Property      | Uploaded | Name      | URL                                | Type       | Size    | Position |
+      | 1  | ACME Downtown | true     | front.jpg | https://s3.amazonaws.com/front.jpg | image/jpeg | 1000000 | 2        |
+      | 2  | ACME Downtown | true     | back.jpg  | https://s3.amazonaws.com/back.jpg  | image/jpeg | 1000000 | 1        |
+    # And the following amenities:
+    #   | Property      | Type   | Name      |
+    #   | ACME Downtown | custom | Breakfast |
+    And the following units:
+      | ID | Property      | Name           | BasePriceCents | OneNightPriceCents | OneWeekPriceCents | ThreeMonthsPriceCents | SixMonthsPriceCents | TwelveMonthsPriceCents |
+      | 2  | ACME Downtown | Standard Apt   | 10000          | 11000              | 40000             | 350000                | 650000              | 1200000                |
+      | 3  | ACME Downtown | Double-bed Apt | 11000          | 12000              | 42000             | 370000                | 670000              | 1220000                |
+    When I list my properties
+    Then the system should respond with "OK" and the following JSON:
+      """
+      [{
+        "id": 1,
+        "name": "ACME Downtown",
+        "publishedAt": "2018-06-05T08:00:00Z",
+        "address1": "88 Tai Tam Reservoir Rd",
+        "address2": "Tai Tam",
+        "address3": null,
+        "postalCode": "111",
+        "cityID": 3,
+        "countryID": null,
+        "latitude": 0,
+        "longitude": 0,
+        "images": [{
+          "id": 2,
+          "name": "back.jpg",
+          "type": "image/jpeg",
+          "size": 1000000,
+          "url": "https://s3.amazonaws.com/back.jpg",
+          "uploaded": true,
+          "position": 1
+        }, {
+          "id": 1,
+          "name": "front.jpg",
+          "type": "image/jpeg",
+          "size": 1000000,
+          "url": "https://s3.amazonaws.com/front.jpg",
+          "uploaded": true,
+          "position": 2
+        }],
+        "minimumStay": null,
+        "deposit": null,
+        "cleaning": null,
+        "nearestAirport": null,
+        "nearestSubway": null,
+        "nearbyLocations": null,
+        "overview": null,
+        "amenities": null,
+        "units": [{
+          "id": 2,
+          "publishedAt": null,
+          "propertyID": 1,
+          "name": "Standard Apt",
+          "bedrooms": 0,
+          "sizeM2": 0,
+          "maxOccupancy": null,
+          "count": 0,
+          "basePriceCents": 10000,
+          "oneNightPriceCents": 11000,
+          "oneWeekPriceCents": 40000,
+          "threeMonthsPriceCents": 350000,
+          "sixMonthsPriceCents": 650000,
+          "twelveMonthsPriceCents": 1200000,
+          "floorPlanImage": null,
+          "amenities": null,
+          "images": null
+        }, {
+          "id": 3,
+          "publishedAt": null,
+          "propertyID": 1,
+          "name": "Double-bed Apt",
+          "bedrooms": 0,
+          "sizeM2": 0,
+          "maxOccupancy": null,
+          "count": 0,
+          "basePriceCents": 11000,
+          "oneNightPriceCents": 12000,
+          "oneWeekPriceCents": 42000,
+          "threeMonthsPriceCents": 370000,
+          "sixMonthsPriceCents": 670000,
+          "twelveMonthsPriceCents": 1220000,
+          "floorPlanImage": null,
+          "amenities": null,
+          "images": null
+        }]
+      }, {
+        "id": 2,
+        "publishedAt": "2018-06-05T08:00:00Z",
+        "name": "ACME Uptown",
+        "address1": "90 Tai Tam Reservoir Rd",
+        "address2": "Tai Tam",
+        "address3": null,
+        "postalCode": "222",
+        "cityID": 3,
+        "countryID": null,
+        "latitude": 0,
+        "longitude": 0,
+        "images": [],
+        "minimumStay": null,
+        "deposit": null,
+        "cleaning": null,
+        "nearestAirport": null,
+        "nearestSubway": null,
+        "nearbyLocations": null,
+        "overview": null,
+        "amenities": null,
+        "units": []
+      }]
+      """

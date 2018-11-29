@@ -60,13 +60,13 @@ func assertResponseStatusAndJSON(status string, rawJSON *gherkin.DocString) erro
 		return err
 	}
 
-	expectedBody := map[string]interface{}{}
+	var expectedBody interface{}
 	err := json.Unmarshal([]byte(rawJSON.Content), &expectedBody)
 	if err != nil {
 		return err
 	}
 
-	actualBody := map[string]interface{}{}
+	var actualBody interface{}
 	if err := json.Unmarshal([]byte(response.Body.String()), &actualBody); err != nil {
 		return fmt.Errorf("Unable to unmarshal %s: %s", response.Body.String(), err.Error())
 	}
@@ -74,7 +74,7 @@ func assertResponseStatusAndJSON(status string, rawJSON *gherkin.DocString) erro
 	if !reflect.DeepEqual(expectedBody, actualBody) {
 		indented := &bytes.Buffer{}
 		json.Indent(indented, []byte(response.Body.String()), "", "  ")
-		return fmt.Errorf("Response body does not match:\nResponse: %s\nExpected: %s", indented.String(), rawJSON.Content)
+		return fmt.Errorf("Response body does not match:\nExpected: %s\nGot: %s", rawJSON.Content, indented.String())
 	}
 
 	return nil
