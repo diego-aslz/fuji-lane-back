@@ -37,9 +37,9 @@ Feature: Properties Management
       | Name  |
       | Other |
     And the following properties:
-      | ID | Account          | Name          | Address1 | Address2 | Address3   | City  | PostalCode | Country | MinimumStay | Deposit | Cleaning | NearestAirport | NearestSubway | NearbyLocations | Overview   |
-      | 1  | Diego Apartments | ACME Downtown | Add. One | Add. Two | Add. Three | Osaka | 223344     | Japan   | 3           | 300     | 50       | IGU            | Ines          | Pharmacy        | Good place |
-      | 2  | Other            | Other Prop    | Add. One | Add. Two | Add. Three | Osaka | 223344     | Japan   | 4           | 350     | 50       | IGU            | Ines          | Restaurant      | Nice place |
+      | ID | Account          | Name          | Address1 | Address2 | Address3   | City  | PostalCode | Country | MinimumStay | Deposit | Cleaning | NearestAirport | NearestSubway | NearbyLocations | Overview   | UpdatedAt            |
+      | 1  | Diego Apartments | ACME Downtown | Add. One | Add. Two | Add. Three | Osaka | 223344     | Japan   | 3           | 300     | 50       | IGU            | Ines          | Pharmacy        | Good place | 2018-06-05T08:00:00Z |
+      | 2  | Other            | Other Prop    | Add. One | Add. Two | Add. Three | Osaka | 223344     | Japan   | 4           | 350     | 50       | IGU            | Ines          | Restaurant      | Nice place | 2018-06-05T08:00:00Z |
     And the following images:
       | ID | Property      | Uploaded | Name      | URL                                | Type       | Size    | Position |
       | 1  | ACME Downtown | true     | front.jpg | https://s3.amazonaws.com/front.jpg | image/jpeg | 1000000 | 2        |
@@ -54,6 +54,7 @@ Feature: Properties Management
       """
       {
         "id": 1,
+        "updatedAt": "2018-06-05T08:00:00Z",
         "publishedAt": null,
         "name": "ACME Downtown",
         "address1": "Add. One",
@@ -229,10 +230,10 @@ Feature: Properties Management
       | Name              |
       | Antoni Apartments |
     And the following properties:
-      | ID | Account           | Name          | Address1                | Address2 | CityID | PostalCode | PublishedAt          |
-      | 1  | Diego Apartments  | ACME Downtown | 88 Tai Tam Reservoir Rd | Tai Tam  | 3      | 111        | 2018-06-05T08:00:00Z |
-      | 2  | Diego Apartments  | ACME Uptown   | 90 Tai Tam Reservoir Rd | Tai Tam  | 3      | 222        | 2018-06-05T08:00:00Z |
-      | 3  | Antoni Apartments | ACME          | Add. One                | Add. Two | 3      | 333        | 2018-06-05T08:00:00Z |
+      | ID | Account           | Name          | Address1                | Address2 | CityID | PostalCode | PublishedAt          | UpdatedAt            |
+      | 1  | Diego Apartments  | ACME Downtown | 88 Tai Tam Reservoir Rd | Tai Tam  | 3      | 111        | 2018-06-05T08:00:00Z | 2018-06-05T08:00:00Z |
+      | 2  | Diego Apartments  | ACME Uptown   | 90 Tai Tam Reservoir Rd | Tai Tam  | 3      | 222        | 2018-06-05T08:00:00Z | 2018-06-05T08:00:00Z |
+      | 3  | Antoni Apartments | ACME          | Add. One                | Add. Two | 3      | 333        | 2018-06-05T08:00:00Z | 2018-06-05T08:00:00Z |
     And the following images:
       | ID | Property      | Uploaded | Name      | URL                                | Type       | Size    | Position |
       | 1  | ACME Downtown | true     | front.jpg | https://s3.amazonaws.com/front.jpg | image/jpeg | 1000000 | 2        |
@@ -250,6 +251,7 @@ Feature: Properties Management
       [{
         "id": 1,
         "name": "ACME Downtown",
+        "updatedAt": "2018-06-05T08:00:00Z",
         "publishedAt": "2018-06-05T08:00:00Z",
         "address1": "88 Tai Tam Reservoir Rd",
         "address2": "Tai Tam",
@@ -323,6 +325,7 @@ Feature: Properties Management
         }]
       }, {
         "id": 2,
+        "updatedAt": "2018-06-05T08:00:00Z",
         "publishedAt": "2018-06-05T08:00:00Z",
         "name": "ACME Uptown",
         "address1": "90 Tai Tam Reservoir Rd",

@@ -11,7 +11,7 @@ import (
 type Property struct {
 	ID              uint       `gorm:"primary_key" json:"id"`
 	CreatedAt       time.Time  `json:"-"`
-	UpdatedAt       time.Time  `json:"-"`
+	UpdatedAt       time.Time  `json:"updatedAt"`
 	DeletedAt       *time.Time `json:"-"`
 	Name            *string    `json:"name"`
 	PublishedAt     *time.Time `json:"publishedAt"`
