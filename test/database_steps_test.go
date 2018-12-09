@@ -245,8 +245,12 @@ func loadAssociationByName(record interface{}, nameAndValues ...string) error {
 }
 
 func findByName(record interface{}, name string) (err error) {
+	return findBy(record, "name", name)
+}
+
+func findBy(record interface{}, field, value string) (err error) {
 	return flentities.WithRepository(func(r *flentities.Repository) error {
-		return r.Find(record, map[string]interface{}{"name": name}).Error
+		return r.Find(record, map[string]interface{}{field: value}).Error
 	})
 }
 

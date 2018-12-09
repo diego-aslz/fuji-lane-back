@@ -26,6 +26,8 @@ const (
 	CitiesPath = "/cities"
 	// CountriesPath for listing countries
 	CountriesPath = "/countries"
+	// DashboardPath for getting dashboard details
+	DashboardPath = "/dashboard"
 	// ImagePath to access a specific image
 	ImagePath = "/images/:id"
 	// ImagesSortPath to access images
@@ -79,6 +81,8 @@ func (a *Application) AddRoutes(e *gin.Engine) {
 	a.route(e.POST, UnitsPath, a.unitsCreate)
 	a.route(e.PUT, UnitPath, a.unitsUpdate)
 	a.route(e.PUT, UnitsPublishPath, a.unitsPublish)
+
+	a.route(e.GET, DashboardPath, a.dashboard)
 }
 
 type ginMethod func(string, ...gin.HandlerFunc) gin.IRoutes
@@ -244,6 +248,14 @@ func (a *Application) imagesUploaded(c *Context) {
 
 func (a *Application) imagesDestroy(c *Context) {
 	withAction(flactions.NewImagesDestroy(a.S3Service),
+		withRepository(
+			authenticateUser(
+				requireAccount(
+					performAction))))(c)
+}
+
+func (a *Application) dashboard(c *Context) {
+	withAction(&flactions.Dashboard{},
 		withRepository(
 			authenticateUser(
 				requireAccount(

@@ -158,6 +158,26 @@ func bodyFromObject(body interface{}) (io.Reader, error) {
 	return strings.NewReader(string(jsonBody)), nil
 }
 
+func performGETWithParamsStep(path string) func(*gherkin.DataTable) error {
+	return func(table *gherkin.DataTable) error {
+		queries, err := assist.ParseMap(table)
+		if err != nil {
+			return err
+		}
+		finalPath := path
+		for key, value := range queries {
+			if finalPath == path {
+				finalPath += "?"
+			} else {
+				finalPath += "&"
+			}
+			finalPath += key + "=" + value
+		}
+
+		return performGETStep(finalPath)()
+	}
+}
+
 func performGETStep(path string) func() error {
 	return func() error {
 		return perform("GET", path, nil)
