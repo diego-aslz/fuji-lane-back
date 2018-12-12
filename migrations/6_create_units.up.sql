@@ -7,6 +7,7 @@ CREATE TABLE units(
   published_at timestamp without time zone,
   name varchar not null,
   bedrooms integer not null,
+  bathrooms integer not null,
   size_m2 integer not null,
   max_occupancy integer,
   count integer not null,

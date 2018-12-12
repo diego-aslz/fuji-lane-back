@@ -63,6 +63,7 @@ Feature: Units Management
     When I update unit "Standard Apt" with the following attributes:
       | Name                   | Std Apartment |
       | Bedrooms               | 2             |
+      | Bathrooms              | 3             |
       | SizeM2                 | 50            |
       | MaxOccupancy           | 2             |
       | Count                  | 20            |
@@ -75,8 +76,8 @@ Feature: Units Management
       | FloorPlanImageID       | 3             |
     Then the system should respond with "OK"
     And I should have the following units:
-      | Property      | Name          | Bedrooms | SizeM2 | MaxOccupancy | Count | BasePriceCents | OneNightPriceCents | OneWeekPriceCents | ThreeMonthsPriceCents | SixMonthsPriceCents | TwelveMonthsPriceCents | FloorPlanImageID |
-      | ACME Downtown | Std Apartment | 2        | 50     | 2            | 20    | 12000          | 11000              | 40000             | 350000                | 650000              | 1200000                | 3                |
+      | Property      | Name          | Bedrooms | Bathrooms | SizeM2 | MaxOccupancy | Count | BasePriceCents | OneNightPriceCents | OneWeekPriceCents | ThreeMonthsPriceCents | SixMonthsPriceCents | TwelveMonthsPriceCents | FloorPlanImageID |
+      | ACME Downtown | Std Apartment | 2        | 3         | 50     | 2            | 20    | 12000          | 11000              | 40000             | 350000                | 650000              | 1200000                | 3                |
 
   Scenario: Updating a unit that does not belong to me
     Given the following accounts:
@@ -155,8 +156,8 @@ Feature: Units Management
 
   Scenario: Getting unit details
     Given the following units:
-      | ID | Property      | Name         | Bedrooms | SizeM2 | MaxOccupancy | Count | BasePriceCents | OneNightPriceCents | OneWeekPriceCents | ThreeMonthsPriceCents | SixMonthsPriceCents | TwelveMonthsPriceCents |
-      | 2  | ACME Downtown | Standard Apt | 1        | 52     | 3            | 15    | 12000          | 11000              | 40000             | 350000                | 650000              | 1200000                |
+      | ID | Property      | Name         | Bedrooms | Bathrooms | SizeM2 | MaxOccupancy | Count | BasePriceCents | OneNightPriceCents | OneWeekPriceCents | ThreeMonthsPriceCents | SixMonthsPriceCents | TwelveMonthsPriceCents |
+      | 2  | ACME Downtown | Standard Apt | 1        | 2         | 52     | 3            | 15    | 12000          | 11000              | 40000             | 350000                | 650000              | 1200000                |
     And the following images:
       | ID | Unit         | Name          | Uploaded | URL                                 | Type       | Size | Position |
       | 3  | Standard Apt | blueprint.jpg | true     | https://s3.amazonaws.com/blue.jpg   | image/jpeg | 5000 | 0        |
@@ -177,6 +178,7 @@ Feature: Units Management
         "propertyID": 1,
         "name": "Standard Apt",
         "bedrooms": 1,
+        "bathrooms": 2,
         "sizeM2": 52,
         "maxOccupancy": 3,
         "count": 15,
@@ -229,8 +231,8 @@ Feature: Units Management
       | Name            |
       | John Apartments |
     And the following properties:
-      | Account         | Name        |
-      | John Apartments | ACME Uptown |
+      | ID | Account         | Name        |
+      | 2  | John Apartments | ACME Uptown |
     And the following units:
       | ID | Property    | Name         | Bedrooms | SizeM2 | MaxOccupancy | Count |
       | 2  | ACME Uptown | Standard Apt | 1        | 52     | 3            | 15    |

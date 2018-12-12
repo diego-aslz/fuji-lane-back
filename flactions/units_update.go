@@ -12,6 +12,7 @@ import (
 type UnitsUpdateBody struct {
 	Name                   string `json:"name"`
 	Bedrooms               int    `json:"bedrooms"`
+	Bathrooms              int    `json:"bathrooms"`
 	SizeM2                 int    `json:"sizeM2"`
 	MaxOccupancy           int    `json:"maxOccupancy"`
 	Count                  int    `json:"count"`
@@ -34,6 +35,7 @@ func (b *UnitsUpdateBody) toMap() (updates map[string]interface{}) {
 
 	optionals := map[string]uint{
 		"Bedrooms":               uint(b.Bedrooms),
+		"Bathrooms":              uint(b.Bathrooms),
 		"SizeM2":                 uint(b.SizeM2),
 		"Count":                  uint(b.Count),
 		"MaxOccupancy":           uint(b.MaxOccupancy),

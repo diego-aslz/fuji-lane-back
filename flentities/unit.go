@@ -19,6 +19,7 @@ type Unit struct {
 	Property               *Property  `json:"-"`
 	Name                   string     `json:"name"`
 	Bedrooms               int        `json:"bedrooms"`
+	Bathrooms              int        `json:"bathrooms"`
 	SizeM2                 int        `json:"sizeM2"`
 	MaxOccupancy           *int       `json:"maxOccupancy"`
 	Count                  int        `json:"count"`

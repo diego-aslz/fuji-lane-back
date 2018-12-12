@@ -56,35 +56,18 @@ func requestUnitsCreate(table *gherkin.DataTable) error {
 }
 
 func requestUnitsUpdate(name string, table *gherkin.DataTable) error {
-	u, err := assist.ParseMap(table)
+	body, err := assist.CreateInstance(new(flactions.UnitsUpdateBody), table)
 	if err != nil {
 		return err
 	}
 
-	unit := &flentities.Unit{}
-	if err := findByName(unit, name); err != nil {
+	var bodyIO io.Reader
+	if bodyIO, err = bodyFromObject(body); err != nil {
 		return err
 	}
 
-	body := flactions.UnitsUpdateBody{}
-	body.Name = u["Name"]
-
-	body.Bedrooms, _ = strconv.Atoi(u["Bedrooms"])
-	body.SizeM2, _ = strconv.Atoi(u["SizeM2"])
-	body.MaxOccupancy, _ = strconv.Atoi(u["MaxOccupancy"])
-	body.Count, _ = strconv.Atoi(u["Count"])
-	body.BasePriceCents, _ = strconv.Atoi(u["BasePriceCents"])
-	body.OneNightPriceCents, _ = strconv.Atoi(u["OneNightPriceCents"])
-	body.OneWeekPriceCents, _ = strconv.Atoi(u["OneWeekPriceCents"])
-	body.ThreeMonthsPriceCents, _ = strconv.Atoi(u["ThreeMonthsPriceCents"])
-	body.SixMonthsPriceCents, _ = strconv.Atoi(u["SixMonthsPriceCents"])
-	body.TwelveMonthsPriceCents, _ = strconv.Atoi(u["TwelveMonthsPriceCents"])
-
-	FloorPlanImageID, _ := strconv.Atoi(u["FloorPlanImageID"])
-	body.FloorPlanImageID = uint(FloorPlanImageID)
-
-	var bodyIO io.Reader
-	if bodyIO, err = bodyFromObject(body); err != nil {
+	unit := &flentities.Unit{}
+	if err = findByName(unit, name); err != nil {
 		return err
 	}
 
