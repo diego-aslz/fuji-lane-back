@@ -49,6 +49,16 @@ Feature: Properties Management
     And the following amenities:
       | Property      | Type |
       | ACME Downtown | gym  |
+    And the following units:
+      | ID | Property      | Name         | Bedrooms | SizeM2 | MaxOccupancy | Count |
+      | 11 | ACME Downtown | Standard Apt | 1        | 52     | 3            | 15    |
+    And the following images:
+      | ID | Unit         | Uploaded | Name      | URL                                | Type       | Size    | Position |
+      | 5  | Standard Apt | true     | front.jpg | https://s3.amazonaws.com/front.jpg | image/jpeg | 1000000 | 2        |
+      | 6  | Standard Apt | false    | back.jpg  | https://s3.amazonaws.com/back.jpg  | image/jpeg | 1000000 | 2        |
+    And the following amenities:
+      | Unit         | Type   |
+      | Standard Apt | toilet |
     When I get details for property "ACME Downtown"
     Then the system should respond with "OK" and the following JSON:
       """
@@ -97,7 +107,36 @@ Feature: Properties Management
             "name": null
           }
         ],
-        "units": null
+        "units": [{
+          "id": 11,
+          "publishedAt": null,
+          "propertyID": 1,
+          "name": "Standard Apt",
+          "bedrooms": 1,
+          "sizeM2": 52,
+          "maxOccupancy": 3,
+          "count": 15,
+          "basePriceCents": null,
+          "oneNightPriceCents": null,
+          "oneWeekPriceCents": null,
+          "threeMonthsPriceCents": null,
+          "sixMonthsPriceCents": null,
+          "twelveMonthsPriceCents": null,
+          "floorPlanImage": null,
+          "amenities": [{
+            "type": "toilet",
+            "name": null
+          }],
+          "images": [{
+            "id": 5,
+            "name": "front.jpg",
+            "type": "image/jpeg",
+            "size": 1000000,
+            "url": "https://s3.amazonaws.com/front.jpg",
+            "uploaded": true,
+            "position": 2
+          }]
+        }]
       }
       """
 
