@@ -166,8 +166,8 @@ Feature: Units Management
     And unit "Standard Apt" has:
       | FloorPlanImageID | 3 |
     And the following amenities:
-      | Unit         | Type      |
-      | Standard Apt | bathrobes |
+      | ID | Unit         | Type      |
+      | 1  | Standard Apt | bathrobes |
     When I get details for unit "Standard Apt"
     Then the system should respond with "OK" and the following JSON:
       """
@@ -216,6 +216,7 @@ Feature: Units Management
         ],
         "amenities": [
           {
+            "id": 1,
             "type": "bathrobes",
             "name": null
           }

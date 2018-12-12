@@ -47,8 +47,8 @@ Feature: Properties Management
       | 3  | Other Prop    | true     | front.jpg | https://s3.amazonaws.com/front.jpg | image/jpeg | 1000000 | 2        |
       | 4  | ACME Downtown | true     | back.jpg  | https://s3.amazonaws.com/back.jpg  | image/jpeg | 1000000 | 1        |
     And the following amenities:
-      | Property      | Type |
-      | ACME Downtown | gym  |
+      | ID | Property      | Type |
+      | 1  | ACME Downtown | gym  |
     And the following units:
       | ID | Property      | Name         | Bedrooms | SizeM2 | MaxOccupancy | Count |
       | 11 | ACME Downtown | Standard Apt | 1        | 52     | 3            | 15    |
@@ -57,8 +57,8 @@ Feature: Properties Management
       | 5  | Standard Apt | true     | front.jpg | https://s3.amazonaws.com/front.jpg | image/jpeg | 1000000 | 2        |
       | 6  | Standard Apt | false    | back.jpg  | https://s3.amazonaws.com/back.jpg  | image/jpeg | 1000000 | 2        |
     And the following amenities:
-      | Unit         | Type   |
-      | Standard Apt | toilet |
+      | ID | Unit         | Type   |
+      | 2  | Standard Apt | toilet |
     When I get details for property "ACME Downtown"
     Then the system should respond with "OK" and the following JSON:
       """
@@ -101,12 +101,11 @@ Feature: Properties Management
             "position": 2
           }
         ],
-        "amenities": [
-          {
-            "type": "gym",
-            "name": null
-          }
-        ],
+        "amenities": [{
+          "id": 1,
+          "type": "gym",
+          "name": null
+        }],
         "units": [{
           "id": 11,
           "publishedAt": null,
@@ -124,6 +123,7 @@ Feature: Properties Management
           "twelveMonthsPriceCents": null,
           "floorPlanImage": null,
           "amenities": [{
+            "id": 2,
             "type": "toilet",
             "name": null
           }],
