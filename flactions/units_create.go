@@ -11,6 +11,7 @@ import (
 type UnitsCreateBody struct {
 	PropertyID   uint   `json:"propertyID"`
 	Name         string `json:"name"`
+	Overview     string `json:"overview"`
 	Bedrooms     int    `json:"bedrooms"`
 	SizeM2       int    `json:"sizeM2"`
 	MaxOccupancy int    `json:"maxOccupancy"`
@@ -56,6 +57,10 @@ func (a *UnitsCreate) Perform(c Context) {
 		SizeM2:       a.SizeM2,
 		MaxOccupancy: &a.MaxOccupancy,
 		Count:        a.Count,
+	}
+
+	if a.Overview != "" {
+		unit.Overview = &a.Overview
 	}
 
 	if err := c.Repository().Create(unit).Error; err != nil {

@@ -16,7 +16,8 @@ CREATE TABLE units(
   one_week_price_cents integer,
   three_months_price_cents integer,
   six_months_price_cents integer,
-  twelve_months_price_cents integer
+  twelve_months_price_cents integer,
+  overview text
 );
 
 CREATE INDEX units_property_id ON units(property_id);

@@ -18,6 +18,7 @@ type Unit struct {
 	PropertyID             *uint      `json:"propertyID"`
 	Property               *Property  `json:"-"`
 	Name                   string     `json:"name"`
+	Overview               *string    `json:"overview"`
 	Bedrooms               int        `json:"bedrooms"`
 	Bathrooms              int        `json:"bathrooms"`
 	SizeM2                 int        `json:"sizeM2"`

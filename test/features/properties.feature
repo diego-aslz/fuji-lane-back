@@ -123,6 +123,7 @@ Feature: Properties Management
           "sixMonthsPriceCents": null,
           "twelveMonthsPriceCents": null,
           "floorPlanImage": null,
+          "overview": null,
           "amenities": [{
             "id": 2,
             "type": "toilet",
@@ -344,7 +345,8 @@ Feature: Properties Management
           "twelveMonthsPriceCents": 1200000,
           "floorPlanImage": null,
           "amenities": null,
-          "images": null
+          "images": null,
+          "overview": null
         }, {
           "id": 3,
           "publishedAt": null,
@@ -363,7 +365,8 @@ Feature: Properties Management
           "twelveMonthsPriceCents": 1220000,
           "floorPlanImage": null,
           "amenities": null,
-          "images": null
+          "images": null,
+          "overview": null
         }]
       }, {
         "id": 2,

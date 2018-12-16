@@ -16,14 +16,15 @@ Feature: Units Management
     When I add the following unit:
       | Property     | ACME Downtown |
       | Name         | Standard Apt  |
+      | Overview     | Big rooms!    |
       | Bedrooms     | 1             |
       | SizeM2       | 52            |
       | MaxOccupancy | 3             |
       | Count        | 15            |
     Then the system should respond with "CREATED"
     And I should have the following units:
-      | Property      | Name         | Bedrooms | SizeM2 | MaxOccupancy | Count |
-      | ACME Downtown | Standard Apt | 1        | 52     | 3            | 15    |
+      | Property      | Name         | Bedrooms | SizeM2 | MaxOccupancy | Count | Overview   |
+      | ACME Downtown | Standard Apt | 1        | 52     | 3            | 15    | Big rooms! |
 
   Scenario: Adding an invalid unit
     When I add the following unit:
@@ -74,10 +75,11 @@ Feature: Units Management
       | SixMonthsPriceCents    | 650000        |
       | TwelveMonthsPriceCents | 1200000       |
       | FloorPlanImageID       | 3             |
+      | Overview               | Big windows!  |
     Then the system should respond with "OK"
     And I should have the following units:
-      | Property      | Name          | Bedrooms | Bathrooms | SizeM2 | MaxOccupancy | Count | BasePriceCents | OneNightPriceCents | OneWeekPriceCents | ThreeMonthsPriceCents | SixMonthsPriceCents | TwelveMonthsPriceCents | FloorPlanImageID |
-      | ACME Downtown | Std Apartment | 2        | 3         | 50     | 2            | 20    | 12000          | 11000              | 40000             | 350000                | 650000              | 1200000                | 3                |
+      | Property      | Name          | Bedrooms | Bathrooms | SizeM2 | MaxOccupancy | Count | BasePriceCents | OneNightPriceCents | OneWeekPriceCents | ThreeMonthsPriceCents | SixMonthsPriceCents | TwelveMonthsPriceCents | FloorPlanImageID | Overview     |
+      | ACME Downtown | Std Apartment | 2        | 3         | 50     | 2            | 20    | 12000          | 11000              | 40000             | 350000                | 650000              | 1200000                | 3                | Big windows! |
 
   Scenario: Updating a unit that does not belong to me
     Given the following accounts:
@@ -156,8 +158,8 @@ Feature: Units Management
 
   Scenario: Getting unit details
     Given the following units:
-      | ID | Property      | Name         | Bedrooms | Bathrooms | SizeM2 | MaxOccupancy | Count | BasePriceCents | OneNightPriceCents | OneWeekPriceCents | ThreeMonthsPriceCents | SixMonthsPriceCents | TwelveMonthsPriceCents |
-      | 2  | ACME Downtown | Standard Apt | 1        | 2         | 52     | 3            | 15    | 12000          | 11000              | 40000             | 350000                | 650000              | 1200000                |
+      | ID | Property      | Name         | Bedrooms | Bathrooms | SizeM2 | MaxOccupancy | Count | BasePriceCents | OneNightPriceCents | OneWeekPriceCents | ThreeMonthsPriceCents | SixMonthsPriceCents | TwelveMonthsPriceCents | Overview   |
+      | 2  | ACME Downtown | Standard Apt | 1        | 2         | 52     | 3            | 15    | 12000          | 11000              | 40000             | 350000                | 650000              | 1200000                | Good view! |
     And the following images:
       | ID | Unit         | Name          | Uploaded | URL                                 | Type       | Size | Position |
       | 3  | Standard Apt | blueprint.jpg | true     | https://s3.amazonaws.com/blue.jpg   | image/jpeg | 5000 | 0        |
@@ -188,6 +190,7 @@ Feature: Units Management
         "threeMonthsPriceCents": 350000,
         "sixMonthsPriceCents": 650000,
         "twelveMonthsPriceCents": 1200000,
+        "overview": "Good view!",
         "floorPlanImage": {
           "id": 3,
           "name": "blueprint.jpg",

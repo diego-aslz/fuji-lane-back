@@ -29,24 +29,22 @@ func requestUnitsShow(name string) error {
 	return performGETStep(url)()
 }
 
+type unitsCreateTestBody struct {
+	flactions.UnitsCreateBody
+	Property string
+}
+
 func requestUnitsCreate(table *gherkin.DataTable) error {
-	unit, err := assist.ParseMap(table)
+	i, err := assist.CreateInstance(new(unitsCreateTestBody), table)
 	if err != nil {
 		return err
 	}
 
-	body := flactions.UnitsCreateBody{}
-	body.Name = unit["Name"]
+	body := i.(*unitsCreateTestBody)
 
-	body.Bedrooms, _ = strconv.Atoi(unit["Bedrooms"])
-	body.SizeM2, _ = strconv.Atoi(unit["SizeM2"])
-	body.MaxOccupancy, _ = strconv.Atoi(unit["MaxOccupancy"])
-	body.Count, _ = strconv.Atoi(unit["Count"])
-
-	propertyName := unit["Property"]
-	if propertyName != "" {
+	if body.Property != "" {
 		property := &flentities.Property{}
-		if err := findByName(property, propertyName); err != nil {
+		if err := findByName(property, body.Property); err != nil {
 			return err
 		}
 		body.PropertyID = property.ID

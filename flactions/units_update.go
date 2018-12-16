@@ -10,19 +10,20 @@ import (
 
 // UnitsUpdateBody is the representation of the payload for creating a Unit
 type UnitsUpdateBody struct {
-	Name                   string `json:"name"`
-	Bedrooms               int    `json:"bedrooms"`
-	Bathrooms              int    `json:"bathrooms"`
-	SizeM2                 int    `json:"sizeM2"`
-	MaxOccupancy           int    `json:"maxOccupancy"`
-	Count                  int    `json:"count"`
-	BasePriceCents         int    `json:"basePriceCents"`
-	OneNightPriceCents     int    `json:"oneNightPriceCents"`
-	OneWeekPriceCents      int    `json:"oneWeekPriceCents"`
-	ThreeMonthsPriceCents  int    `json:"threeMonthsPriceCents"`
-	SixMonthsPriceCents    int    `json:"sixMonthsPriceCents"`
-	TwelveMonthsPriceCents int    `json:"twelveMonthsPriceCents"`
-	FloorPlanImageID       uint   `json:"floorPlanImageID"`
+	Name                   string  `json:"name"`
+	Overview               *string `json:"overview"`
+	Bedrooms               int     `json:"bedrooms"`
+	Bathrooms              int     `json:"bathrooms"`
+	SizeM2                 int     `json:"sizeM2"`
+	MaxOccupancy           int     `json:"maxOccupancy"`
+	Count                  int     `json:"count"`
+	BasePriceCents         int     `json:"basePriceCents"`
+	OneNightPriceCents     int     `json:"oneNightPriceCents"`
+	OneWeekPriceCents      int     `json:"oneWeekPriceCents"`
+	ThreeMonthsPriceCents  int     `json:"threeMonthsPriceCents"`
+	SixMonthsPriceCents    int     `json:"sixMonthsPriceCents"`
+	TwelveMonthsPriceCents int     `json:"twelveMonthsPriceCents"`
+	FloorPlanImageID       uint    `json:"floorPlanImageID"`
 	bodyWithAmenities
 }
 
@@ -31,6 +32,10 @@ func (b *UnitsUpdateBody) toMap() (updates map[string]interface{}) {
 
 	if b.Name != "" {
 		updates["name"] = b.Name
+	}
+
+	if b.Overview != nil {
+		updates["Overview"] = *b.Overview
 	}
 
 	optionals := map[string]uint{
