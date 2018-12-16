@@ -104,7 +104,7 @@ Feature: Properties Management
         "amenities": [{
           "id": 1,
           "type": "gym",
-          "name": null
+          "name": "Gym"
         }],
         "units": [{
           "id": 11,
@@ -127,7 +127,7 @@ Feature: Properties Management
           "amenities": [{
             "id": 2,
             "type": "toilet",
-            "name": null
+            "name": "Toilet"
           }],
           "images": [{
             "id": 5,

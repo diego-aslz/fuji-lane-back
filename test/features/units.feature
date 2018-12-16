@@ -223,7 +223,7 @@ Feature: Units Management
           {
             "id": 1,
             "type": "bathrobes",
-            "name": null
+            "name": "Bathrobes"
           }
         ]
       }

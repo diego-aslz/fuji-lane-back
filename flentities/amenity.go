@@ -1,6 +1,9 @@
 package flentities
 
-import "time"
+import (
+	"encoding/json"
+	"time"
+)
 
 // AmenityType represents a recognized amenity type
 type AmenityType struct {
@@ -56,4 +59,22 @@ func IsValidAmenity(aType, name string) bool {
 	}
 
 	return false
+}
+
+// MarshalJSON to create a JSON with calculated name
+func (a Amenity) MarshalJSON() ([]byte, error) {
+	if a.Type != "custom" && a.Name == nil {
+		for _, typ := range AmenityTypes {
+			if typ.Code == a.Type {
+				a.Name = &typ.Name
+				break
+			}
+		}
+	}
+
+	return json.Marshal(&struct {
+		ID   uint   `json:"id"`
+		Type string `json:"type"`
+		Name string `json:"name"`
+	}{a.ID, a.Type, *a.Name})
 }
