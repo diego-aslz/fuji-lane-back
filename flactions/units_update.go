@@ -27,6 +27,13 @@ type UnitsUpdateBody struct {
 	bodyWithAmenities
 }
 
+// Validate the request body
+func (b *UnitsUpdateBody) Validate() []error {
+	return flentities.ValidateFields(
+		flentities.ValidateField("overview", b.Overview).HTML(),
+	)
+}
+
 func (b *UnitsUpdateBody) toMap() (updates map[string]interface{}) {
 	updates = map[string]interface{}{}
 

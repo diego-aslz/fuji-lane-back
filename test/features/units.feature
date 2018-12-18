@@ -12,32 +12,34 @@ Feature: Units Management
       | Diego Apartments | diego@selzlein.com | Diego Aguir Selzlein |
     And I am authenticated with "diego@selzlein.com"
 
-  Scenario: Adding a unit to my property
+  Scenario: Adding an unit to my property
     When I add the following unit:
-      | Property     | ACME Downtown |
-      | Name         | Standard Apt  |
-      | Overview     | Big rooms!    |
-      | Bedrooms     | 1             |
-      | SizeM2       | 52            |
-      | MaxOccupancy | 3             |
-      | Count        | 15            |
+      | Property     | ACME Downtown               |
+      | Name         | Standard Apt                |
+      | Overview     | <strong>Big rooms!</strong> |
+      | Bedrooms     | 1                           |
+      | SizeM2       | 52                          |
+      | MaxOccupancy | 3                           |
+      | Count        | 15                          |
     Then the system should respond with "CREATED"
     And I should have the following units:
-      | Property      | Name         | Bedrooms | SizeM2 | MaxOccupancy | Count | Overview   |
-      | ACME Downtown | Standard Apt | 1        | 52     | 3            | 15    | Big rooms! |
+      | Property      | Name         | Bedrooms | SizeM2 | MaxOccupancy | Count | Overview                    |
+      | ACME Downtown | Standard Apt | 1        | 52     | 3            | 15    | <strong>Big rooms!</strong> |
 
   Scenario: Adding an invalid unit
     When I add the following unit:
-      | MaxOccupancy | 3 |
+      | MaxOccupancy | 3                                            |
+      | Overview     | <strong>Big rooms!<script></script></strong> |
     Then the system should respond with "UNPROCESSABLE ENTITY" and the following errors:
-      | property is required            |
-      | name is required                |
-      | bedrooms is required            |
-      | size is required                |
-      | number of unit type is required |
+      | property is required                  |
+      | name is required                      |
+      | bedrooms is required                  |
+      | size is required                      |
+      | number of unit type is required       |
+      | overview: script tags are not allowed |
     And I should have no units
 
-  Scenario: Adding a unit to a property that does not belong to me
+  Scenario: Adding an unit to a property that does not belong to me
     Given the following accounts:
       | Name  |
       | Other |
@@ -54,7 +56,7 @@ Feature: Units Management
     Then the system should respond with "NOT FOUND"
     And I should have no units
 
-  Scenario: Updating a unit
+  Scenario: Updating an unit
     Given the following units:
       | Property      | Name         | Bedrooms | SizeM2 | MaxOccupancy | Count |
       | ACME Downtown | Standard Apt | 1        | 52     | 3            | 15    |
@@ -62,26 +64,35 @@ Feature: Units Management
       | ID | Unit         | Name          | Uploaded |
       | 3  | Standard Apt | blueprint.jpg | true     |
     When I update unit "Standard Apt" with the following attributes:
-      | Name                   | Std Apartment |
-      | Bedrooms               | 2             |
-      | Bathrooms              | 3             |
-      | SizeM2                 | 50            |
-      | MaxOccupancy           | 2             |
-      | Count                  | 20            |
-      | BasePriceCents         | 12000         |
-      | OneNightPriceCents     | 11000         |
-      | OneWeekPriceCents      | 40000         |
-      | ThreeMonthsPriceCents  | 350000        |
-      | SixMonthsPriceCents    | 650000        |
-      | TwelveMonthsPriceCents | 1200000       |
-      | FloorPlanImageID       | 3             |
-      | Overview               | Big windows!  |
+      | Name                   | Std Apartment                 |
+      | Bedrooms               | 2                             |
+      | Bathrooms              | 3                             |
+      | SizeM2                 | 50                            |
+      | MaxOccupancy           | 2                             |
+      | Count                  | 20                            |
+      | BasePriceCents         | 12000                         |
+      | OneNightPriceCents     | 11000                         |
+      | OneWeekPriceCents      | 40000                         |
+      | ThreeMonthsPriceCents  | 350000                        |
+      | SixMonthsPriceCents    | 650000                        |
+      | TwelveMonthsPriceCents | 1200000                       |
+      | FloorPlanImageID       | 3                             |
+      | Overview               | <strong>Big windows!</strong> |
     Then the system should respond with "OK"
     And I should have the following units:
-      | Property      | Name          | Bedrooms | Bathrooms | SizeM2 | MaxOccupancy | Count | BasePriceCents | OneNightPriceCents | OneWeekPriceCents | ThreeMonthsPriceCents | SixMonthsPriceCents | TwelveMonthsPriceCents | FloorPlanImageID | Overview     |
-      | ACME Downtown | Std Apartment | 2        | 3         | 50     | 2            | 20    | 12000          | 11000              | 40000             | 350000                | 650000              | 1200000                | 3                | Big windows! |
+      | Property      | Name          | Bedrooms | Bathrooms | SizeM2 | MaxOccupancy | Count | BasePriceCents | OneNightPriceCents | OneWeekPriceCents | ThreeMonthsPriceCents | SixMonthsPriceCents | TwelveMonthsPriceCents | FloorPlanImageID | Overview                      |
+      | ACME Downtown | Std Apartment | 2        | 3         | 50     | 2            | 20    | 12000          | 11000              | 40000             | 350000                | 650000              | 1200000                | 3                | <strong>Big windows!</strong> |
 
-  Scenario: Updating a unit that does not belong to me
+  Scenario: Updating an unit with invalid Overview
+    Given the following units:
+      | Property      | Name         | Bedrooms | SizeM2 | MaxOccupancy | Count |
+      | ACME Downtown | Standard Apt | 1        | 52     | 3            | 15    |
+    When I update unit "Standard Apt" with the following attributes:
+      | Overview | <strong>Big windows!</strong><script></script> |
+    Then the system should respond with "UNPROCESSABLE ENTITY" and the following errors:
+      | overview: script tags are not allowed |
+
+  Scenario: Updating an unit that does not belong to me
     Given the following accounts:
       | Name  |
       | Other |
@@ -102,7 +113,7 @@ Feature: Units Management
       | Property    | Name         | Bedrooms | SizeM2 | MaxOccupancy | Count |
       | ACME Uptown | Standard Apt | 1        | 52     | 3            | 15    |
 
-  Scenario: Updating a unit with a floor plan image that does not belong to me
+  Scenario: Updating an unit with a floor plan image that does not belong to me
     Given the following accounts:
       | Name  |
       | Other |
@@ -158,8 +169,8 @@ Feature: Units Management
 
   Scenario: Getting unit details
     Given the following units:
-      | ID | Property      | Name         | Bedrooms | Bathrooms | SizeM2 | MaxOccupancy | Count | BasePriceCents | OneNightPriceCents | OneWeekPriceCents | ThreeMonthsPriceCents | SixMonthsPriceCents | TwelveMonthsPriceCents | Overview   |
-      | 2  | ACME Downtown | Standard Apt | 1        | 2         | 52     | 3            | 15    | 12000          | 11000              | 40000             | 350000                | 650000              | 1200000                | Good view! |
+      | ID | Property      | Name         | Bedrooms | Bathrooms | SizeM2 | MaxOccupancy | Count | BasePriceCents | OneNightPriceCents | OneWeekPriceCents | ThreeMonthsPriceCents | SixMonthsPriceCents | TwelveMonthsPriceCents | Overview                    |
+      | 2  | ACME Downtown | Standard Apt | 1        | 2         | 52     | 3            | 15    | 12000          | 11000              | 40000             | 350000                | 650000              | 1200000                | <strong>Good view!</strong> |
     And the following images:
       | ID | Unit         | Name          | Uploaded | URL                                 | Type       | Size | Position |
       | 3  | Standard Apt | blueprint.jpg | true     | https://s3.amazonaws.com/blue.jpg   | image/jpeg | 5000 | 0        |
@@ -190,7 +201,7 @@ Feature: Units Management
         "threeMonthsPriceCents": 350000,
         "sixMonthsPriceCents": 650000,
         "twelveMonthsPriceCents": 1200000,
-        "overview": "Good view!",
+        "overview": "<strong>Good view!</strong>",
         "floorPlanImage": {
           "id": 3,
           "name": "blueprint.jpg",
@@ -229,7 +240,7 @@ Feature: Units Management
       }
       """
 
-  Scenario: Getting unit details for a unit the user does not have access to
+  Scenario: Getting unit details for an unit the user does not have access to
     Given the following accounts:
       | Name            |
       | John Apartments |
@@ -259,7 +270,7 @@ Feature: Units Management
       | ID | Name         | PublishedAt          |
       | 2  | Standard Apt | 2018-06-05T08:00:00Z |
 
-  Scenario: Publishing a unit with missing information
+  Scenario: Publishing an unit with missing information
     Given the following units:
       | ID | Property      | Name | Bedrooms | SizeM2 | Count |
       | 2  | ACME Downtown |      | 0        | 0      | 0     |

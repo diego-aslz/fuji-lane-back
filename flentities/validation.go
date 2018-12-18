@@ -4,6 +4,9 @@ import (
 	"fmt"
 	"reflect"
 	"regexp"
+	"strings"
+
+	"golang.org/x/net/html"
 )
 
 const (
@@ -157,4 +160,50 @@ func (v FieldValidation) Image() FieldValidation {
 
 func (v FieldValidation) unsupportedTypeError(validator string) error {
 	return fmt.Errorf("Unsupported type for %s validator: %s", validator, reflect.TypeOf(v.Value))
+}
+
+var invalidHTMLTags = []string{"script"}
+
+// HTML adds an error if the value is not an acceptable HTML
+func (v FieldValidation) HTML() FieldValidation {
+	validator := func(val string) {
+		node, err := html.Parse(strings.NewReader(val))
+		if err != nil {
+			v.Errors = append(v.Errors, fmt.Errorf("%s: %s", v.Name, err.Error()))
+			return
+		}
+
+		var searchForInvalidTags func(*html.Node)
+		searchForInvalidTags = func(n *html.Node) {
+			if n.Type == html.ElementNode {
+				for _, tagName := range invalidHTMLTags {
+					if n.Data == tagName {
+						v.Errors = append(v.Errors, fmt.Errorf("%s: %s tags are not allowed", v.Name, tagName))
+					}
+				}
+			}
+
+			for c := n.FirstChild; c != nil; c = c.NextSibling {
+				searchForInvalidTags(c)
+			}
+		}
+
+		searchForInvalidTags(node)
+	}
+
+	switch val := v.Value.(type) {
+	case *string:
+		if val != nil {
+			validator(*val)
+		}
+	case string:
+		if val != "" {
+			validator(val)
+		}
+		break
+	default:
+		v.Errors = append(v.Errors, v.unsupportedTypeError("HTML"))
+	}
+
+	return v
 }

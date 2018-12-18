@@ -26,6 +26,7 @@ func (b *UnitsCreateBody) Validate() []error {
 		flentities.ValidateField("bedrooms", b.Bedrooms).Required(),
 		flentities.ValidateField("size", b.SizeM2).Required(),
 		flentities.ValidateField("number of unit type", b.Count).Required(),
+		flentities.ValidateField("overview", b.Overview).HTML(),
 	)
 }
 
