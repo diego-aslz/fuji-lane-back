@@ -28,6 +28,13 @@ type PropertiesUpdateBody struct {
 	bodyWithAmenities
 }
 
+// Validate the request body
+func (b *PropertiesUpdateBody) Validate() []error {
+	return flentities.ValidateFields(
+		flentities.ValidateField("overview", b.Overview).HTML(),
+	)
+}
+
 // PropertiesUpdate returns a pre-signed URL for clients to upload images directly to S3
 type PropertiesUpdate struct {
 	PropertiesUpdateBody

@@ -37,9 +37,9 @@ Feature: Properties Management
       | Name  |
       | Other |
     And the following properties:
-      | ID | Account          | Name          | Address1 | Address2 | Address3   | City  | PostalCode | Country | MinimumStay | Deposit | Cleaning | NearestAirport | NearestSubway | NearbyLocations | Overview   | UpdatedAt            |
-      | 1  | Diego Apartments | ACME Downtown | Add. One | Add. Two | Add. Three | Osaka | 223344     | Japan   | 3           | 300     | 50       | IGU            | Ines          | Pharmacy        | Good place | 2018-06-05T08:00:00Z |
-      | 2  | Other            | Other Prop    | Add. One | Add. Two | Add. Three | Osaka | 223344     | Japan   | 4           | 350     | 50       | IGU            | Ines          | Restaurant      | Nice place | 2018-06-05T08:00:00Z |
+      | ID | Account          | Name          | Address1 | Address2 | Address3   | City  | PostalCode | Country | MinimumStay | Deposit | Cleaning | NearestAirport | NearestSubway | NearbyLocations | Overview                     | UpdatedAt            |
+      | 1  | Diego Apartments | ACME Downtown | Add. One | Add. Two | Add. Three | Osaka | 223344     | Japan   | 3           | 300     | 50       | IGU            | Ines          | Pharmacy        | <strong>Good place!</strong> | 2018-06-05T08:00:00Z |
+      | 2  | Other            | Other Prop    | Add. One | Add. Two | Add. Three | Osaka | 223344     | Japan   | 4           | 350     | 50       | IGU            | Ines          | Restaurant      | <strong>Nice place!</strong> | 2018-06-05T08:00:00Z |
     And the following images:
       | ID | Property      | Uploaded | Name      | URL                                | Type       | Size    | Position |
       | 1  | ACME Downtown | true     | front.jpg | https://s3.amazonaws.com/front.jpg | image/jpeg | 1000000 | 2        |
@@ -81,7 +81,7 @@ Feature: Properties Management
         "nearestAirport": "IGU",
         "nearestSubway": "Ines",
         "nearbyLocations": "Pharmacy",
-        "overview": "Good place",
+        "overview": "<strong>Good place!</strong>",
         "images": [
           {
             "id": 4,
@@ -157,25 +157,34 @@ Feature: Properties Management
       | ID | Account          |
       | 1  | Diego Apartments |
     When I update the property "1" with the following details:
-      | Name            | ACME Downtown |
-      | Address1        | Add. One      |
-      | Address2        | Add. Two      |
-      | Address3        | Add. Three    |
-      | CityID          | 3             |
-      | PostalCode      | 223344        |
-      | MinimumStay     | 3             |
-      | Deposit         | 150           |
-      | Cleaning        | daily         |
-      | NearestAirport  | IGU           |
-      | NearestSubway   | Central Park  |
-      | NearbyLocations | Pharmacy      |
-      | Overview        | Nice place    |
-      | Latitude        | 34.69374      |
-      | Longitude       | 135.50218     |
+      | Name            | ACME Downtown                |
+      | Address1        | Add. One                     |
+      | Address2        | Add. Two                     |
+      | Address3        | Add. Three                   |
+      | CityID          | 3                            |
+      | PostalCode      | 223344                       |
+      | MinimumStay     | 3                            |
+      | Deposit         | 150                          |
+      | Cleaning        | daily                        |
+      | NearestAirport  | IGU                          |
+      | NearestSubway   | Central Park                 |
+      | NearbyLocations | Pharmacy                     |
+      | Overview        | <strong>Good place!</strong> |
+      | Latitude        | 34.69374                     |
+      | Longitude       | 135.50218                    |
     Then the system should respond with "OK"
     And I should have the following properties:
-      | Account          | Name          | Address1 | Address2 | Address3   | City  | PostalCode | Country | MinimumStay | Deposit | Cleaning | NearestAirport | NearestSubway | NearbyLocations | Overview   | Latitude | Longitude |
-      | Diego Apartments | ACME Downtown | Add. One | Add. Two | Add. Three | Osaka | 223344     | Japan   | 3           | 150     | daily    | IGU            | Central Park  | Pharmacy        | Nice place | 34.69374 | 135.50218 |
+      | Account          | Name          | Address1 | Address2 | Address3   | City  | PostalCode | Country | MinimumStay | Deposit | Cleaning | NearestAirport | NearestSubway | NearbyLocations | Overview                     | Latitude | Longitude |
+      | Diego Apartments | ACME Downtown | Add. One | Add. Two | Add. Three | Osaka | 223344     | Japan   | 3           | 150     | daily    | IGU            | Central Park  | Pharmacy        | <strong>Good place!</strong> | 34.69374 | 135.50218 |
+
+  Scenario: Updating my property with invalid Overview
+    Given the following properties:
+      | ID | Account          |
+      | 1  | Diego Apartments |
+    When I update the property "1" with the following details:
+      | Overview | <strong>Big windows!</strong><script></script> |
+    Then the system should respond with "UNPROCESSABLE ENTITY" and the following errors:
+      | overview: script tags are not allowed |
 
   Scenario: Updating a property that does not belong to me
     Given the following accounts:
@@ -279,9 +288,6 @@ Feature: Properties Management
       | ID | Property      | Uploaded | Name      | URL                                | Type       | Size    | Position |
       | 1  | ACME Downtown | true     | front.jpg | https://s3.amazonaws.com/front.jpg | image/jpeg | 1000000 | 2        |
       | 2  | ACME Downtown | true     | back.jpg  | https://s3.amazonaws.com/back.jpg  | image/jpeg | 1000000 | 1        |
-    # And the following amenities:
-    #   | Property      | Type   | Name      |
-    #   | ACME Downtown | custom | Breakfast |
     And the following units:
       | ID | Property      | Name           | BasePriceCents | OneNightPriceCents | OneWeekPriceCents | ThreeMonthsPriceCents | SixMonthsPriceCents | TwelveMonthsPriceCents |
       | 2  | ACME Downtown | Standard Apt   | 10000          | 11000              | 40000             | 350000                | 650000              | 1200000                |
