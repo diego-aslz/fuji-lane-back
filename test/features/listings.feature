@@ -34,13 +34,14 @@ Feature: Listings
       | 22 | ACME Downtown      | Unpublished Penthouse |
       | 23 | No Published Units | Unpublished           |
     And the following images:
-      | ID | Property      | Uploaded | Name      | URL                                | Type       | Size    | Position |
-      | 1  | ACME Downtown | true     | front.jpg | https://s3.amazonaws.com/front.jpg | image/jpeg | 1000000 | 1        |
-      | 2  | ACME Downtown | false    | back.jpg  | https://s3.amazonaws.com/back.jpg  | image/jpeg | 1000000 | 2        |
+      | ID | Property      | Uploaded | Name         | URL                                   | Type       | Size    | Position |
+      | 1  | ACME Downtown | true     | front.jpg    | https://s3.amazonaws.com/front.jpg    | image/jpeg | 1000000 | 1        |
+      | 2  | ACME Downtown | false    | back.jpg     | https://s3.amazonaws.com/back.jpg     | image/jpeg | 1000000 | 2        |
+      | 3  | ACME Uptown   | true     | property.jpg | https://s3.amazonaws.com/property.jpg | image/jpeg | 1000000 | 1        |
     And the following images:
       | ID | Unit         | Uploaded | Name      | URL                                | Type       | Size    | Position |
-      | 3  | Standard Apt | true     | front.jpg | https://s3.amazonaws.com/front.jpg | image/jpeg | 1000000 | 1        |
-      | 4  | Standard Apt | false    | back.jpg  | https://s3.amazonaws.com/back.jpg  | image/jpeg | 1000000 | 2        |
+      | 10 | Standard Apt | true     | front.jpg | https://s3.amazonaws.com/front.jpg | image/jpeg | 1000000 | 1        |
+      | 11 | Standard Apt | false    | back.jpg  | https://s3.amazonaws.com/back.jpg  | image/jpeg | 1000000 | 2        |
     And the following amenities:
       | Property      | Type |
       | ACME Downtown | gym  |
@@ -77,6 +78,11 @@ Feature: Listings
           "basePriceCents": 20000,
           "bathrooms": 4,
           "bedrooms": 3,
+          "id": 2,
+          "images": [{
+            "name": "property.jpg",
+            "url": "https://s3.amazonaws.com/property.jpg"
+          }],
           "name": "ACME Uptown",
           "overview": "<p>Uptown Overview</p>",
           "sizeM2": 80
@@ -115,21 +121,21 @@ Feature: Listings
 
   Scenario: Getting Listing Details for a not published Property
     Given the following properties:
-      | ID | Account          | Name               | Overview                 | Latitude | Longitude | Address1                | CityID | CountryID |
-      | 1  | Diego Apartments | ACME Downtown      | <p>Property Overview</p> | 100      | 200       | 88 Tai Tam Reservoir Rd | 3      | 2         |
+      | ID | Account          | Name          | Overview                 | Latitude | Longitude | Address1                | CityID | CountryID |
+      | 1  | Diego Apartments | ACME Downtown | <p>Property Overview</p> | 100      | 200       | 88 Tai Tam Reservoir Rd | 3      | 2         |
     And the following units:
-      | ID | Property       | Name         | Bedrooms | Bathrooms | SizeM2 | MaxOccupancy | Count | PublishedAt          | BasePriceCents |
-      | 11 | ACME Downtown  | Double Apt   | 2        | 2         | 62     | 6            | 10    | 2018-06-01T08:00:00Z | 12000          |
+      | ID | Property      | Name       | Bedrooms | Bathrooms | SizeM2 | MaxOccupancy | Count | PublishedAt          | BasePriceCents |
+      | 11 | ACME Downtown | Double Apt | 2        | 2         | 62     | 6            | 10    | 2018-06-01T08:00:00Z | 12000          |
     When I get listing details for "ACME Downtown"
     Then the system should respond with "NOT FOUND"
 
   Scenario: Getting Listing Details for a published Property with no published Units
     Given the following properties:
-      | ID | Account          | Name               | Overview                 | PublishedAt          | Latitude | Longitude | Address1                | CityID | CountryID |
-      | 1  | Diego Apartments | ACME Downtown      | <p>Property Overview</p> | 2018-06-01T08:00:00Z | 100      | 200       | 88 Tai Tam Reservoir Rd | 3      | 2         |
+      | ID | Account          | Name          | Overview                 | PublishedAt          | Latitude | Longitude | Address1                | CityID | CountryID |
+      | 1  | Diego Apartments | ACME Downtown | <p>Property Overview</p> | 2018-06-01T08:00:00Z | 100      | 200       | 88 Tai Tam Reservoir Rd | 3      | 2         |
     And the following units:
-      | ID | Property       | Name         | Bedrooms | Bathrooms | SizeM2 | MaxOccupancy | Count | BasePriceCents |
-      | 11 | ACME Downtown  | Double Apt   | 2        | 2         | 62     | 6            | 10    | 12000          |
+      | ID | Property      | Name       | Bedrooms | Bathrooms | SizeM2 | MaxOccupancy | Count | BasePriceCents |
+      | 11 | ACME Downtown | Double Apt | 2        | 2         | 62     | 6            | 10    | 12000          |
     When I get listing details for "ACME Downtown"
     Then the system should respond with "NOT FOUND"
 
@@ -139,11 +145,11 @@ Feature: Listings
       | Diego Apartments | diego@selzlein.com | Diego Aguir Selzlein |
     And I am authenticated with "diego@selzlein.com"
     And the following properties:
-      | ID | Account          | Name               | Overview                 | Latitude | Longitude | Address1                | CityID | CountryID |
-      | 1  | Diego Apartments | ACME Downtown      | <p>Property Overview</p> | 100      | 200       | 88 Tai Tam Reservoir Rd | 3      | 2         |
+      | ID | Account          | Name          | Overview                 | Latitude | Longitude | Address1                | CityID | CountryID |
+      | 1  | Diego Apartments | ACME Downtown | <p>Property Overview</p> | 100      | 200       | 88 Tai Tam Reservoir Rd | 3      | 2         |
     And the following units:
-      | ID | Property       | Name         | Bedrooms | Bathrooms | SizeM2 | MaxOccupancy | Count | PublishedAt          | BasePriceCents |
-      | 11 | ACME Downtown  | Double Apt   | 2        | 2         | 62     | 6            | 10    | 2018-06-01T08:00:00Z | 12000          |
+      | ID | Property      | Name       | Bedrooms | Bathrooms | SizeM2 | MaxOccupancy | Count | PublishedAt          | BasePriceCents |
+      | 11 | ACME Downtown | Double Apt | 2        | 2         | 62     | 6            | 10    | 2018-06-01T08:00:00Z | 12000          |
     When I get listing details for "ACME Downtown"
     Then the system should respond with "OK"
 
@@ -153,10 +159,10 @@ Feature: Listings
       | Diego Apartments | diego@selzlein.com | Diego Aguir Selzlein |
     And I am authenticated with "diego@selzlein.com"
     And the following properties:
-      | ID | Account          | Name               | Overview                 | PublishedAt          | Latitude | Longitude | Address1                | CityID | CountryID |
-      | 1  | Diego Apartments | ACME Downtown      | <p>Property Overview</p> | 2018-06-01T08:00:00Z | 100      | 200       | 88 Tai Tam Reservoir Rd | 3      | 2         |
+      | ID | Account          | Name          | Overview                 | PublishedAt          | Latitude | Longitude | Address1                | CityID | CountryID |
+      | 1  | Diego Apartments | ACME Downtown | <p>Property Overview</p> | 2018-06-01T08:00:00Z | 100      | 200       | 88 Tai Tam Reservoir Rd | 3      | 2         |
     And the following units:
-      | ID | Property       | Name         | Bedrooms | Bathrooms | SizeM2 | MaxOccupancy | Count | BasePriceCents |
-      | 11 | ACME Downtown  | Double Apt   | 2        | 2         | 62     | 6            | 10    | 12000          |
+      | ID | Property      | Name       | Bedrooms | Bathrooms | SizeM2 | MaxOccupancy | Count | BasePriceCents |
+      | 11 | ACME Downtown | Double Apt | 2        | 2         | 62     | 6            | 10    | 12000          |
     When I get listing details for "ACME Downtown"
     Then the system should respond with "OK"

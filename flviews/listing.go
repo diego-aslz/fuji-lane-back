@@ -49,11 +49,13 @@ func listingUnits(units []*flentities.Unit) []map[string]interface{} {
 func listingImages(images []*flentities.Image) []map[string]interface{} {
 	result := []map[string]interface{}{}
 
-	for _, img := range images {
-		result = append(result, map[string]interface{}{
-			"name": img.Name,
-			"url":  img.URL,
-		})
+	if images != nil {
+		for _, img := range images {
+			result = append(result, map[string]interface{}{
+				"name": img.Name,
+				"url":  img.URL,
+			})
+		}
 	}
 
 	return result
@@ -81,11 +83,13 @@ func listingSimilarListings(similarListings []*flentities.Property) []map[string
 		}
 
 		result = append(result, map[string]interface{}{
+			"id":             l.ID,
 			"name":           l.Name,
 			"address1":       l.Address1,
 			"address2":       l.Address2,
 			"address3":       l.Address3,
 			"overview":       l.Overview,
+			"images":         listingImages(l.Images),
 			"bedrooms":       l.Units[0].Bedrooms,
 			"bathrooms":      l.Units[0].Bathrooms,
 			"sizeM2":         l.Units[0].SizeM2,
