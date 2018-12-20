@@ -125,16 +125,18 @@ func (a *Application) facebookSignIn(c *Context) {
 func (a *Application) renewSession(c *Context) {
 	withAction(&flactions.RenewSession{},
 		withRepository(
-			authenticateUser(
-				performAction)))(c)
+			loadSession(
+				requireUser(
+					performAction))))(c)
 }
 
 func (a *Application) accountsCreate(c *Context) {
 	withAction(&flactions.AccountsCreate{},
 		withRepository(
-			authenticateUser(
-				loadActionBody(
-					performAction))))(c)
+			loadSession(
+				requireUser(
+					loadActionBody(
+						performAction)))))(c)
 }
 
 func (a *Application) countriesList(c *Context) {
@@ -156,34 +158,38 @@ func (a *Application) citiesList(c *Context) {
 func (a *Application) propertiesCreate(c *Context) {
 	withAction(&flactions.PropertiesCreate{},
 		withRepository(
-			authenticateUser(
-				requireAccount(
-					performAction))))(c)
+			loadSession(
+				requireUser(
+					requireAccount(
+						performAction)))))(c)
 }
 
 func (a *Application) propertiesUpdate(c *Context) {
 	withAction(&flactions.PropertiesUpdate{},
 		withRepository(
-			authenticateUser(
-				requireAccount(
-					loadActionBody(
-						performAction)))))(c)
+			loadSession(
+				requireUser(
+					requireAccount(
+						loadActionBody(
+							performAction))))))(c)
 }
 
 func (a *Application) propertiesPublish(c *Context) {
 	withAction(&flactions.PropertiesPublish{},
 		withRepository(
-			authenticateUser(
-				requireAccount(
-					performAction))))(c)
+			loadSession(
+				requireUser(
+					requireAccount(
+						performAction)))))(c)
 }
 
 func (a *Application) propertiesShow(c *Context) {
 	withAction(&flactions.PropertiesShow{},
 		withRepository(
-			authenticateUser(
-				requireAccount(
-					performAction))))(c)
+			loadSession(
+				requireUser(
+					requireAccount(
+						performAction)))))(c)
 }
 
 func (a *Application) listingsShow(c *Context) {
@@ -195,79 +201,89 @@ func (a *Application) listingsShow(c *Context) {
 func (a *Application) propertiesList(c *Context) {
 	withAction(&flactions.PropertiesList{},
 		withRepository(
-			authenticateUser(
-				requireAccount(
-					performAction))))(c)
+			loadSession(
+				requireUser(
+					requireAccount(
+						performAction)))))(c)
 }
 
 func (a *Application) imagesCreate(c *Context) {
 	withAction(flactions.NewImagesCreate(a.S3Service),
 		withRepository(
-			authenticateUser(
-				loadActionBody(
-					requireAccount(
-						performAction)))))(c)
+			loadSession(
+				requireUser(
+					loadActionBody(
+						requireAccount(
+							performAction))))))(c)
 }
 
 func (a *Application) unitsCreate(c *Context) {
 	withAction(&flactions.UnitsCreate{},
 		withRepository(
-			authenticateUser(
-				loadActionBody(
-					performAction))))(c)
+			loadSession(
+				requireUser(
+					loadActionBody(
+						performAction)))))(c)
 }
 
 func (a *Application) unitsUpdate(c *Context) {
 	withAction(&flactions.UnitsUpdate{},
 		withRepository(
-			authenticateUser(
-				loadActionBody(
-					performAction))))(c)
+			loadSession(
+				requireUser(
+					loadActionBody(
+						performAction)))))(c)
 }
 
 func (a *Application) unitsPublish(c *Context) {
 	withAction(&flactions.UnitsPublish{},
 		withRepository(
-			authenticateUser(
-				requireAccount(
-					performAction))))(c)
+			loadSession(
+				requireUser(
+					requireAccount(
+						performAction)))))(c)
 }
 
 func (a *Application) unitsShow(c *Context) {
 	withAction(&flactions.UnitsShow{},
 		withRepository(
-			authenticateUser(
-				performAction)))(c)
+			loadSession(
+				requireUser(
+					performAction))))(c)
 }
 
 func (a *Application) imagesSort(c *Context) {
 	withAction(&flactions.ImagesSort{},
 		withRepository(
-			authenticateUser(
-				requireAccount(
-					performAction))))(c)
+			loadSession(
+				requireUser(
+					requireAccount(
+						performAction)))))(c)
 }
 
 func (a *Application) imagesUploaded(c *Context) {
 	withAction(&flactions.ImagesUploaded{},
 		withRepository(
-			authenticateUser(
-				requireAccount(
-					performAction))))(c)
+			loadSession(
+				requireUser(
+					requireAccount(
+						performAction)))))(c)
 }
 
 func (a *Application) imagesDestroy(c *Context) {
 	withAction(flactions.NewImagesDestroy(a.S3Service),
 		withRepository(
-			authenticateUser(
-				requireAccount(
-					performAction))))(c)
+			loadSession(
+				requireUser(
+					requireAccount(
+						performAction)))))(c)
 }
 
 func (a *Application) dashboard(c *Context) {
 	withAction(&flactions.Dashboard{},
 		withRepository(
-			authenticateUser(
-				requireAccount(
-					performAction))))(c)
+			loadSession(
+				requireUser(
+					requireAccount(
+						performAction)))))(c)
 }

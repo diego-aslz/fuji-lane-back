@@ -16,10 +16,13 @@ import (
 // switch web libraries with less pain if we ever need to
 type Context struct {
 	*gin.Context
-	randSource rand.Source
-	repository *flentities.Repository
-	now        func() time.Time
-	action     flactions.Action
+	randSource     rand.Source
+	repository     *flentities.Repository
+	now            func() time.Time
+	action         flactions.Action
+	session        *flentities.Session
+	currentUser    *flentities.User
+	currentAccount *flentities.Account
 }
 
 // Diagnostics returns the Diagnostics object being used for reporting execution details
@@ -100,10 +103,6 @@ func (c *Context) getHeader(key string) string {
 		return ""
 	}
 	return values[0]
-}
-
-func (c *Context) set(key string, value interface{}) {
-	c.Set(key, value)
 }
 
 // Repository returns the current Repository for database access
