@@ -47,15 +47,17 @@ func requestPropertiesUpdateWithAmenities(id string, table *gherkin.DataTable) e
 	return perform("PUT", strings.Replace(flweb.PropertyPath, ":id", id, 1), body)
 }
 
-func requestPropertiesShow(name string) error {
-	property := &flentities.Property{}
-	if err := findByName(property, name); err != nil {
-		return err
+func performGETPropertyStep(path string) func(string) error {
+	return func(propertyName string) error {
+		property := &flentities.Property{}
+		if err := findByName(property, propertyName); err != nil {
+			return err
+		}
+
+		url := strings.Replace(path, ":id", fmt.Sprint(property.ID), 1)
+
+		return performGETStep(url)()
 	}
-
-	url := strings.Replace(flweb.PropertyPath, ":id", fmt.Sprint(property.ID), 1)
-
-	return performGETStep(url)()
 }
 
 func requestPropertiesPublish(id string) error {
@@ -108,6 +110,7 @@ func PropertyContext(s *godog.Suite) {
 	s.Step(`^the following properties:$`, createFromTableStep(new(propertyRow), tableRowToProperty))
 	s.Step(`^I should have the following properties:$`, assertDatabaseRecordsStep(&[]*flentities.Property{}, propertyToTableRow))
 	s.Step(`^I should have no properties$`, assertNoDatabaseRecordsStep(&flentities.Property{}))
-	s.Step(`^I get details for property "([^"]*)"$`, requestPropertiesShow)
+	s.Step(`^I get details for property "([^"]*)"$`, performGETPropertyStep(flweb.PropertyPath))
+	s.Step(`^I get listing details for "([^"]*)"$`, performGETPropertyStep(flweb.ListingPath))
 	s.Step(`^I list my properties$`, performGETStep(flweb.PropertiesPath))
 }

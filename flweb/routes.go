@@ -36,6 +36,8 @@ const (
 	ImagesPath = "/images"
 	// ImagesUploadedPath for marking an image as uploaded
 	ImagesUploadedPath = "/images/:id/uploaded"
+	// ListingPath to get listing details
+	ListingPath = "/listings/:id"
 	// PropertiesPath to access properties
 	PropertiesPath = "/properties"
 	// PropertiesPublishPath to publish a property
@@ -76,6 +78,8 @@ func (a *Application) AddRoutes(e *gin.Engine) {
 	a.route(e.POST, ImagesPath, a.imagesCreate)
 	a.route(e.POST, ImagesSortPath, a.imagesSort)
 	a.route(e.PUT, ImagesUploadedPath, a.imagesUploaded)
+
+	a.route(e.GET, ListingPath, a.listingsShow)
 
 	a.route(e.GET, UnitPath, a.unitsShow)
 	a.route(e.POST, UnitsPath, a.unitsCreate)
@@ -180,6 +184,12 @@ func (a *Application) propertiesShow(c *Context) {
 			authenticateUser(
 				requireAccount(
 					performAction))))(c)
+}
+
+func (a *Application) listingsShow(c *Context) {
+	withAction(&flactions.ListingsShow{},
+		withRepository(
+			performAction))(c)
 }
 
 func (a *Application) propertiesList(c *Context) {

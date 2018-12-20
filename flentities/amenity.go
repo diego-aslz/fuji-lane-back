@@ -63,18 +63,29 @@ func IsValidAmenity(aType, name string) bool {
 
 // MarshalJSON to create a JSON with calculated name
 func (a Amenity) MarshalJSON() ([]byte, error) {
-	if a.Type != "custom" && a.Name == nil {
-		for _, typ := range AmenityTypes {
-			if typ.Code == a.Type {
-				a.Name = &typ.Name
-				break
-			}
-		}
-	}
+	str := AmenityName(a)
+	a.Name = &str
 
 	return json.Marshal(&struct {
 		ID   uint   `json:"id"`
 		Type string `json:"type"`
 		Name string `json:"name"`
 	}{a.ID, a.Type, *a.Name})
+}
+
+// AmenityName returns the calculated amenity's name. It returns the persisted name if it's a custom amenity
+func AmenityName(a Amenity) string {
+	if a.Type != "custom" && a.Name == nil {
+		for _, typ := range AmenityTypes {
+			if typ.Code == a.Type {
+				return typ.Name
+			}
+		}
+	}
+
+	if a.Name == nil {
+		return ""
+	}
+
+	return *a.Name
 }
