@@ -195,7 +195,8 @@ func (a *Application) propertiesShow(c *Context) {
 func (a *Application) listingsShow(c *Context) {
 	withAction(&flactions.ListingsShow{},
 		withRepository(
-			performAction))(c)
+			loadSession(
+				performAction)))(c)
 }
 
 func (a *Application) propertiesList(c *Context) {

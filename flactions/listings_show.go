@@ -28,7 +28,7 @@ func (a *ListingsShow) Perform(c Context) {
 	err = c.Repository().Preload("Amenities").Preload("Images", flentities.Image{Uploaded: true}, imagesDefaultOrder).
 		Preload("Units", func(db *gorm.DB) *gorm.DB { return db.Not(publishedNull).Order("units.base_price_cents") }).
 		Preload("Units.Images", flentities.Image{Uploaded: true}, imagesDefaultOrder).Preload("Units.Amenities").
-		Where(id).Not(publishedNull).Find(property).Error
+		Where(id).Find(property).Error
 
 	if err != nil {
 		if gorm.IsRecordNotFoundError(err) {
@@ -37,6 +37,14 @@ func (a *ListingsShow) Perform(c Context) {
 			c.ServerError(err)
 		}
 		return
+	}
+
+	user := c.CurrentUser()
+	if user == nil || user.AccountID == nil || *user.AccountID != property.AccountID {
+		if property.PublishedAt == nil || len(property.Units) == 0 {
+			c.RespondNotFound()
+			return
+		}
 	}
 
 	similarListings := []*flentities.Property{}

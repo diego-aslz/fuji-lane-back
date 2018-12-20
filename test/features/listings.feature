@@ -112,3 +112,51 @@ Feature: Listings
         }]
       }
       """
+
+  Scenario: Getting Listing Details for a not published Property
+    Given the following properties:
+      | ID | Account          | Name               | Overview                 | Latitude | Longitude | Address1                | CityID | CountryID |
+      | 1  | Diego Apartments | ACME Downtown      | <p>Property Overview</p> | 100      | 200       | 88 Tai Tam Reservoir Rd | 3      | 2         |
+    And the following units:
+      | ID | Property       | Name         | Bedrooms | Bathrooms | SizeM2 | MaxOccupancy | Count | PublishedAt          | BasePriceCents |
+      | 11 | ACME Downtown  | Double Apt   | 2        | 2         | 62     | 6            | 10    | 2018-06-01T08:00:00Z | 12000          |
+    When I get listing details for "ACME Downtown"
+    Then the system should respond with "NOT FOUND"
+
+  Scenario: Getting Listing Details for a published Property with no published Units
+    Given the following properties:
+      | ID | Account          | Name               | Overview                 | PublishedAt          | Latitude | Longitude | Address1                | CityID | CountryID |
+      | 1  | Diego Apartments | ACME Downtown      | <p>Property Overview</p> | 2018-06-01T08:00:00Z | 100      | 200       | 88 Tai Tam Reservoir Rd | 3      | 2         |
+    And the following units:
+      | ID | Property       | Name         | Bedrooms | Bathrooms | SizeM2 | MaxOccupancy | Count | BasePriceCents |
+      | 11 | ACME Downtown  | Double Apt   | 2        | 2         | 62     | 6            | 10    | 12000          |
+    When I get listing details for "ACME Downtown"
+    Then the system should respond with "NOT FOUND"
+
+  Scenario: Getting Listing Details for a not published Property as its owner
+    Given the following users:
+      | Account          | Email              | Name                 |
+      | Diego Apartments | diego@selzlein.com | Diego Aguir Selzlein |
+    And I am authenticated with "diego@selzlein.com"
+    And the following properties:
+      | ID | Account          | Name               | Overview                 | Latitude | Longitude | Address1                | CityID | CountryID |
+      | 1  | Diego Apartments | ACME Downtown      | <p>Property Overview</p> | 100      | 200       | 88 Tai Tam Reservoir Rd | 3      | 2         |
+    And the following units:
+      | ID | Property       | Name         | Bedrooms | Bathrooms | SizeM2 | MaxOccupancy | Count | PublishedAt          | BasePriceCents |
+      | 11 | ACME Downtown  | Double Apt   | 2        | 2         | 62     | 6            | 10    | 2018-06-01T08:00:00Z | 12000          |
+    When I get listing details for "ACME Downtown"
+    Then the system should respond with "OK"
+
+  Scenario: Getting Listing Details for a published Property with no published Units as its owner
+    Given the following users:
+      | Account          | Email              | Name                 |
+      | Diego Apartments | diego@selzlein.com | Diego Aguir Selzlein |
+    And I am authenticated with "diego@selzlein.com"
+    And the following properties:
+      | ID | Account          | Name               | Overview                 | PublishedAt          | Latitude | Longitude | Address1                | CityID | CountryID |
+      | 1  | Diego Apartments | ACME Downtown      | <p>Property Overview</p> | 2018-06-01T08:00:00Z | 100      | 200       | 88 Tai Tam Reservoir Rd | 3      | 2         |
+    And the following units:
+      | ID | Property       | Name         | Bedrooms | Bathrooms | SizeM2 | MaxOccupancy | Count | BasePriceCents |
+      | 11 | ACME Downtown  | Double Apt   | 2        | 2         | 62     | 6            | 10    | 12000          |
+    When I get listing details for "ACME Downtown"
+    Then the system should respond with "OK"
