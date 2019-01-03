@@ -12,8 +12,9 @@ Feature: Bookings
       | Account          | Name          |
       | Diego Apartments | ACME Downtown |
     And the following units:
-      | Property      | Name         | Bedrooms | SizeM2 | MaxOccupancy | Count |
-      | ACME Downtown | Standard Apt | 1        | 32     | 3            | 15    |
+      | Property      | Name         | Bedrooms | SizeM2 | MaxOccupancy | Count | BasePriceCents | PublishedAt          |
+      | ACME Downtown | Standard Apt | 1        | 32     | 3            | 15    | 11000          | 2018-06-09T15:00:00Z |
+    And I am authenticated with "diego@selzlein.com"
 
   Scenario: Listing my Bookings
     Given the following bookings:
@@ -21,7 +22,6 @@ Feature: Bookings
       | 1  | diego@selzlein.com   | Standard Apt | 2018-06-09T15:00:00Z | 2018-06-11T11:00:00Z | 2      |
       | 2  | diego@selzlein.com   | Standard Apt | 2018-06-15T15:00:00Z | 2018-06-16T11:00:00Z | 1      |
       | 3  | djeison@selzlein.com | Standard Apt | 2018-07-09T15:00:00Z | 2018-07-11T11:00:00Z | 2      |
-    And I am authenticated with "diego@selzlein.com"
     When I list my bookings
     Then the system should respond with "OK" and the following JSON:
       """
@@ -45,9 +45,39 @@ Feature: Bookings
       | ID | User               | Unit         | CheckInAt            | CheckOutAt           | Nights |
       | 1  | diego@selzlein.com | Standard Apt | 2018-06-09T15:00:00Z | 2018-06-11T11:00:00Z | 2      |
       | 2  | diego@selzlein.com | Standard Apt | 2018-06-15T15:00:00Z | 2018-06-16T11:00:00Z | 1      |
-    And I am authenticated with "diego@selzlein.com"
     When I list my bookings for page "2"
     Then the system should respond with "OK" and the following JSON:
       """
       []
       """
+
+  Scenario: Booking a Unit
+    Given it is currently "01 Jun 18 08:00"
+    When I submit the following booking:
+      | Unit           | Standard Apt         |
+      | CheckInAt      | 2018-06-09T15:00:00Z |
+      | CheckOutAt     | 2018-06-11T11:00:00Z |
+      | AdditionalInfo | Nothing              |
+    Then the system should respond with "CREATED"
+    And I should have the following bookings:
+      | User               | Unit         | CheckInAt            | CheckOutAt           | AdditionalInfo | Nights | NightPriceCents | ServiceFeeCents | TotalCents |
+      | diego@selzlein.com | Standard Apt | 2018-06-09T15:00:00Z | 2018-06-11T11:00:00Z | Nothing        | 2      | 11000           | 0               | 22000      |
+
+  Scenario: Booking a Unit without required information
+    Given it is currently "01 Jun 18 08:00"
+    When I submit the following booking:
+      | AdditionalInfo | Nothing |
+    Then the system should respond with "UNPROCESSABLE ENTITY" and the following errors:
+      | unit is required           |
+      | check in date is required  |
+      | check out date is required |
+
+  Scenario: Booking a Unit with invalid dates
+    Given it is currently "01 Jun 18 08:00"
+    When I submit the following booking:
+      | Unit       | Standard Apt         |
+      | CheckInAt  | 2018-05-09T15:00:00Z |
+      | CheckOutAt | 2018-04-11T11:00:00Z |
+    Then the system should respond with "UNPROCESSABLE ENTITY" and the following errors:
+      | check in date should be in the future        |
+      | check out date should be after check in date |

@@ -62,6 +62,7 @@ func (a *Application) AddRoutes(e *gin.Engine) {
 
 	a.route(e.GET, AmenityTypesPath, a.amenityTypesList)
 	a.route(e.GET, BookingsPath, a.bookingsList, withRepository, loadSession, requireUser)
+	a.route(e.POST, BookingsPath, a.bookingsCreate, withRepository, loadSession, requireUser, parseBody)
 	a.route(e.GET, CitiesPath, a.citiesList, withRepository)
 	a.route(e.GET, CountriesPath, a.countriesList, withRepository)
 
@@ -225,6 +226,10 @@ func (a *Application) dashboard() flactions.Action {
 
 func (a *Application) bookingsList() flactions.Action {
 	return &flactions.BookingsList{}
+}
+
+func (a *Application) bookingsCreate() flactions.Action {
+	return &flactions.BookingsCreate{}
 }
 
 func combineMiddleware(middleware ...func(contextFunc) contextFunc) contextFunc {

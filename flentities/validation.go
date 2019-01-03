@@ -1,10 +1,12 @@
 package flentities
 
 import (
+	"errors"
 	"fmt"
 	"reflect"
 	"regexp"
 	"strings"
+	"time"
 
 	"golang.org/x/net/html"
 )
@@ -55,6 +57,9 @@ func (v FieldValidation) Required() FieldValidation {
 		break
 	case int:
 		valid = val != 0
+		break
+	case time.Time:
+		valid = !val.IsZero()
 		break
 	default:
 		v.Errors = append(v.Errors, v.unsupportedTypeError("Required"))
@@ -203,6 +208,20 @@ func (v FieldValidation) HTML() FieldValidation {
 		break
 	default:
 		v.Errors = append(v.Errors, v.unsupportedTypeError("HTML"))
+	}
+
+	return v
+}
+
+// After adds an error if the value is not after the given time
+func (v FieldValidation) After(t time.Time, errorMsg string) FieldValidation {
+	switch val := v.Value.(type) {
+	case time.Time:
+		if !val.After(t) {
+			v.Errors = append(v.Errors, errors.New(errorMsg))
+		}
+	default:
+		v.Errors = append(v.Errors, v.unsupportedTypeError("After"))
 	}
 
 	return v

@@ -77,17 +77,6 @@ func (c *Context) ServerError(err error) {
 	c.RespondError(http.StatusInternalServerError, errors.New("Sorry, something went wrong"))
 }
 
-func (c *Context) validate(v flentities.Validatable) bool {
-	errs := v.Validate()
-	if len(errs) > 0 {
-		c.Diagnostics().AddJSON("validation_errors", c.errorsBody(errs))
-		c.Respond(http.StatusUnprocessableEntity, c.errorsBody(errs))
-		return false
-	}
-
-	return true
-}
-
 // parseBodyOrFail will try to parse the body as JSON and fail with BAD_REQUEST if an error is returned
 func (c *Context) parseBodyOrFail(dst interface{}) bool {
 	err := c.BindJSON(dst)

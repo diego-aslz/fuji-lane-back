@@ -47,8 +47,11 @@ func parseBody(next contextFunc) contextFunc {
 
 		c.Diagnostics().AddJSON("body", c.action)
 
-		if validatable, ok := c.action.(flentities.Validatable); ok {
-			if !c.validate(validatable) {
+		if v, ok := c.action.(flentities.Validatable); ok {
+			errs := v.Validate()
+			if len(errs) > 0 {
+				c.Diagnostics().AddJSON("validation_errors", c.errorsBody(errs))
+				c.Respond(http.StatusUnprocessableEntity, c.errorsBody(errs))
 				return
 			}
 		}
