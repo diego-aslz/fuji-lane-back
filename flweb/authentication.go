@@ -49,7 +49,7 @@ func (c *Context) unauthorized(msg ...string) {
 	c.RespondError(http.StatusUnauthorized, errors.New(m))
 }
 
-func loadSession(next func(*Context)) func(*Context) {
+func loadSession(next contextFunc) contextFunc {
 	return func(c *Context) {
 		auth := c.getHeader("Authorization")
 
@@ -97,7 +97,7 @@ func loadSession(next func(*Context)) func(*Context) {
 	}
 }
 
-func requireUser(next func(*Context)) func(*Context) {
+func requireUser(next contextFunc) contextFunc {
 	return func(c *Context) {
 		if c.currentUser == nil {
 			c.unauthorized()

@@ -37,7 +37,9 @@ func withDiagnostics(c *gin.Context) {
 	log.Println(diagnostics)
 }
 
-func loadActionBody(next func(*Context)) func(*Context) {
+type contextFunc func(*Context)
+
+func loadActionBody(next contextFunc) contextFunc {
 	return func(c *Context) {
 		if !c.parseBodyOrFail(c.action) {
 			return
@@ -55,7 +57,7 @@ func loadActionBody(next func(*Context)) func(*Context) {
 	}
 }
 
-func withRepository(next func(*Context)) func(*Context) {
+func withRepository(next contextFunc) contextFunc {
 	return func(c *Context) {
 		err := flentities.WithRepository(func(r *flentities.Repository) error {
 			c.repository = r
@@ -82,7 +84,7 @@ func performAction(c *Context) {
 	c.action.Perform(c)
 }
 
-func requireAccount(next func(*Context)) func(*Context) {
+func requireAccount(next contextFunc) contextFunc {
 	return func(c *Context) {
 		account := c.CurrentAccount()
 
