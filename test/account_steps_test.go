@@ -14,24 +14,41 @@ type accountRow struct {
 	Country string
 }
 
+type accountBodyTable struct {
+	flactions.AccountsCreateBody
+	Country string
+}
+
 func requestAccountsCreate(table *gherkin.DataTable) error {
-	b, err := assist.ParseMap(table)
+	abt, err := assist.CreateInstance(new(accountBodyTable), table)
 	if err != nil {
 		return err
 	}
 
+	body := abt.(*accountBodyTable)
+
 	country := &flentities.Country{}
-	if err := findByName(country, b["country"]); err != nil {
+	if err := findByName(country, body.Country); err != nil {
 		return err
 	}
 
-	body := flactions.AccountsCreateBody{}
-	body.Name = b["name"]
-	body.Phone = b["phone"]
-	body.UserName = b["userName"]
 	body.CountryID = country.ID
 
 	return performPOST(flweb.AccountsPath, body)
+}
+
+func requestProfileUpdate(table *gherkin.DataTable) error {
+	uub, err := assist.CreateInstance(new(flactions.ProfileUpdateBody), table)
+	if err != nil {
+		return err
+	}
+
+	body, err := bodyFromObject(uub)
+	if err != nil {
+		return err
+	}
+
+	return perform("PUT", flweb.ProfilePath, body)
 }
 
 func tableRowToAccount(r *flentities.Repository, a interface{}) (interface{}, error) {
@@ -58,4 +75,5 @@ func AccountContext(s *godog.Suite) {
 	s.Step(`^I create the following account:$`, requestAccountsCreate)
 	s.Step(`^I should have the following accounts:$`, assertDatabaseRecordsStep(&[]*flentities.Account{},
 		accountToTableRow))
+	s.Step(`^I update my user details with:$`, requestProfileUpdate)
 }
