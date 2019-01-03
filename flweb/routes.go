@@ -71,26 +71,26 @@ func (a *Application) AddRoutes(e *gin.Engine) {
 }
 
 func (a *Application) routeAuthentication(e *gin.Engine) {
-	a.route(e.POST, AccountsPath, a.accountsCreate, withRepository, loadSession, requireUser, loadActionBody)
-	a.route(e.PUT, ProfilePath, a.profileUpdate, withRepository, loadSession, requireUser, loadActionBody)
+	a.route(e.POST, AccountsPath, a.accountsCreate, withRepository, loadSession, requireUser, parseBody)
+	a.route(e.PUT, ProfilePath, a.profileUpdate, withRepository, loadSession, requireUser, parseBody)
 
 	a.route(e.GET, RenewSessionPath, a.renewSession, withRepository, loadSession, requireUser)
-	a.route(e.POST, FacebookSignInPath, a.facebookSignIn, withRepository, loadActionBody)
-	a.route(e.POST, SignInPath, a.signIn, withRepository, loadActionBody)
-	a.route(e.POST, SignUpPath, a.signUp, withRepository, loadActionBody)
+	a.route(e.POST, FacebookSignInPath, a.facebookSignIn, withRepository, parseBody)
+	a.route(e.POST, SignInPath, a.signIn, withRepository, parseBody)
+	a.route(e.POST, SignUpPath, a.signUp, withRepository, parseBody)
 }
 
 func (a *Application) routeImages(e *gin.Engine) {
 	a.route(e.DELETE, ImagePath, a.imagesDestroy, withRepository, loadSession, requireUser, requireAccount)
-	a.route(e.POST, ImagesPath, a.imagesCreate, withRepository, loadSession, requireUser, loadActionBody, requireAccount)
+	a.route(e.POST, ImagesPath, a.imagesCreate, withRepository, loadSession, requireUser, parseBody, requireAccount)
 	a.route(e.POST, ImagesSortPath, a.imagesSort, withRepository, loadSession, requireUser, requireAccount)
 	a.route(e.PUT, ImagesUploadedPath, a.imagesUploaded, withRepository, loadSession, requireUser, requireAccount)
 }
 
 func (a *Application) routeUnits(e *gin.Engine) {
 	a.route(e.GET, UnitPath, a.unitsShow, withRepository, loadSession, requireUser)
-	a.route(e.POST, UnitsPath, a.unitsCreate, withRepository, loadSession, requireUser, loadActionBody)
-	a.route(e.PUT, UnitPath, a.unitsUpdate, withRepository, loadSession, requireUser, loadActionBody)
+	a.route(e.POST, UnitsPath, a.unitsCreate, withRepository, loadSession, requireUser, parseBody)
+	a.route(e.PUT, UnitPath, a.unitsUpdate, withRepository, loadSession, requireUser, parseBody)
 	a.route(e.PUT, UnitsPublishPath, a.unitsPublish, withRepository, loadSession, requireUser, requireAccount)
 }
 
@@ -100,8 +100,7 @@ func (a *Application) routeProperties(e *gin.Engine) {
 	a.route(e.GET, PropertyPath, a.propertiesShow, withRepository, loadSession, requireUser, requireAccount)
 	a.route(e.GET, PropertiesPath, a.propertiesList, withRepository, loadSession, requireUser, requireAccount)
 	a.route(e.POST, PropertiesPath, a.propertiesCreate, withRepository, loadSession, requireUser, requireAccount)
-	a.route(e.PUT, PropertyPath, a.propertiesUpdate,
-		withRepository, loadSession, requireUser, requireAccount, loadActionBody)
+	a.route(e.PUT, PropertyPath, a.propertiesUpdate, withRepository, loadSession, requireUser, requireAccount, parseBody)
 	a.route(e.PUT, PropertiesPublishPath, a.propertiesPublish, withRepository, loadSession, requireUser, requireAccount)
 }
 

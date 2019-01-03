@@ -39,7 +39,7 @@ func withDiagnostics(c *gin.Context) {
 
 type contextFunc func(*Context)
 
-func loadActionBody(next contextFunc) contextFunc {
+func parseBody(next contextFunc) contextFunc {
 	return func(c *Context) {
 		if !c.parseBodyOrFail(c.action) {
 			return
