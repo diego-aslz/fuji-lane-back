@@ -22,6 +22,8 @@ const (
 	AccountsPath = "/accounts"
 	// AmenityTypesPath for listing amenity types
 	AmenityTypesPath = "/amenity_types/:target"
+	// BookingsPath for accessing user bookings
+	BookingsPath = "/bookings"
 	// CitiesPath for listing cities
 	CitiesPath = "/cities"
 	// CountriesPath for listing countries
@@ -58,9 +60,10 @@ const (
 func (a *Application) AddRoutes(e *gin.Engine) {
 	a.route(e.GET, StatusPath, a.status)
 
+	a.route(e.GET, AmenityTypesPath, a.amenityTypesList)
+	a.route(e.GET, BookingsPath, a.bookingsList, withRepository, loadSession, requireUser)
 	a.route(e.GET, CitiesPath, a.citiesList, withRepository)
 	a.route(e.GET, CountriesPath, a.countriesList, withRepository)
-	a.route(e.GET, AmenityTypesPath, a.amenityTypesList)
 
 	a.route(e.GET, DashboardPath, a.dashboard, withRepository, loadSession, requireUser, requireAccount)
 
@@ -218,6 +221,10 @@ func (a *Application) imagesDestroy() flactions.Action {
 
 func (a *Application) dashboard() flactions.Action {
 	return &flactions.Dashboard{}
+}
+
+func (a *Application) bookingsList() flactions.Action {
+	return &flactions.BookingsList{}
 }
 
 func combineMiddleware(middleware ...func(contextFunc) contextFunc) contextFunc {
