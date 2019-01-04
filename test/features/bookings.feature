@@ -73,3 +73,16 @@ Feature: Bookings
       | check in date should be in the future        |
       | check out date is required                   |
       | check out date should be after check in date |
+
+  Scenario: Trying to Book a Unit that's not published
+    Given it is currently "01 Jun 18 08:00"
+    And the following units:
+      | Property      | Name       | Bedrooms | SizeM2 | MaxOccupancy | Count | BasePriceCents |
+      | ACME Downtown | Double Apt | 1        | 32     | 3            | 15    | 11000          |
+    When I submit the following booking:
+      | Unit           | Double Apt           |
+      | CheckInAt      | 2018-06-09T15:00:00Z |
+      | CheckOutAt     | 2018-06-11T11:00:00Z |
+      | AdditionalInfo | Nothing              |
+    Then the system should respond with "UNPROCESSABLE ENTITY" and the following errors:
+      | unit is invalid |

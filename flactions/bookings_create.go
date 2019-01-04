@@ -51,7 +51,7 @@ func (a *BookingsCreate) Perform() {
 
 	if err := a.Repository().Find(booking.Unit).Error; err != nil {
 		if gorm.IsRecordNotFoundError(err) {
-			a.RespondError(http.StatusUnprocessableEntity, errors.New("Invalid unit"))
+			a.invalidUnit()
 		} else {
 			a.ServerError(err)
 		}
@@ -60,7 +60,7 @@ func (a *BookingsCreate) Perform() {
 	}
 
 	if booking.Unit.PublishedAt == nil {
-		a.RespondError(http.StatusUnprocessableEntity, errors.New("Invalid unit"))
+		a.invalidUnit()
 		return
 	}
 
@@ -72,6 +72,10 @@ func (a *BookingsCreate) Perform() {
 	}
 
 	a.Respond(http.StatusCreated, booking)
+}
+
+func (a *BookingsCreate) invalidUnit() {
+	a.RespondError(http.StatusUnprocessableEntity, errors.New("unit is invalid"))
 }
 
 // NewBookingsCreate returns a new BookingsCreate action
