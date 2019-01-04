@@ -63,21 +63,13 @@ Feature: Bookings
       | User               | Unit         | CheckInAt            | CheckOutAt           | AdditionalInfo | Nights | NightPriceCents | ServiceFeeCents | TotalCents |
       | diego@selzlein.com | Standard Apt | 2018-06-09T15:00:00Z | 2018-06-11T11:00:00Z | Nothing        | 2      | 11000           | 0               | 22000      |
 
-  Scenario: Booking a Unit without required information
+  Scenario: Booking a Unit with invalid information
     Given it is currently "01 Jun 18 08:00"
     When I submit the following booking:
       | AdditionalInfo | Nothing |
     Then the system should respond with "UNPROCESSABLE ENTITY" and the following errors:
-      | unit is required           |
-      | check in date is required  |
-      | check out date is required |
-
-  Scenario: Booking a Unit with invalid dates
-    Given it is currently "01 Jun 18 08:00"
-    When I submit the following booking:
-      | Unit       | Standard Apt         |
-      | CheckInAt  | 2018-05-09T15:00:00Z |
-      | CheckOutAt | 2018-04-11T11:00:00Z |
-    Then the system should respond with "UNPROCESSABLE ENTITY" and the following errors:
+      | unit is required                             |
+      | check in date is required                    |
       | check in date should be in the future        |
+      | check out date is required                   |
       | check out date should be after check in date |

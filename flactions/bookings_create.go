@@ -17,19 +17,21 @@ type BookingsCreateBody struct {
 	AdditionalInfo *string   `json:"additionalInfo"`
 }
 
-// Validate the request body
-func (b *BookingsCreateBody) Validate() []error {
-	return flentities.ValidateFields(
-		flentities.ValidateField("unit", b.UnitID).Required(),
-		flentities.ValidateField("check in date", b.CheckInAt).Required(),
-		flentities.ValidateField("check out date", b.CheckOutAt).Required(),
-	)
-}
-
 // BookingsCreate lists user bookings
 type BookingsCreate struct {
 	BookingsCreateBody
 	Context
+}
+
+// Validate the request body
+func (a *BookingsCreate) Validate() []error {
+	return flentities.ValidateFields(
+		flentities.ValidateField("unit", a.UnitID).Required(),
+		flentities.ValidateField("check in date", a.CheckInAt).Required().After(a.Now(),
+			"check in date should be in the future"),
+		flentities.ValidateField("check out date", a.CheckOutAt).Required().After(a.CheckInAt,
+			"check out date should be after check in date"),
+	)
 }
 
 // Perform executes the action
@@ -41,17 +43,6 @@ func (a *BookingsCreate) Perform() {
 		CheckInAt:      a.CheckInAt,
 		CheckOutAt:     a.CheckOutAt,
 		AdditionalInfo: a.AdditionalInfo,
-	}
-
-	errs := flentities.ValidateFields(
-		flentities.ValidateField("check in date", booking.CheckInAt).After(a.Now(), "check in date should be in the future"),
-		flentities.ValidateField("check out date", booking.CheckOutAt).After(booking.CheckInAt,
-			"check out date should be after check in date"),
-	)
-
-	if len(errs) > 0 {
-		a.RespondError(http.StatusUnprocessableEntity, errs...)
-		return
 	}
 
 	if booking.CheckInAt.Before(a.Now()) {
