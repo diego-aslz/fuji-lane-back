@@ -6,7 +6,7 @@ import (
 
 // RenewSession gives the user a new session with a new token and expiration date
 type RenewSession struct {
-	Context
+	sessionAction
 }
 
 // Perform executes the action
@@ -16,10 +16,10 @@ func (a *RenewSession) Perform() {
 		return
 	}
 
-	createSession(a.Context, a.CurrentUser())
+	a.createSession(a.CurrentUser())
 }
 
 // NewRenewSession returns a new RenewSession action
 func NewRenewSession(c Context) Action {
-	return &RenewSession{c}
+	return &RenewSession{sessionAction: sessionAction{c}}
 }

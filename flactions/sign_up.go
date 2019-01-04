@@ -31,7 +31,7 @@ func (b SignUpBody) FilterSensitiveInformation() fldiagnostics.SensitivePayload 
 // SignUp creates properties that can hold units
 type SignUp struct {
 	SignUpBody
-	Context
+	sessionAction
 }
 
 // Perform executes the action
@@ -54,10 +54,10 @@ func (a *SignUp) Perform() {
 		return
 	}
 
-	createSessionWithStatus(a.Context, user, http.StatusCreated)
+	a.createSessionWithStatus(user, http.StatusCreated)
 }
 
 // NewSignUp returns a new SignUp action
 func NewSignUp(c Context) Action {
-	return &SignUp{Context: c}
+	return &SignUp{sessionAction: sessionAction{c}}
 }

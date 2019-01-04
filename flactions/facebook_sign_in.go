@@ -27,7 +27,7 @@ func (b FacebookSignInBody) FilterSensitiveInformation() fldiagnostics.Sensitive
 // FacebookSignIn signs the user in via Facebook authentication
 type FacebookSignIn struct {
 	FacebookSignInBody
-	Context
+	sessionAction
 	facebook *flservices.Facebook
 }
 
@@ -63,10 +63,10 @@ func (a *FacebookSignIn) Perform() {
 		return
 	}
 
-	createSession(a.Context, user)
+	a.createSession(user)
 }
 
 // NewFacebookSignIn creates a new FacebookSignIn instance
 func NewFacebookSignIn(client flservices.FacebookClient, c Context) Action {
-	return &FacebookSignIn{facebook: flservices.NewFacebook(client), Context: c}
+	return &FacebookSignIn{facebook: flservices.NewFacebook(client), sessionAction: sessionAction{c}}
 }

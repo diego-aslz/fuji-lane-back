@@ -6,21 +6,25 @@ import (
 	"github.com/nerde/fuji-lane-back/flentities"
 )
 
-func createSession(c Context, user *flentities.User) {
-	createSessionWithStatus(c, user, http.StatusOK)
+type sessionAction struct {
+	Context
 }
 
-func createSessionWithStatus(c Context, user *flentities.User, status int) {
+func (a sessionAction) createSession(user *flentities.User) {
+	a.createSessionWithStatus(user, http.StatusOK)
+}
+
+func (a sessionAction) createSessionWithStatus(user *flentities.User, status int) {
 	if user.AccountID != nil && user.Account == nil {
 		user.Account = &flentities.Account{}
-		c.Repository().First(user.Account, *user.AccountID)
+		a.Repository().First(user.Account, *user.AccountID)
 	}
 
-	s := flentities.NewSession(user, c.Now)
+	s := flentities.NewSession(user, a.Now)
 	if err := s.GenerateToken(); err != nil {
-		c.ServerError(err)
+		a.ServerError(err)
 		return
 	}
 
-	c.Respond(status, s)
+	a.Respond(status, s)
 }

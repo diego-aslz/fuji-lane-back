@@ -6,10 +6,12 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
-type paginatedAction struct{}
+type paginatedAction struct {
+	Context
+}
 
-func (paginatedAction) page(c Context) int {
-	page := c.Query("page")
+func (a paginatedAction) page() int {
+	page := a.Query("page")
 	if page == "" {
 		return 1
 	}

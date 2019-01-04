@@ -23,7 +23,7 @@ func (b SignInBody) FilterSensitiveInformation() fldiagnostics.SensitivePayload 
 // SignIn creates properties that can hold units
 type SignIn struct {
 	SignInBody
-	Context
+	sessionAction
 }
 
 const authenticationFailedMessage = "Invalid email or password"
@@ -54,10 +54,10 @@ func (a *SignIn) Perform() {
 		return
 	}
 
-	createSession(a.Context, user)
+	a.createSession(user)
 }
 
 // NewSignIn returns a new SignIn action
 func NewSignIn(c Context) Action {
-	return &SignIn{Context: c}
+	return &SignIn{sessionAction: sessionAction{c}}
 }
