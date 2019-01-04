@@ -18,40 +18,41 @@ type AccountsCreateBody struct {
 // AccountsCreate is reponsible for creating new accounts
 type AccountsCreate struct {
 	AccountsCreateBody
+	Context
 }
 
 // Perform executes the action
-func (a *AccountsCreate) Perform(c Context) {
-	user := c.CurrentUser()
+func (a *AccountsCreate) Perform() {
+	user := a.CurrentUser()
 
 	if user.AccountID != nil {
-		c.RespondError(http.StatusUnprocessableEntity, errors.New("You already have an account"))
+		a.RespondError(http.StatusUnprocessableEntity, errors.New("You already have an account"))
 		return
 	}
 
 	account := a.buildAccount()
 
-	c.Repository().Transaction(func(tx *flentities.Repository) {
+	a.Repository().Transaction(func(tx *flentities.Repository) {
 		err := tx.Create(account).Error
 		if err != nil {
 			tx.Rollback()
-			c.ServerError(err)
+			a.ServerError(err)
 			return
 		}
 
 		err = tx.Model(user).Updates(map[string]interface{}{"name": a.UserName, "account_id": account.ID}).Error
 		if err != nil {
 			tx.Rollback()
-			c.ServerError(err)
+			a.ServerError(err)
 			return
 		}
 
 		if err = tx.Commit().Error; err != nil {
-			c.ServerError(err)
+			a.ServerError(err)
 			return
 		}
 
-		c.Respond(http.StatusCreated, account)
+		a.Respond(http.StatusCreated, account)
 	})
 }
 
@@ -66,4 +67,9 @@ func (a *AccountsCreate) buildAccount() *flentities.Account {
 	}
 
 	return account
+}
+
+// NewAccountsCreate returns a new AccountsCreate action
+func NewAccountsCreate(c Context) Action {
+	return &AccountsCreate{Context: c}
 }

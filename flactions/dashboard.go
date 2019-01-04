@@ -9,42 +9,49 @@ import (
 )
 
 // Dashboard lists user properties
-type Dashboard struct{}
+type Dashboard struct {
+	Context
+}
 
 // Perform executes the action
-func (a *Dashboard) Perform(c Context) {
-	user := c.CurrentUser()
+func (a *Dashboard) Perform() {
+	user := a.CurrentUser()
 
-	rawSince := c.Query("since")
-	rawUntil := c.Query("until")
+	rawSince := a.Query("since")
+	rawUntil := a.Query("until")
 
-	c.Diagnostics().Add("since", rawSince).Add("until", rawUntil)
+	a.Diagnostics().Add("since", rawSince).Add("until", rawUntil)
 
 	if rawSince == "" || rawUntil == "" {
-		c.RespondError(http.StatusBadRequest, errors.New("Parameters 'since' and 'until' are required"))
+		a.RespondError(http.StatusBadRequest, errors.New("Parameters 'since' and 'until' are required"))
 		return
 	}
 
 	since, err := time.Parse(time.RFC3339, rawSince)
 	if err != nil {
-		c.Diagnostics().AddError(err)
-		c.RespondError(http.StatusBadRequest, errors.New("Invalid 'since' parameter"))
+		a.Diagnostics().AddError(err)
+		a.RespondError(http.StatusBadRequest, errors.New("Invalid 'since' parameter"))
 		return
 	}
 
 	var until time.Time
 	until, err = time.Parse(time.RFC3339, rawUntil)
 	if err != nil {
-		c.Diagnostics().AddError(err)
-		c.RespondError(http.StatusBadRequest, errors.New("Invalid 'until' parameter"))
+		a.Diagnostics().AddError(err)
+		a.RespondError(http.StatusBadRequest, errors.New("Invalid 'until' parameter"))
 		return
 	}
 
-	report, err := flreports.NewDashboard(c.Repository(), *user.AccountID, since, until)
+	report, err := flreports.NewDashboard(a.Repository(), *user.AccountID, since, until)
 	if err != nil {
-		c.ServerError(err)
+		a.ServerError(err)
 		return
 	}
 
-	c.Respond(http.StatusOK, report)
+	a.Respond(http.StatusOK, report)
+}
+
+// NewDashboard returns a new Dashboard action
+func NewDashboard(c Context) Action {
+	return &Dashboard{c}
 }

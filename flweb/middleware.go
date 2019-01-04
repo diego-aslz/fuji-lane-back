@@ -84,7 +84,7 @@ func withAction(a flactions.Action, next func(c *Context)) func(c *Context) {
 }
 
 func performAction(c *Context) {
-	c.action.Perform(c)
+	c.action.Perform()
 }
 
 func requireAccount(next contextFunc) contextFunc {

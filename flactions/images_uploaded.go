@@ -8,23 +8,25 @@ import (
 )
 
 // ImagesUploaded marks an image as uploaded
-type ImagesUploaded struct{}
+type ImagesUploaded struct {
+	Context
+}
 
 // Perform the action
-func (a *ImagesUploaded) Perform(c Context) {
-	account := c.CurrentAccount()
+func (a *ImagesUploaded) Perform() {
+	account := a.CurrentAccount()
 
-	id := c.Param("id")
+	id := a.Param("id")
 	image := &flentities.Image{}
-	err := c.Repository().Preload("Property").Preload("Unit.Property").Find(image,
+	err := a.Repository().Preload("Property").Preload("Unit.Property").Find(image,
 		map[string]interface{}{"id": id, "uploaded": false}).Error
 	if gorm.IsRecordNotFoundError(err) {
-		c.Diagnostics().AddQuoted("reason", "Could not find Image")
-		c.RespondNotFound()
+		a.Diagnostics().AddQuoted("reason", "Could not find Image")
+		a.RespondNotFound()
 		return
 	}
 	if err != nil {
-		c.ServerError(err)
+		a.ServerError(err)
 		return
 	}
 
@@ -36,15 +38,20 @@ func (a *ImagesUploaded) Perform(c Context) {
 	}
 
 	if imageAccountID != account.ID {
-		c.Diagnostics().AddQuoted("reason", "Image belongs to another account")
-		c.RespondNotFound()
+		a.Diagnostics().AddQuoted("reason", "Image belongs to another account")
+		a.RespondNotFound()
 		return
 	}
 
-	if err = c.Repository().Model(image).Updates(map[string]interface{}{"uploaded": true}).Error; err != nil {
-		c.ServerError(err)
+	if err = a.Repository().Model(image).Updates(map[string]interface{}{"uploaded": true}).Error; err != nil {
+		a.ServerError(err)
 		return
 	}
 
-	c.Respond(http.StatusOK, image)
+	a.Respond(http.StatusOK, image)
+}
+
+// NewImagesUploaded returns a new ImagesUploaded action
+func NewImagesUploaded(c Context) Action {
+	return &ImagesUploaded{c}
 }

@@ -9,16 +9,18 @@ import (
 )
 
 // PropertiesShow exposes details for a property
-type PropertiesShow struct{}
+type PropertiesShow struct {
+	Context
+}
 
 // Perform executes the action
-func (a *PropertiesShow) Perform(c Context) {
-	user := c.CurrentUser()
+func (a *PropertiesShow) Perform() {
+	user := a.CurrentUser()
 
-	id, err := strconv.Atoi(c.Param("id"))
+	id, err := strconv.Atoi(a.Param("id"))
 	if err != nil {
-		c.Diagnostics().AddError(err)
-		c.RespondNotFound()
+		a.Diagnostics().AddError(err)
+		a.RespondNotFound()
 		return
 	}
 
@@ -28,18 +30,23 @@ func (a *PropertiesShow) Perform(c Context) {
 	}
 
 	property := &flentities.Property{}
-	err = c.Repository().Preload("Amenities").Preload("Images", flentities.Image{Uploaded: true}, imagesDefaultOrder).
+	err = a.Repository().Preload("Amenities").Preload("Images", flentities.Image{Uploaded: true}, imagesDefaultOrder).
 		Preload("Units.Images", flentities.Image{Uploaded: true}, imagesDefaultOrder).Preload("Units.Amenities").
 		Find(property, conditions).Error
 
 	if err != nil {
 		if gorm.IsRecordNotFoundError(err) {
-			c.RespondNotFound()
+			a.RespondNotFound()
 		} else {
-			c.ServerError(err)
+			a.ServerError(err)
 		}
 		return
 	}
 
-	c.Respond(http.StatusOK, property)
+	a.Respond(http.StatusOK, property)
+}
+
+// NewPropertiesShow returns a new PropertiesShow action
+func NewPropertiesShow(c Context) Action {
+	return &PropertiesShow{c}
 }

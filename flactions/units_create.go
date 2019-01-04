@@ -33,21 +33,22 @@ func (b *UnitsCreateBody) Validate() []error {
 // UnitsCreate creates a new Unit
 type UnitsCreate struct {
 	UnitsCreateBody
+	Context
 }
 
 // Perform executes the action
-func (a *UnitsCreate) Perform(c Context) {
+func (a *UnitsCreate) Perform() {
 	property := &flentities.Property{}
 
-	conditions := map[string]interface{}{"id": a.PropertyID, "account_id": c.CurrentAccount().ID}
-	err := c.Repository().Find(property, conditions).Error
+	conditions := map[string]interface{}{"id": a.PropertyID, "account_id": a.CurrentAccount().ID}
+	err := a.Repository().Find(property, conditions).Error
 	if gorm.IsRecordNotFoundError(err) {
-		c.Diagnostics().AddQuoted("reason", "Could not find property")
-		c.RespondNotFound()
+		a.Diagnostics().AddQuoted("reason", "Could not find property")
+		a.RespondNotFound()
 		return
 	}
 	if err != nil {
-		c.ServerError(err)
+		a.ServerError(err)
 		return
 	}
 
@@ -64,10 +65,15 @@ func (a *UnitsCreate) Perform(c Context) {
 		unit.Overview = &a.Overview
 	}
 
-	if err := c.Repository().Create(unit).Error; err != nil {
-		c.ServerError(err)
+	if err := a.Repository().Create(unit).Error; err != nil {
+		a.ServerError(err)
 		return
 	}
 
-	c.Respond(http.StatusCreated, unit)
+	a.Respond(http.StatusCreated, unit)
+}
+
+// NewUnitsCreate returns a new UnitsCreate action
+func NewUnitsCreate(c Context) Action {
+	return &UnitsCreate{Context: c}
 }

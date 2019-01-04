@@ -9,29 +9,31 @@ import (
 )
 
 // UnitsShow exposes details for a unit
-type UnitsShow struct{}
+type UnitsShow struct {
+	Context
+}
 
 // Perform executes the action
-func (a *UnitsShow) Perform(c Context) {
-	id, err := strconv.Atoi(c.Param("id"))
+func (a *UnitsShow) Perform() {
+	id, err := strconv.Atoi(a.Param("id"))
 	if err != nil {
-		c.Diagnostics().AddError(err)
-		c.RespondNotFound()
+		a.Diagnostics().AddError(err)
+		a.RespondNotFound()
 		return
 	}
 
-	user := c.CurrentUser()
-	properties := c.Repository().UserProperties(user).Select("id")
+	user := a.CurrentUser()
+	properties := a.Repository().UserProperties(user).Select("id")
 
 	unit := &flentities.Unit{}
-	err = c.Repository().Preload("Amenities").Preload("Images", flentities.Image{Uploaded: true}, imagesDefaultOrder).
+	err = a.Repository().Preload("Amenities").Preload("Images", flentities.Image{Uploaded: true}, imagesDefaultOrder).
 		Where(map[string]interface{}{"id": id}).Where("property_id IN (?)", properties.QueryExpr()).Find(unit).Error
 
 	if err != nil {
 		if gorm.IsRecordNotFoundError(err) {
-			c.RespondNotFound()
+			a.RespondNotFound()
 		} else {
-			c.ServerError(err)
+			a.ServerError(err)
 		}
 		return
 	}
@@ -50,5 +52,10 @@ func (a *UnitsShow) Perform(c Context) {
 		unit.Images = filteredImages
 	}
 
-	c.Respond(http.StatusOK, unit)
+	a.Respond(http.StatusOK, unit)
+}
+
+// NewUnitsShow returns a new UnitsShow action
+func NewUnitsShow(c Context) Action {
+	return &UnitsShow{c}
 }

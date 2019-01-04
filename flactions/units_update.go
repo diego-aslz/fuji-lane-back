@@ -73,27 +73,28 @@ func (b *UnitsUpdateBody) toMap() (updates map[string]interface{}) {
 // UnitsUpdate creates a new Unit
 type UnitsUpdate struct {
 	UnitsUpdateBody
+	Context
 }
 
 // Perform executes the action
-func (a *UnitsUpdate) Perform(c Context) {
+func (a *UnitsUpdate) Perform() {
 	unit := &flentities.Unit{}
 
-	conditions := map[string]interface{}{"id": c.Param("id")}
-	err := c.Repository().Preload("Property").Preload("Amenities").Find(unit, conditions).Error
+	conditions := map[string]interface{}{"id": a.Param("id")}
+	err := a.Repository().Preload("Property").Preload("Amenities").Find(unit, conditions).Error
 	if gorm.IsRecordNotFoundError(err) {
-		c.Diagnostics().AddQuoted("reason", "Could not find unit")
-		c.RespondNotFound()
+		a.Diagnostics().AddQuoted("reason", "Could not find unit")
+		a.RespondNotFound()
 		return
 	}
 	if err != nil {
-		c.ServerError(err)
+		a.ServerError(err)
 		return
 	}
 
-	if unit.Property.AccountID != c.CurrentAccount().ID {
-		c.Diagnostics().AddQuoted("reason", "Unit belongs to another account")
-		c.RespondNotFound()
+	if unit.Property.AccountID != a.CurrentAccount().ID {
+		a.Diagnostics().AddQuoted("reason", "Unit belongs to another account")
+		a.RespondNotFound()
 		return
 	}
 
@@ -102,24 +103,24 @@ func (a *UnitsUpdate) Perform(c Context) {
 		image := &flentities.Image{}
 		image.ID = imageID.(uint)
 
-		if err := c.Repository().Preload("Unit.Property").Find(image).Error; err != nil {
-			c.ServerError(err)
+		if err := a.Repository().Preload("Unit.Property").Find(image).Error; err != nil {
+			a.ServerError(err)
 			return
 		}
 
-		if image.Unit == nil || image.Unit.Property.AccountID != c.CurrentAccount().ID {
-			c.RespondError(http.StatusUnprocessableEntity, errors.New("floor plan image does not exist"))
+		if image.Unit == nil || image.Unit.Property.AccountID != a.CurrentAccount().ID {
+			a.RespondError(http.StatusUnprocessableEntity, errors.New("floor plan image does not exist"))
 			return
 		}
 	}
 
-	c.Repository().Transaction(func(tx *flentities.Repository) {
+	a.Repository().Transaction(func(tx *flentities.Repository) {
 		amenitiesToDelete, amenitiesToCreate := a.amenitiesDiff(unit.Amenities)
 
 		for _, am := range amenitiesToDelete {
 			if err := tx.Delete(am).Error; err != nil {
 				tx.Rollback()
-				c.ServerError(err)
+				a.ServerError(err)
 				return
 			}
 		}
@@ -128,22 +129,27 @@ func (a *UnitsUpdate) Perform(c Context) {
 			am.UnitID = &unit.ID
 			if err := tx.Create(am).Error; err != nil {
 				tx.Rollback()
-				c.ServerError(err)
+				a.ServerError(err)
 				return
 			}
 		}
 
 		if err := tx.Model(unit).Updates(updates).Error; err != nil {
 			tx.Rollback()
-			c.ServerError(err)
+			a.ServerError(err)
 			return
 		}
 
 		if err := tx.Commit().Error; err != nil {
-			c.ServerError(err)
+			a.ServerError(err)
 			return
 		}
 
-		c.Respond(http.StatusOK, unit)
+		a.Respond(http.StatusOK, unit)
 	})
+}
+
+// NewUnitsUpdate returns a new UnitsUpdate action
+func NewUnitsUpdate(c Context) Action {
+	return &UnitsUpdate{Context: c}
 }

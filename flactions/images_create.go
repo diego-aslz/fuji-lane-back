@@ -37,11 +37,12 @@ func (b ImagesCreateBody) Validate() []error {
 type ImagesCreate struct {
 	flservices.S3Service
 	ImagesCreateBody
+	Context
 }
 
 // Perform executes the action
-func (a *ImagesCreate) Perform(c Context) {
-	account := c.CurrentAccount()
+func (a *ImagesCreate) Perform() {
+	account := a.CurrentAccount()
 
 	collection := "properties"
 	id := a.PropertyID
@@ -50,11 +51,11 @@ func (a *ImagesCreate) Perform(c Context) {
 		id = a.UnitID
 	}
 
-	path := fmt.Sprintf("%s/%d/images/%s", collection, id, flutils.GenerateRandomString(30, c.RandomSource()))
+	path := fmt.Sprintf("%s/%d/images/%s", collection, id, flutils.GenerateRandomString(30, a.RandomSource()))
 	url, err := a.GenerateURLToUploadPublicFile(path, a.Type, a.Size)
 
 	if err != nil {
-		c.ServerError(err)
+		a.ServerError(err)
 		return
 	}
 
@@ -69,46 +70,46 @@ func (a *ImagesCreate) Perform(c Context) {
 
 	if a.PropertyID > 0 {
 		property := &flentities.Property{}
-		err := c.Repository().Find(property, map[string]interface{}{"id": a.PropertyID, "account_id": account.ID}).Error
+		err := a.Repository().Find(property, map[string]interface{}{"id": a.PropertyID, "account_id": account.ID}).Error
 		if gorm.IsRecordNotFoundError(err) {
-			c.RespondError(http.StatusUnprocessableEntity, errors.New("Could not find Property"))
+			a.RespondError(http.StatusUnprocessableEntity, errors.New("Could not find Property"))
 			return
 		}
 		if err != nil {
-			c.ServerError(err)
+			a.ServerError(err)
 			return
 		}
 		image.PropertyID = &property.ID
 
 	} else if a.UnitID > 0 {
 		unit := &flentities.Unit{}
-		err := c.Repository().Preload("Property").Find(unit, map[string]interface{}{"id": a.UnitID}).Error
-		if gorm.IsRecordNotFoundError(err) || unit.Property == nil || unit.Property.AccountID != c.CurrentAccount().ID {
-			c.RespondError(http.StatusUnprocessableEntity, errors.New("Could not find Unit"))
+		err := a.Repository().Preload("Property").Find(unit, map[string]interface{}{"id": a.UnitID}).Error
+		if gorm.IsRecordNotFoundError(err) || unit.Property == nil || unit.Property.AccountID != a.CurrentAccount().ID {
+			a.RespondError(http.StatusUnprocessableEntity, errors.New("Could not find Unit"))
 			return
 		}
 		if err != nil {
-			c.ServerError(err)
+			a.ServerError(err)
 			return
 		}
 		image.UnitID = &unit.ID
 
 	} else {
-		c.RespondError(http.StatusUnprocessableEntity, errors.New("Please provide either a Property or a Unit"))
+		a.RespondError(http.StatusUnprocessableEntity, errors.New("Please provide either a Property or a Unit"))
 		return
 	}
 
-	if err = c.Repository().Save(image).Error; err != nil {
-		c.ServerError(err)
+	if err = a.Repository().Save(image).Error; err != nil {
+		a.ServerError(err)
 		return
 	}
 
 	image.URL = url
 
-	c.Respond(http.StatusOK, image)
+	a.Respond(http.StatusOK, image)
 }
 
 // NewImagesCreate returns a new instance of the PropertiesImagesNew action
-func NewImagesCreate(s3 flservices.S3Service) *ImagesCreate {
-	return &ImagesCreate{S3Service: s3}
+func NewImagesCreate(s3 flservices.S3Service, c Context) *ImagesCreate {
+	return &ImagesCreate{S3Service: s3, Context: c}
 }

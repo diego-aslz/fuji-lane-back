@@ -13,21 +13,27 @@ const bookingsPageSize = defaultPageSize
 // BookingsList lists user bookings
 type BookingsList struct {
 	paginatedAction
+	Context
 }
 
 // Perform executes the action
-func (a *BookingsList) Perform(c Context) {
-	user := c.CurrentUser()
+func (a *BookingsList) Perform() {
+	user := a.CurrentUser()
 
 	bookings := []*flentities.Booking{}
-	err := a.paginate(c.Repository().Order("check_in_at desc").Preload("Unit"), a.page(c), bookingsPageSize).Find(
+	err := a.paginate(a.Repository().Order("check_in_at desc").Preload("Unit"), a.page(a.Context), bookingsPageSize).Find(
 		&bookings, map[string]interface{}{"user_id": user.ID}).Error
 	if err != nil {
-		c.ServerError(err)
+		a.ServerError(err)
 		return
 	}
 
-	c.Diagnostics().Add("bookings_size", strconv.Itoa(len(bookings)))
+	a.Diagnostics().Add("bookings_size", strconv.Itoa(len(bookings)))
 
-	c.Respond(http.StatusOK, flviews.NewBookingList(bookings))
+	a.Respond(http.StatusOK, flviews.NewBookingList(bookings))
+}
+
+// NewBookingsList returns a new BookingsList action
+func NewBookingsList(c Context) Action {
+	return &BookingsList{Context: c}
 }

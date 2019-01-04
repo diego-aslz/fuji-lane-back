@@ -27,45 +27,46 @@ func (b FacebookSignInBody) FilterSensitiveInformation() fldiagnostics.Sensitive
 // FacebookSignIn signs the user in via Facebook authentication
 type FacebookSignIn struct {
 	FacebookSignInBody
+	Context
 	facebook *flservices.Facebook
 }
 
 // Perform the action
-func (a *FacebookSignIn) Perform(c Context) {
+func (a *FacebookSignIn) Perform() {
 	err := a.facebook.Validate(a.AccessToken, a.ID)
 	if err != nil {
-		c.Diagnostics().AddError(err)
-		c.RespondError(http.StatusUnauthorized, errors.New("You could not be authenticated"))
+		a.Diagnostics().AddError(err)
+		a.RespondError(http.StatusUnauthorized, errors.New("You could not be authenticated"))
 		return
 	}
 
-	user, err := c.Repository().FindUserForFacebookSignIn(a.ID, a.Email)
+	user, err := a.Repository().FindUserForFacebookSignIn(a.ID, a.Email)
 	if err != nil {
-		c.ServerError(err)
+		a.ServerError(err)
 		return
 	}
 
-	now := c.Now()
+	now := a.Now()
 	if user.ID > 0 {
 		updates := flentities.User{Name: &a.Name, FacebookID: &a.ID, LastSignedIn: &now}
-		err = c.Repository().Model(user).Updates(updates).Error
+		err = a.Repository().Model(user).Updates(updates).Error
 	} else {
 		user.Email = a.Email
 		user.Name = &a.Name
 		user.FacebookID = &a.ID
 		user.LastSignedIn = &now
-		err = c.Repository().Create(user).Error
+		err = a.Repository().Create(user).Error
 	}
 
 	if err != nil {
-		c.ServerError(err)
+		a.ServerError(err)
 		return
 	}
 
-	createSession(c, user)
+	createSession(a.Context, user)
 }
 
 // NewFacebookSignIn creates a new FacebookSignIn instance
-func NewFacebookSignIn(client flservices.FacebookClient) Action {
-	return &FacebookSignIn{facebook: flservices.NewFacebook(client)}
+func NewFacebookSignIn(client flservices.FacebookClient, c Context) Action {
+	return &FacebookSignIn{facebook: flservices.NewFacebook(client), Context: c}
 }

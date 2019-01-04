@@ -58,15 +58,15 @@ const (
 
 // AddRoutes to a Gin Engine
 func (a *Application) AddRoutes(e *gin.Engine) {
-	a.route(e.GET, StatusPath, a.status)
+	a.route(e.GET, StatusPath, flactions.NewStatus)
 
-	a.route(e.GET, AmenityTypesPath, a.amenityTypesList)
-	a.route(e.GET, BookingsPath, a.bookingsList, withRepository, loadSession, requireUser)
-	a.route(e.POST, BookingsPath, a.bookingsCreate, withRepository, loadSession, requireUser, parseBody)
-	a.route(e.GET, CitiesPath, a.citiesList, withRepository)
-	a.route(e.GET, CountriesPath, a.countriesList, withRepository)
+	a.route(e.GET, AmenityTypesPath, flactions.NewAmenityTypesList)
+	a.route(e.GET, BookingsPath, flactions.NewBookingsList, withRepository, loadSession, requireUser)
+	a.route(e.POST, BookingsPath, flactions.NewBookingsCreate, withRepository, loadSession, requireUser, parseBody)
+	a.route(e.GET, CitiesPath, flactions.NewCitiesList, withRepository)
+	a.route(e.GET, CountriesPath, flactions.NewCountriesList, withRepository)
 
-	a.route(e.GET, DashboardPath, a.dashboard, withRepository, loadSession, requireUser, requireAccount)
+	a.route(e.GET, DashboardPath, flactions.NewDashboard, withRepository, loadSession, requireUser, requireAccount)
 
 	a.routeAuthentication(e)
 	a.routeImages(e)
@@ -75,48 +75,49 @@ func (a *Application) AddRoutes(e *gin.Engine) {
 }
 
 func (a *Application) routeAuthentication(e *gin.Engine) {
-	a.route(e.POST, AccountsPath, a.accountsCreate, withRepository, loadSession, requireUser, parseBody)
-	a.route(e.PUT, ProfilePath, a.profileUpdate, withRepository, loadSession, requireUser, parseBody)
+	a.route(e.POST, AccountsPath, flactions.NewAccountsCreate, withRepository, loadSession, requireUser, parseBody)
+	a.route(e.PUT, ProfilePath, flactions.NewProfileUpdate, withRepository, loadSession, requireUser, parseBody)
 
-	a.route(e.GET, RenewSessionPath, a.renewSession, withRepository, loadSession, requireUser)
+	a.route(e.GET, RenewSessionPath, flactions.NewRenewSession, withRepository, loadSession, requireUser)
 	a.route(e.POST, FacebookSignInPath, a.facebookSignIn, withRepository, parseBody)
-	a.route(e.POST, SignInPath, a.signIn, withRepository, parseBody)
-	a.route(e.POST, SignUpPath, a.signUp, withRepository, parseBody)
+	a.route(e.POST, SignInPath, flactions.NewSignIn, withRepository, parseBody)
+	a.route(e.POST, SignUpPath, flactions.NewSignUp, withRepository, parseBody)
 }
 
 func (a *Application) routeImages(e *gin.Engine) {
 	a.route(e.DELETE, ImagePath, a.imagesDestroy, withRepository, loadSession, requireUser, requireAccount)
 	a.route(e.POST, ImagesPath, a.imagesCreate, withRepository, loadSession, requireUser, parseBody, requireAccount)
-	a.route(e.POST, ImagesSortPath, a.imagesSort, withRepository, loadSession, requireUser, requireAccount)
-	a.route(e.PUT, ImagesUploadedPath, a.imagesUploaded, withRepository, loadSession, requireUser, requireAccount)
+	a.route(e.POST, ImagesSortPath, flactions.NewImagesSort, withRepository, loadSession, requireUser, requireAccount)
+	a.route(e.PUT, ImagesUploadedPath, flactions.NewImagesUploaded, withRepository, loadSession, requireUser, requireAccount)
 }
 
 func (a *Application) routeUnits(e *gin.Engine) {
-	a.route(e.GET, UnitPath, a.unitsShow, withRepository, loadSession, requireUser)
-	a.route(e.POST, UnitsPath, a.unitsCreate, withRepository, loadSession, requireUser, parseBody)
-	a.route(e.PUT, UnitPath, a.unitsUpdate, withRepository, loadSession, requireUser, parseBody)
-	a.route(e.PUT, UnitsPublishPath, a.unitsPublish, withRepository, loadSession, requireUser, requireAccount)
+	a.route(e.GET, UnitPath, flactions.NewUnitsShow, withRepository, loadSession, requireUser)
+	a.route(e.POST, UnitsPath, flactions.NewUnitsCreate, withRepository, loadSession, requireUser, parseBody)
+	a.route(e.PUT, UnitPath, flactions.NewUnitsUpdate, withRepository, loadSession, requireUser, parseBody)
+	a.route(e.PUT, UnitsPublishPath, flactions.NewUnitsPublish, withRepository, loadSession, requireUser, requireAccount)
 }
 
 func (a *Application) routeProperties(e *gin.Engine) {
-	a.route(e.GET, ListingPath, a.listingsShow, withRepository, loadSession)
+	a.route(e.GET, ListingPath, flactions.NewListingsShow, withRepository, loadSession)
 
-	a.route(e.GET, PropertyPath, a.propertiesShow, withRepository, loadSession, requireUser, requireAccount)
-	a.route(e.GET, PropertiesPath, a.propertiesList, withRepository, loadSession, requireUser, requireAccount)
-	a.route(e.POST, PropertiesPath, a.propertiesCreate, withRepository, loadSession, requireUser, requireAccount)
-	a.route(e.PUT, PropertyPath, a.propertiesUpdate, withRepository, loadSession, requireUser, requireAccount, parseBody)
-	a.route(e.PUT, PropertiesPublishPath, a.propertiesPublish, withRepository, loadSession, requireUser, requireAccount)
+	a.route(e.GET, PropertyPath, flactions.NewPropertiesShow, withRepository, loadSession, requireUser, requireAccount)
+	a.route(e.GET, PropertiesPath, flactions.NewPropertiesList, withRepository, loadSession, requireUser, requireAccount)
+	a.route(e.POST, PropertiesPath, flactions.NewPropertiesCreate, withRepository, loadSession, requireUser, requireAccount)
+	a.route(e.PUT, PropertyPath, flactions.NewPropertiesUpdate, withRepository, loadSession, requireUser, requireAccount, parseBody)
+	a.route(e.PUT, PropertiesPublishPath, flactions.NewPropertiesPublish, withRepository, loadSession, requireUser, requireAccount)
 }
 
 type ginMethod func(string, ...gin.HandlerFunc) gin.IRoutes
 
-func (a *Application) route(method ginMethod, path string, actionProvider func() flactions.Action,
+func (a *Application) route(method ginMethod, path string, actionProvider func(flactions.Context) flactions.Action,
 	middleware ...func(contextFunc) contextFunc) {
 
 	next := combineMiddleware(middleware...)
 
 	method(path, func(c *gin.Context) {
-		withAction(actionProvider(), next)(a.newContext(c))
+		ctx := a.newContext(c)
+		withAction(actionProvider(ctx), next)(ctx)
 	})
 }
 
@@ -124,112 +125,16 @@ func (a *Application) newContext(c *gin.Context) *Context {
 	return &Context{Context: c, now: a.TimeFunc, randSource: a.RandSource}
 }
 
-func (a *Application) status() flactions.Action {
-	return &flactions.Status{}
+func (a *Application) facebookSignIn(c flactions.Context) flactions.Action {
+	return flactions.NewFacebookSignIn(a.facebookClient, c)
 }
 
-func (a *Application) signUp() flactions.Action {
-	return &flactions.SignUp{}
+func (a *Application) imagesCreate(c flactions.Context) flactions.Action {
+	return flactions.NewImagesCreate(a.S3Service, c)
 }
 
-func (a *Application) signIn() flactions.Action {
-	return &flactions.SignIn{}
-}
-
-func (a *Application) facebookSignIn() flactions.Action {
-	return flactions.NewFacebookSignIn(a.facebookClient)
-}
-
-func (a *Application) renewSession() flactions.Action {
-	return &flactions.RenewSession{}
-}
-
-func (a *Application) accountsCreate() flactions.Action {
-	return &flactions.AccountsCreate{}
-}
-
-func (a *Application) countriesList() flactions.Action {
-	return &flactions.CountriesList{}
-}
-
-func (a *Application) amenityTypesList() flactions.Action {
-	return &flactions.AmenityTypesList{}
-}
-
-func (a *Application) citiesList() flactions.Action {
-	return &flactions.CitiesList{}
-}
-
-func (a *Application) profileUpdate() flactions.Action {
-	return &flactions.ProfileUpdate{}
-}
-
-func (a *Application) propertiesCreate() flactions.Action {
-	return &flactions.PropertiesCreate{}
-}
-
-func (a *Application) propertiesUpdate() flactions.Action {
-	return &flactions.PropertiesUpdate{}
-}
-
-func (a *Application) propertiesPublish() flactions.Action {
-	return &flactions.PropertiesPublish{}
-}
-
-func (a *Application) propertiesShow() flactions.Action {
-	return &flactions.PropertiesShow{}
-}
-
-func (a *Application) listingsShow() flactions.Action {
-	return &flactions.ListingsShow{}
-}
-
-func (a *Application) propertiesList() flactions.Action {
-	return &flactions.PropertiesList{}
-}
-
-func (a *Application) imagesCreate() flactions.Action {
-	return flactions.NewImagesCreate(a.S3Service)
-}
-
-func (a *Application) unitsCreate() flactions.Action {
-	return &flactions.UnitsCreate{}
-}
-
-func (a *Application) unitsUpdate() flactions.Action {
-	return &flactions.UnitsUpdate{}
-}
-
-func (a *Application) unitsPublish() flactions.Action {
-	return &flactions.UnitsPublish{}
-}
-
-func (a *Application) unitsShow() flactions.Action {
-	return &flactions.UnitsShow{}
-}
-
-func (a *Application) imagesSort() flactions.Action {
-	return &flactions.ImagesSort{}
-}
-
-func (a *Application) imagesUploaded() flactions.Action {
-	return &flactions.ImagesUploaded{}
-}
-
-func (a *Application) imagesDestroy() flactions.Action {
-	return flactions.NewImagesDestroy(a.S3Service)
-}
-
-func (a *Application) dashboard() flactions.Action {
-	return &flactions.Dashboard{}
-}
-
-func (a *Application) bookingsList() flactions.Action {
-	return &flactions.BookingsList{}
-}
-
-func (a *Application) bookingsCreate() flactions.Action {
-	return &flactions.BookingsCreate{}
+func (a *Application) imagesDestroy(c flactions.Context) flactions.Action {
+	return flactions.NewImagesDestroy(a.S3Service, c)
 }
 
 func combineMiddleware(middleware ...func(contextFunc) contextFunc) contextFunc {

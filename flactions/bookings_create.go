@@ -29,12 +29,13 @@ func (b *BookingsCreateBody) Validate() []error {
 // BookingsCreate lists user bookings
 type BookingsCreate struct {
 	BookingsCreateBody
+	Context
 }
 
 // Perform executes the action
-func (a *BookingsCreate) Perform(c Context) {
+func (a *BookingsCreate) Perform() {
 	booking := &flentities.Booking{
-		UserID:         c.CurrentUser().ID,
+		UserID:         a.CurrentUser().ID,
 		Unit:           &flentities.Unit{ID: a.UnitID},
 		UnitID:         a.UnitID,
 		CheckInAt:      a.CheckInAt,
@@ -43,41 +44,46 @@ func (a *BookingsCreate) Perform(c Context) {
 	}
 
 	errs := flentities.ValidateFields(
-		flentities.ValidateField("check in date", booking.CheckInAt).After(c.Now(), "check in date should be in the future"),
+		flentities.ValidateField("check in date", booking.CheckInAt).After(a.Now(), "check in date should be in the future"),
 		flentities.ValidateField("check out date", booking.CheckOutAt).After(booking.CheckInAt,
 			"check out date should be after check in date"),
 	)
 
 	if len(errs) > 0 {
-		c.RespondError(http.StatusUnprocessableEntity, errs...)
+		a.RespondError(http.StatusUnprocessableEntity, errs...)
 		return
 	}
 
-	if booking.CheckInAt.Before(c.Now()) {
-		c.RespondError(http.StatusUnprocessableEntity, errors.New("check in date should be in the future"))
+	if booking.CheckInAt.Before(a.Now()) {
+		a.RespondError(http.StatusUnprocessableEntity, errors.New("check in date should be in the future"))
 	}
 
-	if err := c.Repository().Find(booking.Unit).Error; err != nil {
+	if err := a.Repository().Find(booking.Unit).Error; err != nil {
 		if gorm.IsRecordNotFoundError(err) {
-			c.RespondError(http.StatusUnprocessableEntity, errors.New("Invalid unit"))
+			a.RespondError(http.StatusUnprocessableEntity, errors.New("Invalid unit"))
 		} else {
-			c.ServerError(err)
+			a.ServerError(err)
 		}
 
 		return
 	}
 
 	if booking.Unit.PublishedAt == nil {
-		c.RespondError(http.StatusUnprocessableEntity, errors.New("Invalid unit"))
+		a.RespondError(http.StatusUnprocessableEntity, errors.New("Invalid unit"))
 		return
 	}
 
 	booking.Calculate()
 
-	if err := c.Repository().Save(booking).Error; err != nil {
-		c.ServerError(err)
+	if err := a.Repository().Save(booking).Error; err != nil {
+		a.ServerError(err)
 		return
 	}
 
-	c.Respond(http.StatusCreated, booking)
+	a.Respond(http.StatusCreated, booking)
+}
+
+// NewBookingsCreate returns a new BookingsCreate action
+func NewBookingsCreate(c Context) Action {
+	return &BookingsCreate{Context: c}
 }

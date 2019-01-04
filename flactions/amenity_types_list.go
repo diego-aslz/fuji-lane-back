@@ -7,15 +7,17 @@ import (
 )
 
 // AmenityTypesList lists the amenity types for the given target
-type AmenityTypesList struct{}
+type AmenityTypesList struct {
+	Context
+}
 
 // Perform executes the action
-func (a *AmenityTypesList) Perform(c Context) {
-	target := c.Param("target")
-	c.Diagnostics().Add("target", target)
+func (a *AmenityTypesList) Perform() {
+	target := a.Param("target")
+	a.Diagnostics().Add("target", target)
 
 	if target != "properties" && target != "units" {
-		c.RespondNotFound()
+		a.RespondNotFound()
 		return
 	}
 
@@ -27,5 +29,10 @@ func (a *AmenityTypesList) Perform(c Context) {
 		}
 	}
 
-	c.Respond(http.StatusOK, types)
+	a.Respond(http.StatusOK, types)
+}
+
+// NewAmenityTypesList returns a new AmenityTypesList action
+func NewAmenityTypesList(c Context) Action {
+	return &AmenityTypesList{c}
 }

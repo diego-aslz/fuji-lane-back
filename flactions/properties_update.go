@@ -38,22 +38,23 @@ func (b *PropertiesUpdateBody) Validate() []error {
 // PropertiesUpdate returns a pre-signed URL for clients to upload images directly to S3
 type PropertiesUpdate struct {
 	PropertiesUpdateBody
+	Context
 }
 
 // Perform executes the action
-func (a *PropertiesUpdate) Perform(c Context) {
-	account := c.CurrentAccount()
+func (a *PropertiesUpdate) Perform() {
+	account := a.CurrentAccount()
 
-	id := c.Param("id")
+	id := a.Param("id")
 	property := &flentities.Property{}
 	conditions := map[string]interface{}{"id": id, "account_id": account.ID}
-	err := c.Repository().Preload("Amenities").Find(property, conditions).Error
+	err := a.Repository().Preload("Amenities").Find(property, conditions).Error
 	if gorm.IsRecordNotFoundError(err) {
-		c.RespondNotFound()
+		a.RespondNotFound()
 		return
 	}
 	if err != nil {
-		c.ServerError(err)
+		a.ServerError(err)
 		return
 	}
 
@@ -67,14 +68,14 @@ func (a *PropertiesUpdate) Perform(c Context) {
 	if a.CityID != nil {
 		city := &flentities.City{}
 		city.ID = uint(*a.CityID)
-		err := c.Repository().Find(city).Error
+		err := a.Repository().Find(city).Error
 
 		if gorm.IsRecordNotFoundError(err) {
-			c.RespondError(http.StatusUnprocessableEntity, errors.New("Invalid City"))
+			a.RespondError(http.StatusUnprocessableEntity, errors.New("Invalid City"))
 			return
 		}
 		if err != nil {
-			c.ServerError(err)
+			a.ServerError(err)
 			return
 		}
 
@@ -94,13 +95,13 @@ func (a *PropertiesUpdate) Perform(c Context) {
 		updates["MinimumStay"] = *a.MinimumStay
 	}
 
-	c.Repository().Transaction(func(tx *flentities.Repository) {
+	a.Repository().Transaction(func(tx *flentities.Repository) {
 		amenitiesToDelete, amenitiesToCreate := a.amenitiesDiff(property.Amenities)
 
 		for _, am := range amenitiesToDelete {
 			if err := tx.Delete(am).Error; err != nil {
 				tx.Rollback()
-				c.ServerError(err)
+				a.ServerError(err)
 				return
 			}
 		}
@@ -109,23 +110,23 @@ func (a *PropertiesUpdate) Perform(c Context) {
 			am.PropertyID = &property.ID
 			if err := tx.Create(am).Error; err != nil {
 				tx.Rollback()
-				c.ServerError(err)
+				a.ServerError(err)
 				return
 			}
 		}
 
 		if err := tx.Model(property).Updates(updates).Error; err != nil {
 			tx.Rollback()
-			c.ServerError(err)
+			a.ServerError(err)
 			return
 		}
 
 		if err := tx.Commit().Error; err != nil {
-			c.ServerError(err)
+			a.ServerError(err)
 			return
 		}
 
-		c.Respond(http.StatusOK, property)
+		a.Respond(http.StatusOK, property)
 	})
 }
 
@@ -143,4 +144,9 @@ func (a *PropertiesUpdate) bodyMap() map[string]*string {
 		"nearby_locations": a.NearbyLocations,
 		"overview":         a.Overview,
 	}
+}
+
+// NewPropertiesUpdate returns a new PropertiesUpdate action
+func NewPropertiesUpdate(c Context) Action {
+	return &PropertiesUpdate{Context: c}
 }

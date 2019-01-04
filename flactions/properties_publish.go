@@ -9,16 +9,18 @@ import (
 )
 
 // PropertiesPublish marks a property as published, allowing it to appear in search results
-type PropertiesPublish struct{}
+type PropertiesPublish struct {
+	Context
+}
 
 // Perform executes the action
-func (a *PropertiesPublish) Perform(c Context) {
-	user := c.CurrentUser()
+func (a *PropertiesPublish) Perform() {
+	user := a.CurrentUser()
 
-	id, err := strconv.Atoi(c.Param("id"))
+	id, err := strconv.Atoi(a.Param("id"))
 	if err != nil {
-		c.Diagnostics().AddError(err)
-		c.RespondNotFound()
+		a.Diagnostics().AddError(err)
+		a.RespondNotFound()
 		return
 	}
 
@@ -28,28 +30,33 @@ func (a *PropertiesPublish) Perform(c Context) {
 	}
 
 	property := &flentities.Property{}
-	err = c.Repository().Preload("Amenities").Preload("Units").Preload("Images", flentities.Image{Uploaded: true}).
+	err = a.Repository().Preload("Amenities").Preload("Units").Preload("Images", flentities.Image{Uploaded: true}).
 		Find(property, conditions).Error
 
 	if err != nil {
 		if gorm.IsRecordNotFoundError(err) {
-			c.RespondNotFound()
+			a.RespondNotFound()
 		} else {
-			c.ServerError(err)
+			a.ServerError(err)
 		}
 		return
 	}
 
 	errs := property.CanBePublished()
 	if len(errs) > 0 {
-		c.RespondError(http.StatusUnprocessableEntity, errs...)
+		a.RespondError(http.StatusUnprocessableEntity, errs...)
 		return
 	}
 
-	if err = c.Repository().Model(property).Updates(map[string]interface{}{"PublishedAt": c.Now()}).Error; err != nil {
-		c.ServerError(err)
+	if err = a.Repository().Model(property).Updates(map[string]interface{}{"PublishedAt": a.Now()}).Error; err != nil {
+		a.ServerError(err)
 		return
 	}
 
-	c.Respond(http.StatusOK, nil)
+	a.Respond(http.StatusOK, nil)
+}
+
+// NewPropertiesPublish returns a new PropertiesPublish action
+func NewPropertiesPublish(c Context) Action {
+	return &PropertiesPublish{c}
 }

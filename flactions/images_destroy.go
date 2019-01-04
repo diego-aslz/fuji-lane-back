@@ -11,22 +11,23 @@ import (
 // ImagesDestroy destroys an image
 type ImagesDestroy struct {
 	flservices.S3Service
+	Context
 }
 
 // Perform the action
-func (a *ImagesDestroy) Perform(c Context) {
-	account := c.CurrentAccount()
+func (a *ImagesDestroy) Perform() {
+	account := a.CurrentAccount()
 
-	id := c.Param("id")
+	id := a.Param("id")
 	image := &flentities.Image{}
-	err := c.Repository().Preload("Property").Preload("Unit.Property").Find(image, map[string]interface{}{"id": id}).Error
+	err := a.Repository().Preload("Property").Preload("Unit.Property").Find(image, map[string]interface{}{"id": id}).Error
 	if gorm.IsRecordNotFoundError(err) {
-		c.Diagnostics().AddQuoted("reason", "Could not find Image")
-		c.RespondNotFound()
+		a.Diagnostics().AddQuoted("reason", "Could not find Image")
+		a.RespondNotFound()
 		return
 	}
 	if err != nil {
-		c.ServerError(err)
+		a.ServerError(err)
 		return
 	}
 
@@ -38,25 +39,25 @@ func (a *ImagesDestroy) Perform(c Context) {
 	}
 
 	if imageAccountID != account.ID {
-		c.Diagnostics().AddQuoted("reason", "Image belongs to another account")
-		c.RespondNotFound()
+		a.Diagnostics().AddQuoted("reason", "Image belongs to another account")
+		a.RespondNotFound()
 		return
 	}
 
-	if err = c.Repository().RemoveImage(image); err != nil {
-		c.ServerError(err)
+	if err = a.Repository().RemoveImage(image); err != nil {
+		a.ServerError(err)
 		return
 	}
 
 	if err = a.DeleteFile(image.URL); err != nil {
-		c.ServerError(err)
+		a.ServerError(err)
 		return
 	}
 
-	c.Respond(http.StatusOK, map[string]interface{}{})
+	a.Respond(http.StatusOK, map[string]interface{}{})
 }
 
 // NewImagesDestroy returns a new instance of the PropertiesImagesDestroy action
-func NewImagesDestroy(s3 flservices.S3Service) *ImagesDestroy {
-	return &ImagesDestroy{s3}
+func NewImagesDestroy(s3 flservices.S3Service, c Context) *ImagesDestroy {
+	return &ImagesDestroy{S3Service: s3, Context: c}
 }

@@ -7,18 +7,25 @@ import (
 )
 
 // PropertiesCreate creates properties that can hold units
-type PropertiesCreate struct{}
+type PropertiesCreate struct {
+	Context
+}
 
 // Perform executes the action
-func (a *PropertiesCreate) Perform(c Context) {
-	user := c.CurrentUser()
+func (a *PropertiesCreate) Perform() {
+	user := a.CurrentUser()
 
 	property := &flentities.Property{AccountID: *user.AccountID}
 
-	if err := c.Repository().Create(property).Error; err != nil {
-		c.ServerError(err)
+	if err := a.Repository().Create(property).Error; err != nil {
+		a.ServerError(err)
 		return
 	}
 
-	c.Respond(http.StatusCreated, property)
+	a.Respond(http.StatusCreated, property)
+}
+
+// NewPropertiesCreate returns a new PropertiesCreate action
+func NewPropertiesCreate(c Context) Action {
+	return &PropertiesCreate{c}
 }

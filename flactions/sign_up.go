@@ -31,27 +31,33 @@ func (b SignUpBody) FilterSensitiveInformation() fldiagnostics.SensitivePayload 
 // SignUp creates properties that can hold units
 type SignUp struct {
 	SignUpBody
+	Context
 }
 
 // Perform executes the action
-func (a *SignUp) Perform(c Context) {
-	user, err := c.Repository().SignUp(a.Email, a.Password)
+func (a *SignUp) Perform() {
+	user, err := a.Repository().SignUp(a.Email, a.Password)
 	if err != nil {
 		if flentities.IsUniqueConstraintViolation(err) {
 			err = errors.New("Invalid email: already in use")
-			c.Diagnostics().AddError(err)
-			c.RespondError(http.StatusUnprocessableEntity, err)
+			a.Diagnostics().AddError(err)
+			a.RespondError(http.StatusUnprocessableEntity, err)
 		} else {
-			c.ServerError(err)
+			a.ServerError(err)
 		}
 		return
 	}
 
-	now := c.Now()
-	if err = c.Repository().Model(user).Updates(flentities.User{LastSignedIn: &now}).Error; err != nil {
-		c.ServerError(err)
+	now := a.Now()
+	if err = a.Repository().Model(user).Updates(flentities.User{LastSignedIn: &now}).Error; err != nil {
+		a.ServerError(err)
 		return
 	}
 
-	createSessionWithStatus(c, user, http.StatusCreated)
+	createSessionWithStatus(a.Context, user, http.StatusCreated)
+}
+
+// NewSignUp returns a new SignUp action
+func NewSignUp(c Context) Action {
+	return &SignUp{Context: c}
 }

@@ -23,35 +23,41 @@ func (b SignInBody) FilterSensitiveInformation() fldiagnostics.SensitivePayload 
 // SignIn creates properties that can hold units
 type SignIn struct {
 	SignInBody
+	Context
 }
 
 const authenticationFailedMessage = "Invalid email or password"
 
 // Perform executes the action
-func (a *SignIn) Perform(c Context) {
-	user, err := c.Repository().FindUserByEmail(a.Email)
+func (a *SignIn) Perform() {
+	user, err := a.Repository().FindUserByEmail(a.Email)
 	if err != nil {
-		c.ServerError(err)
+		a.ServerError(err)
 		return
 	}
 
 	if user == nil || user.ID == 0 {
-		c.Diagnostics().AddQuoted("reason", "User not found")
-		c.RespondError(http.StatusUnauthorized, errors.New(authenticationFailedMessage))
+		a.Diagnostics().AddQuoted("reason", "User not found")
+		a.RespondError(http.StatusUnauthorized, errors.New(authenticationFailedMessage))
 		return
 	}
 
 	if !user.ValidatePassword(a.Password) {
-		c.Diagnostics().AddQuoted("reason", "Password is invalid")
-		c.RespondError(http.StatusUnauthorized, errors.New(authenticationFailedMessage))
+		a.Diagnostics().AddQuoted("reason", "Password is invalid")
+		a.RespondError(http.StatusUnauthorized, errors.New(authenticationFailedMessage))
 		return
 	}
 
-	now := c.Now()
-	if err = c.Repository().Model(user).Updates(flentities.User{LastSignedIn: &now}).Error; err != nil {
-		c.ServerError(err)
+	now := a.Now()
+	if err = a.Repository().Model(user).Updates(flentities.User{LastSignedIn: &now}).Error; err != nil {
+		a.ServerError(err)
 		return
 	}
 
-	createSession(c, user)
+	createSession(a.Context, user)
+}
+
+// NewSignIn returns a new SignIn action
+func NewSignIn(c Context) Action {
+	return &SignIn{Context: c}
 }

@@ -7,15 +7,22 @@ import (
 )
 
 // CitiesList lists the available countries
-type CitiesList struct{}
+type CitiesList struct {
+	Context
+}
 
 // Perform executes the action
-func (a *CitiesList) Perform(c Context) {
+func (a *CitiesList) Perform() {
 	cities := []*flentities.City{}
-	if err := c.Repository().Order("name").Find(&cities).Error; err != nil {
-		c.ServerError(err)
+	if err := a.Repository().Order("name").Find(&cities).Error; err != nil {
+		a.ServerError(err)
 		return
 	}
 
-	c.Respond(http.StatusOK, cities)
+	a.Respond(http.StatusOK, cities)
+}
+
+// NewCitiesList returns a new CitiesList action
+func NewCitiesList(c Context) Action {
+	return &CitiesList{c}
 }

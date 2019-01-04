@@ -24,14 +24,15 @@ func (b *ProfileUpdateBody) Validate() []error {
 // ProfileUpdate is reponsible for creating new accounts
 type ProfileUpdate struct {
 	ProfileUpdateBody
+	Context
 }
 
 // Perform executes the action
-func (a *ProfileUpdate) Perform(c Context) {
-	user := c.CurrentUser()
+func (a *ProfileUpdate) Perform() {
+	user := a.CurrentUser()
 
 	if !user.ValidatePassword(a.Password) {
-		c.RespondError(http.StatusUnauthorized, errors.New("Password does not match"))
+		a.RespondError(http.StatusUnauthorized, errors.New("Password does not match"))
 		return
 	}
 
@@ -43,10 +44,15 @@ func (a *ProfileUpdate) Perform(c Context) {
 
 	user.Email = a.Email
 
-	if err := c.Repository().Save(user).Error; err != nil {
-		c.ServerError(err)
+	if err := a.Repository().Save(user).Error; err != nil {
+		a.ServerError(err)
 		return
 	}
 
-	c.Respond(http.StatusOK, user)
+	a.Respond(http.StatusOK, user)
+}
+
+// NewProfileUpdate returns a new ProfileUpdate action
+func NewProfileUpdate(c Context) Action {
+	return &ProfileUpdate{Context: c}
 }
