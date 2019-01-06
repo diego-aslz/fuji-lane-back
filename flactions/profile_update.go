@@ -39,7 +39,7 @@ func (a *ProfileUpdate) Perform() {
 	user := a.CurrentUser()
 
 	if !user.ValidatePassword(a.Password) {
-		a.RespondError(http.StatusUnauthorized, errors.New("Password does not match"))
+		a.RespondError(http.StatusUnauthorized, errors.New("Password is incorrect"))
 		return
 	}
 

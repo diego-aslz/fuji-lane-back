@@ -24,7 +24,7 @@ Feature: User Profile
       | Email    | diego+fl@selzlein.com |
       | Password | 123456789             |
     Then the system should respond with "UNAUTHORIZED" and the following errors:
-      | Password does not match |
+      | Password is incorrect |
     And I should have the following users:
       | Email              | Name |
       | diego@selzlein.com |      |
