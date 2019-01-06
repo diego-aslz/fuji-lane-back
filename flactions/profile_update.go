@@ -31,7 +31,7 @@ func (b ProfileUpdateBody) FilterSensitiveInformation() fldiagnostics.SensitiveP
 // ProfileUpdate is reponsible for creating new accounts
 type ProfileUpdate struct {
 	ProfileUpdateBody
-	Context
+	sessionAction
 }
 
 // Perform executes the action
@@ -56,10 +56,10 @@ func (a *ProfileUpdate) Perform() {
 		return
 	}
 
-	a.Respond(http.StatusOK, user)
+	a.createSession(user)
 }
 
 // NewProfileUpdate returns a new ProfileUpdate action
 func NewProfileUpdate(c Context) Action {
-	return &ProfileUpdate{Context: c}
+	return &ProfileUpdate{sessionAction: sessionAction{c}}
 }
