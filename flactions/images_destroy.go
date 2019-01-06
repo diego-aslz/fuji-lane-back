@@ -10,7 +10,7 @@ import (
 
 // ImagesDestroy destroys an image
 type ImagesDestroy struct {
-	flservices.S3Service
+	flservices.S3Service `json:"-"`
 	Context
 }
 

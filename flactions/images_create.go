@@ -35,7 +35,7 @@ func (b ImagesCreateBody) Validate() []error {
 
 // ImagesCreate returns a pre-signed URL for clients to upload images directly to S3
 type ImagesCreate struct {
-	flservices.S3Service
+	flservices.S3Service `json:"-"`
 	ImagesCreateBody
 	Context
 }

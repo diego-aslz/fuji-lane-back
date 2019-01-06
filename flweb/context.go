@@ -15,7 +15,7 @@ import (
 // Context is a thin abstraction layer around gin.Context so our routes don't directly depend on it and we can
 // switch web libraries with less pain if we ever need to
 type Context struct {
-	*gin.Context
+	*gin.Context   `json:"-"`
 	randSource     rand.Source
 	repository     *flentities.Repository
 	now            func() time.Time
