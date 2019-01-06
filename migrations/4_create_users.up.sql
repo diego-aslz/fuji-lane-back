@@ -12,3 +12,4 @@ CREATE TABLE users(
 );
 
 CREATE INDEX users_deleted_at ON users(deleted_at);
+CREATE UNIQUE INDEX users_email ON users(email);
