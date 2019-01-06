@@ -27,12 +27,14 @@ Feature: Bookings
       """
       [{
         "id": 2,
+        "propertyName": "ACME Downtown",
         "unitName": "Standard Apt",
         "checkInAt": "2018-06-15T15:00:00Z",
         "checkOutAt": "2018-06-16T11:00:00Z",
         "nights": 1
       }, {
         "id": 1,
+        "propertyName": "ACME Downtown",
         "unitName": "Standard Apt",
         "checkInAt": "2018-06-09T15:00:00Z",
         "checkOutAt": "2018-06-11T11:00:00Z",

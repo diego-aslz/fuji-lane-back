@@ -5,11 +5,12 @@ import "github.com/nerde/fuji-lane-back/flentities"
 // NewBookingItem returns the JSON structure for a Booking
 func NewBookingItem(b *flentities.Booking) map[string]interface{} {
 	return map[string]interface{}{
-		"id":         b.ID,
-		"unitName":   b.Unit.Name,
-		"checkInAt":  b.CheckInAt,
-		"checkOutAt": b.CheckOutAt,
-		"nights":     b.Nights,
+		"id":           b.ID,
+		"propertyName": b.Unit.Property.Name,
+		"unitName":     b.Unit.Name,
+		"checkInAt":    b.CheckInAt,
+		"checkOutAt":   b.CheckOutAt,
+		"nights":       b.Nights,
 	}
 }
 

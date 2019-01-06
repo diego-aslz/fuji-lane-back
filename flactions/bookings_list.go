@@ -20,7 +20,7 @@ func (a *BookingsList) Perform() {
 	user := a.CurrentUser()
 
 	bookings := []*flentities.Booking{}
-	err := a.paginate(a.Repository().Order("check_in_at desc").Preload("Unit"), a.page(), bookingsPageSize).Find(
+	err := a.paginate(a.Repository().Order("check_in_at desc").Preload("Unit.Property"), a.page(), bookingsPageSize).Find(
 		&bookings, map[string]interface{}{"user_id": user.ID}).Error
 	if err != nil {
 		a.ServerError(err)
