@@ -4,6 +4,7 @@ import (
 	"errors"
 	"net/http"
 
+	"github.com/nerde/fuji-lane-back/fldiagnostics"
 	"github.com/nerde/fuji-lane-back/flentities"
 )
 
@@ -19,6 +20,12 @@ func (b *ProfileUpdateBody) Validate() []error {
 	return flentities.ValidateFields(
 		flentities.ValidateField("email", b.Email).Required().Email(),
 	)
+}
+
+// FilterSensitiveInformation hides password
+func (b ProfileUpdateBody) FilterSensitiveInformation() fldiagnostics.SensitivePayload {
+	b.Password = "[FILTERED]"
+	return b
 }
 
 // ProfileUpdate is reponsible for creating new accounts
