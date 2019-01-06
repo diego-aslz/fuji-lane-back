@@ -8,8 +8,8 @@ func NewBookingItem(b *flentities.Booking) map[string]interface{} {
 		"id":           b.ID,
 		"propertyName": b.Unit.Property.Name,
 		"unitName":     b.Unit.Name,
-		"checkInAt":    b.CheckInAt,
-		"checkOutAt":   b.CheckOutAt,
+		"checkIn":      b.CheckIn,
+		"checkOut":     b.CheckOut,
 		"nights":       b.Nights,
 	}
 }

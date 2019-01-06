@@ -35,7 +35,6 @@ func NewDashboard(r *flentities.Repository, accountID uint, since, until time.Ti
 		},
 		Daily: []DashboardDaily{},
 	}
-	dateLayout := "2006-01-02"
 
 	bookingTotals := []dateTotal{}
 	err := r.Model(&flentities.Booking{}).Joins("JOIN units ON bookings.unit_id = units.id").
@@ -50,11 +49,11 @@ func NewDashboard(r *flentities.Repository, accountID uint, since, until time.Ti
 
 	s := since
 	for s.Before(until) {
-		formattedDate := s.Format(dateLayout)
+		formattedDate := s.Format(flentities.Layout)
 
 		total := dateTotal{}
 		for _, t := range bookingTotals {
-			if t.Date.Format(dateLayout) == formattedDate {
+			if t.Date.Format(flentities.Layout) == formattedDate {
 				total = t
 				break
 			}

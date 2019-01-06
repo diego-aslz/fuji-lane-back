@@ -3,7 +3,6 @@ package flactions
 import (
 	"errors"
 	"net/http"
-	"time"
 
 	"github.com/jinzhu/gorm"
 	"github.com/nerde/fuji-lane-back/flentities"
@@ -11,10 +10,10 @@ import (
 
 // BookingsCreateBody is the payload to create a booking
 type BookingsCreateBody struct {
-	UnitID         uint      `json:"unitID"`
-	CheckInAt      time.Time `json:"checkInAt"`
-	CheckOutAt     time.Time `json:"checkOutAt"`
-	AdditionalInfo *string   `json:"additionalInfo"`
+	UnitID         uint            `json:"unitID"`
+	CheckIn        flentities.Date `json:"checkIn"`
+	CheckOut       flentities.Date `json:"checkOut"`
+	AdditionalInfo *string         `json:"additionalInfo"`
 }
 
 // BookingsCreate lists user bookings
@@ -27,9 +26,9 @@ type BookingsCreate struct {
 func (a *BookingsCreate) Validate() []error {
 	return flentities.ValidateFields(
 		flentities.ValidateField("unit", a.UnitID).Required(),
-		flentities.ValidateField("check in date", a.CheckInAt).Required().After(a.Now(),
+		flentities.ValidateField("check in date", a.CheckIn.Time).Required().After(a.Now(),
 			"check in date should be in the future"),
-		flentities.ValidateField("check out date", a.CheckOutAt).Required().After(a.CheckInAt,
+		flentities.ValidateField("check out date", a.CheckOut.Time).Required().After(a.CheckIn.Time,
 			"check out date should be after check in date"),
 	)
 }
@@ -40,12 +39,12 @@ func (a *BookingsCreate) Perform() {
 		UserID:         a.CurrentUser().ID,
 		Unit:           &flentities.Unit{ID: a.UnitID},
 		UnitID:         a.UnitID,
-		CheckInAt:      a.CheckInAt,
-		CheckOutAt:     a.CheckOutAt,
+		CheckIn:        a.CheckIn,
+		CheckOut:       a.CheckOut,
 		AdditionalInfo: a.AdditionalInfo,
 	}
 
-	if booking.CheckInAt.Before(a.Now()) {
+	if booking.CheckIn.Before(a.Now()) {
 		a.RespondError(http.StatusUnprocessableEntity, errors.New("check in date should be in the future"))
 	}
 

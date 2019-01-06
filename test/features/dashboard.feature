@@ -21,12 +21,12 @@ Feature: Dashboard
 
   Scenario: Getting dashboard details
     Given the following bookings:
-      | User             | Unit         | CreatedAt            | CheckInAt            | CheckOutAt           | Nights |
-      | antoni@gmail.com | Standard Apt | 2018-05-31T23:59:00Z | 2018-06-09T15:00:00Z | 2018-06-11T11:00:00Z | 2      |
-      | antoni@gmail.com | Standard Apt | 2018-06-01T00:01:00Z | 2018-06-09T15:00:00Z | 2018-06-11T11:00:00Z | 2      |
-      | antoni@gmail.com | Double Apt   | 2018-06-01T00:01:00Z | 2018-06-19T15:00:00Z | 2018-06-21T11:00:00Z | 2      |
-      | antoni@gmail.com | Standard Apt | 2018-06-06T23:59:00Z | 2018-06-09T15:00:00Z | 2018-06-11T11:00:00Z | 2      |
-      | antoni@gmail.com | Standard Apt | 2018-06-07T00:01:00Z | 2018-06-09T15:00:00Z | 2018-06-11T11:00:00Z | 2      |
+      | User             | Unit         | CreatedAt            | CheckIn    | CheckOut   | Nights |
+      | antoni@gmail.com | Standard Apt | 2018-05-31T23:59:00Z | 2018-06-09 | 2018-06-11 | 2      |
+      | antoni@gmail.com | Standard Apt | 2018-06-01T00:01:00Z | 2018-06-09 | 2018-06-11 | 2      |
+      | antoni@gmail.com | Double Apt   | 2018-06-01T00:01:00Z | 2018-06-19 | 2018-06-21 | 2      |
+      | antoni@gmail.com | Standard Apt | 2018-06-06T23:59:00Z | 2018-06-09 | 2018-06-11 | 2      |
+      | antoni@gmail.com | Standard Apt | 2018-06-07T00:01:00Z | 2018-06-09 | 2018-06-11 | 2      |
     When I get dashboard details for:
       | since | 2018-06-01T00:00:00Z |
       | until | 2018-06-07T00:00:00Z |

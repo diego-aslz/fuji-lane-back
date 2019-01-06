@@ -10,6 +10,7 @@ import (
 	"github.com/DATA-DOG/godog/gherkin"
 	"github.com/gin-gonic/gin"
 	"github.com/nerde/fuji-lane-back/flconfig"
+	"github.com/nerde/fuji-lane-back/flentities"
 	"github.com/nerde/fuji-lane-back/flservices"
 	"github.com/nerde/fuji-lane-back/flweb"
 	"github.com/rdumont/assistdog"
@@ -39,6 +40,7 @@ func setupApplication() {
 	flconfig.LoadConfiguration()
 
 	assist = assistdog.NewDefault()
+	assist.RegisterComparer(flentities.Date{}, dateComparer)
 	assist.RegisterComparer(time.Time{}, timeComparer)
 	assist.RegisterComparer(&time.Time{}, timePtrComparer)
 	assist.RegisterComparer(true, boolComparer)
@@ -55,6 +57,7 @@ func setupApplication() {
 	assist.RegisterParser(float32(1.0), floatParser)
 	assist.RegisterParser(refUint(1), uintPtrParser)
 	assist.RegisterParser(&time.Time{}, timePtrParser)
+	assist.RegisterParser(flentities.Date{}, dateParser)
 
 	facebookClient = &mockedFacebookClient{tokens: map[string]flservices.FacebookTokenDetails{}}
 	application = flweb.NewApplication(facebookClient)
@@ -71,7 +74,7 @@ func setupApplication() {
 func timeComparer(raw string, rawActual interface{}) error {
 	at, ok := rawActual.(time.Time)
 	if !ok {
-		return fmt.Errorf("%v is not time.Time", rawActual)
+		return fmt.Errorf("%v is not a time.Time", rawActual)
 	}
 
 	et, err := defaults.ParseTime(raw)
@@ -83,6 +86,23 @@ func timeComparer(raw string, rawActual interface{}) error {
 	actual := at.UTC()
 	if expected != actual {
 		return fmt.Errorf("Expected %v, but got %v", expected, actual)
+	}
+
+	return nil
+}
+
+func dateComparer(raw string, rawActual interface{}) error {
+	d, ok := rawActual.(flentities.Date)
+	if !ok {
+		return fmt.Errorf("%v is not a Date", rawActual)
+	}
+
+	if raw == "" && d.IsZero() {
+		return nil
+	}
+
+	if raw != d.String() {
+		return fmt.Errorf("Expected %s, got %s", raw, d.String())
 	}
 
 	return nil
@@ -265,6 +285,14 @@ func timePtrParser(raw string) (interface{}, error) {
 	}
 
 	return &i, nil
+}
+
+func dateParser(raw string) (interface{}, error) {
+	if raw == "" {
+		return flentities.Date{}, nil
+	}
+
+	return flentities.ParseDate(raw)
 }
 
 func itIsCurrently(timeExpr string) (err error) {

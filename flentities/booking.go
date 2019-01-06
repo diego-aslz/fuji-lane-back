@@ -13,8 +13,8 @@ type Booking struct {
 	User            *User     `json:"-"`
 	UnitID          uint      `json:"unitID"`
 	Unit            *Unit     `json:"-"`
-	CheckInAt       time.Time `json:"checkInAt"`
-	CheckOutAt      time.Time `json:"checkOutAt"`
+	CheckIn         Date      `json:"checkIn"`
+	CheckOut        Date      `json:"checkOut"`
 	AdditionalInfo  *string   `json:"additionalInfo"`
 	NightPriceCents int       `json:"nightPriceCents"`
 	Nights          int       `json:"nights"`
@@ -24,7 +24,7 @@ type Booking struct {
 
 // Calculate fills in calculated fields, like prices
 func (b *Booking) Calculate() {
-	b.Nights = int(math.Ceil(b.CheckOutAt.Sub(b.CheckInAt).Hours() / 24))
+	b.Nights = int(math.Ceil(b.CheckOut.Sub(b.CheckIn.Time).Hours() / 24))
 
 	if b.Unit == nil || b.Unit.BasePriceCents == nil {
 		return
