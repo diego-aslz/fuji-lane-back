@@ -15,7 +15,7 @@ type Booking struct {
 	Unit            *Unit     `json:"-"`
 	CheckIn         Date      `json:"checkIn"`
 	CheckOut        Date      `json:"checkOut"`
-	AdditionalInfo  *string   `json:"additionalInfo"`
+	Message         *string   `json:"message"`
 	NightPriceCents int       `json:"nightPriceCents"`
 	Nights          int       `json:"nights"`
 	ServiceFeeCents int       `json:"serviceFeeCents"`

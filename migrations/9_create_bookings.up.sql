@@ -5,7 +5,7 @@ CREATE TABLE bookings(
   unit_id integer not null references units,
   check_in date not null,
   check_out date not null,
-  additional_info text,
+  message text,
   night_price_cents integer not null,
   nights integer not null check (nights > 0),
   service_fee_cents integer not null,

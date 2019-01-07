@@ -56,25 +56,25 @@ Feature: Bookings
   Scenario: Booking a Unit
     Given it is currently "01 Jun 18 08:00"
     When I submit the following booking:
-      | Unit           | Standard Apt |
-      | CheckIn        | 2018-06-09   |
-      | CheckOut       | 2018-06-11   |
-      | AdditionalInfo | Nothing      |
+      | Unit     | Standard Apt |
+      | CheckIn  | 2018-06-09   |
+      | CheckOut | 2018-06-11   |
+      | Message  | Nothing      |
     Then the system should respond with "CREATED"
     And I should have the following bookings:
-      | User               | Unit         | CheckIn    | CheckOut   | AdditionalInfo | Nights | NightPriceCents | ServiceFeeCents | TotalCents |
-      | diego@selzlein.com | Standard Apt | 2018-06-09 | 2018-06-11 | Nothing        | 2      | 11000           | 0               | 22000      |
+      | User               | Unit         | CheckIn    | CheckOut   | Message | Nights | NightPriceCents | ServiceFeeCents | TotalCents |
+      | diego@selzlein.com | Standard Apt | 2018-06-09 | 2018-06-11 | Nothing | 2      | 11000           | 0               | 22000      |
 
   Scenario: Booking a Unit with invalid information
     Given it is currently "01 Jun 18 08:00"
     When I submit the following booking:
-      | AdditionalInfo | Nothing |
+      | Message | Nothing |
     Then the system should respond with "UNPROCESSABLE ENTITY" and the following errors:
-      | unit is required                             |
-      | check in date is required                    |
-      | check in date should be in the future        |
-      | check out date is required                   |
-      | check out date should be after check in date |
+      | unit is required                   |
+      | check in is required               |
+      | check in should be in the future   |
+      | check out is required              |
+      | check out should be after check in |
 
   Scenario: Trying to Book a Unit that's not published
     Given it is currently "01 Jun 18 08:00"
@@ -82,9 +82,9 @@ Feature: Bookings
       | Property      | Name       | Bedrooms | SizeM2 | MaxOccupancy | Count | BasePriceCents |
       | ACME Downtown | Double Apt | 1        | 32     | 3            | 15    | 11000          |
     When I submit the following booking:
-      | Unit           | Double Apt |
-      | CheckIn        | 2018-06-09 |
-      | CheckOut       | 2018-06-11 |
-      | AdditionalInfo | Nothing    |
+      | Unit     | Double Apt |
+      | CheckIn  | 2018-06-09 |
+      | CheckOut | 2018-06-11 |
+      | Message  | Nothing    |
     Then the system should respond with "UNPROCESSABLE ENTITY" and the following errors:
       | unit is invalid |

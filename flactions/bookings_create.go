@@ -10,10 +10,10 @@ import (
 
 // BookingsCreateBody is the payload to create a booking
 type BookingsCreateBody struct {
-	UnitID         uint            `json:"unitID"`
-	CheckIn        flentities.Date `json:"checkIn"`
-	CheckOut       flentities.Date `json:"checkOut"`
-	AdditionalInfo *string         `json:"additionalInfo"`
+	UnitID   uint            `json:"unitID"`
+	CheckIn  flentities.Date `json:"checkIn"`
+	CheckOut flentities.Date `json:"checkOut"`
+	Message  *string         `json:"message"`
 }
 
 // BookingsCreate lists user bookings
@@ -26,22 +26,24 @@ type BookingsCreate struct {
 func (a *BookingsCreate) Validate() []error {
 	return flentities.ValidateFields(
 		flentities.ValidateField("unit", a.UnitID).Required(),
-		flentities.ValidateField("check in date", a.CheckIn.Time).Required().After(a.Now(),
-			"check in date should be in the future"),
-		flentities.ValidateField("check out date", a.CheckOut.Time).Required().After(a.CheckIn.Time,
-			"check out date should be after check in date"),
+		flentities.ValidateField("check in", a.CheckIn.Time).Required().After(a.Now(), "check in should be in the future"),
+		flentities.ValidateField("check out", a.CheckOut.Time).Required().After(a.CheckIn.Time,
+			"check out should be after check in"),
 	)
 }
 
 // Perform executes the action
 func (a *BookingsCreate) Perform() {
 	booking := &flentities.Booking{
-		UserID:         a.CurrentUser().ID,
-		Unit:           &flentities.Unit{ID: a.UnitID},
-		UnitID:         a.UnitID,
-		CheckIn:        a.CheckIn,
-		CheckOut:       a.CheckOut,
-		AdditionalInfo: a.AdditionalInfo,
+		UserID:   a.CurrentUser().ID,
+		Unit:     &flentities.Unit{ID: a.UnitID},
+		UnitID:   a.UnitID,
+		CheckIn:  a.CheckIn,
+		CheckOut: a.CheckOut,
+	}
+
+	if a.Message != nil && *a.Message != "" {
+		booking.Message = a.Message
 	}
 
 	if booking.CheckIn.Before(a.Now()) {
