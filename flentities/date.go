@@ -45,7 +45,7 @@ func ParseDate(raw string) (Date, error) {
 
 // Value returns a String representation for d
 func (d Date) Value() (driver.Value, error) {
-	return json.Marshal(d.String())
+	return d.String(), nil
 }
 
 // Scan loads a scanned value into d
