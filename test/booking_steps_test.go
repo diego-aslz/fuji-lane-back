@@ -82,7 +82,7 @@ func BookingContext(s *godog.Suite) {
 	s.Step(`^I get dashboard details for:$`, performGETWithParamsStep(flweb.DashboardPath))
 	s.Step(`^I list my bookings$`, performGETStep(flweb.BookingsPath))
 	s.Step(`^I list my bookings for page "([^"]*)"$`, performGETStepWithPage(flweb.BookingsPath))
-	s.Step(`^I submit the following booking:$`, requestBookingsCreate)
+	s.Step(`^I create the following booking:$`, requestBookingsCreate)
 	s.Step(`^I should have the following bookings:$`, assertDatabaseRecordsStep(&[]*flentities.Booking{},
 		bookingToTableRow))
 }

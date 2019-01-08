@@ -55,7 +55,7 @@ Feature: Bookings
 
   Scenario: Booking a Unit
     Given it is currently "01 Jun 18 08:00"
-    When I submit the following booking:
+    When I create the following booking:
       | Unit     | Standard Apt |
       | CheckIn  | 2018-06-09   |
       | CheckOut | 2018-06-11   |
@@ -67,7 +67,7 @@ Feature: Bookings
 
   Scenario: Booking a Unit with invalid information
     Given it is currently "01 Jun 18 08:00"
-    When I submit the following booking:
+    When I create the following booking:
       | Message | Nothing |
     Then the system should respond with "UNPROCESSABLE ENTITY" and the following errors:
       | unit is required                   |
@@ -81,10 +81,48 @@ Feature: Bookings
     And the following units:
       | Property      | Name       | Bedrooms | SizeM2 | MaxOccupancy | Count | BasePriceCents |
       | ACME Downtown | Double Apt | 1        | 32     | 3            | 15    | 11000          |
-    When I submit the following booking:
+    When I create the following booking:
       | Unit     | Double Apt |
       | CheckIn  | 2018-06-09 |
       | CheckOut | 2018-06-11 |
       | Message  | Nothing    |
     Then the system should respond with "UNPROCESSABLE ENTITY" and the following errors:
       | unit is invalid |
+
+  Scenario Outline: Calculating Booking Prices
+    Given the following units:
+      | Property      | Name            | Bedrooms | SizeM2 | MaxOccupancy | Count | OneNightPriceCents | BasePriceCents | OneWeekPriceCents | ThreeMonthsPriceCents | SixMonthsPriceCents | TwelveMonthsPriceCents | PublishedAt          |
+      | ACME Downtown | Specific Prices | 1        | 32     | 3            | 15    | 13000              | 10000          | 60000             | 750000                | 1200000             | 2200000                | 2018-06-09T15:00:00Z |
+    And the following units:
+      | Property      | Name         | Bedrooms | SizeM2 | MaxOccupancy | Count | BasePriceCents | PublishedAt          |
+      | ACME Downtown | Single Price | 1        | 32     | 3            | 15    | 10000          | 2018-06-09T15:00:00Z |
+    And it is currently "01 Jun 18 08:00"
+    When I create the following booking:
+      | Unit     | <Unit>     |
+      | CheckIn  | <CheckIn>  |
+      | CheckOut | <CheckOut> |
+    Then the system should respond with "CREATED"
+    And I should have the following bookings:
+      | User               | Unit   | CheckIn   | CheckOut   | Nights   | NightPriceCents | TotalCents |
+      | diego@selzlein.com | <Unit> | <CheckIn> | <CheckOut> | <Nights> | <PerNight>      | <Total>    |
+
+    Examples:
+      | Unit            | CheckIn    | CheckOut   | Nights | PerNight | Total   |
+      | Specific Prices | 2018-07-01 | 2018-07-02 | 1      | 13000    | 13000   |
+      | Specific Prices | 2018-07-01 | 2018-07-07 | 6      | 10000    | 60000   |
+      | Specific Prices | 2018-07-01 | 2018-07-08 | 7      | 8571     | 60000   |
+      | Specific Prices | 2018-07-01 | 2018-09-28 | 89     | 8571     | 762857  |
+      | Specific Prices | 2018-07-01 | 2018-09-29 | 90     | 8333     | 750000  |
+      | Specific Prices | 2018-07-01 | 2018-12-27 | 179    | 8333     | 1491667 |
+      | Specific Prices | 2018-07-01 | 2018-12-28 | 180    | 6667     | 1200000 |
+      | Specific Prices | 2018-07-01 | 2019-06-30 | 364    | 6667     | 2426667 |
+      | Specific Prices | 2018-07-01 | 2019-07-01 | 365    | 6027     | 2200000 |
+      | Single Price    | 2018-07-01 | 2018-07-02 | 1      | 10000    | 10000   |
+      | Single Price    | 2018-07-01 | 2018-07-07 | 6      | 10000    | 60000   |
+      | Single Price    | 2018-07-01 | 2018-07-08 | 7      | 10000    | 70000   |
+      | Single Price    | 2018-07-01 | 2018-09-28 | 89     | 10000    | 890000  |
+      | Single Price    | 2018-07-01 | 2018-09-29 | 90     | 10000    | 900000  |
+      | Single Price    | 2018-07-01 | 2018-12-27 | 179    | 10000    | 1790000 |
+      | Single Price    | 2018-07-01 | 2018-12-28 | 180    | 10000    | 1800000 |
+      | Single Price    | 2018-07-01 | 2019-06-30 | 364    | 10000    | 3640000 |
+      | Single Price    | 2018-07-01 | 2019-07-01 | 365    | 10000    | 3650000 |
