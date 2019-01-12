@@ -30,16 +30,21 @@ func listingUnits(units []*flentities.Unit) []map[string]interface{} {
 
 	for _, u := range units {
 		result = append(result, map[string]interface{}{
-			"id":             u.ID,
-			"name":           u.Name,
-			"bedrooms":       u.Bedrooms,
-			"bathrooms":      u.Bathrooms,
-			"sizeM2":         u.SizeM2,
-			"maxOccupancy":   u.MaxOccupancy,
-			"basePriceCents": u.BasePriceCents,
-			"overview":       u.Overview,
-			"amenities":      listingAmenities(u.Amenities),
-			"images":         listingImages(u.Images),
+			"id":                     u.ID,
+			"name":                   u.Name,
+			"bedrooms":               u.Bedrooms,
+			"bathrooms":              u.Bathrooms,
+			"sizeM2":                 u.SizeM2,
+			"maxOccupancy":           u.MaxOccupancy,
+			"oneNightPriceCents":     u.OneNightPriceCents,
+			"basePriceCents":         u.BasePriceCents,
+			"oneWeekPriceCents":      u.OneWeekPriceCents,
+			"threeMonthsPriceCents":  u.ThreeMonthsPriceCents,
+			"sixMonthsPriceCents":    u.SixMonthsPriceCents,
+			"twelveMonthsPriceCents": u.TwelveMonthsPriceCents,
+			"overview":               u.Overview,
+			"amenities":              listingAmenities(u.Amenities),
+			"images":                 listingImages(u.Images),
 		})
 	}
 

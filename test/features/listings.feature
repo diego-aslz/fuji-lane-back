@@ -102,8 +102,13 @@ Feature: Listings
           }],
           "maxOccupancy": 3,
           "name": "Standard Apt",
+          "oneNightPriceCents": null,
+          "oneWeekPriceCents": null,
           "overview": null,
-          "sizeM2": 52
+          "sixMonthsPriceCents": null,
+          "sizeM2": 52,
+          "threeMonthsPriceCents": null,
+          "twelveMonthsPriceCents": null
         }, {
           "amenities": [],
           "basePriceCents": 12000,
@@ -113,8 +118,13 @@ Feature: Listings
           "images": [],
           "maxOccupancy": 6,
           "name": "Double Apt",
+          "oneNightPriceCents": null,
+          "oneWeekPriceCents": null,
           "overview": null,
-          "sizeM2": 62
+          "sixMonthsPriceCents": null,
+          "sizeM2": 62,
+          "threeMonthsPriceCents": null,
+          "twelveMonthsPriceCents": null
         }]
       }
       """
