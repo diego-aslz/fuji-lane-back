@@ -17,6 +17,7 @@ func NewListing(property *flentities.Property, similarListings []*flentities.Pro
 		"countryID":       property.CountryID,
 		"latitude":        property.Latitude,
 		"longitude":       property.Longitude,
+		"minimumStay":     property.MinimumStay,
 		"overview":        property.Overview,
 		"images":          listingImages(property.Images),
 		"amenities":       listingAmenities(property.Amenities),

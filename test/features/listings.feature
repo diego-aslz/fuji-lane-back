@@ -15,11 +15,11 @@ Feature: Listings
 
   Scenario: Getting Listing Details
     Given the following properties:
-      | ID | Account          | Name               | PublishedAt          | Overview                 | Latitude | Longitude | Address1                | CityID | CountryID |
-      | 1  | Diego Apartments | ACME Downtown      | 2018-06-01T08:00:00Z | <p>Property Overview</p> | 100      | 200       | 88 Tai Tam Reservoir Rd | 3      | 2         |
-      | 2  | Diego Apartments | ACME Uptown        | 2018-06-01T08:00:00Z | <p>Uptown Overview</p>   | 100      | 200       | Add 1                   | 3      | 2         |
-      | 3  | Diego Apartments | No Published Units | 2018-06-01T08:00:00Z | <p>Overview</p>          | 100      | 200       | Add 1                   | 3      | 2         |
-      | 4  | Diego Apartments | Different City     | 2018-06-01T08:00:00Z | <p>Overview</p>          | 100      | 200       | Add 1                   | 2      | 1         |
+      | ID | Account          | Name               | PublishedAt          | Overview                 | Latitude | Longitude | Address1                | CityID | CountryID | MinimumStay |
+      | 1  | Diego Apartments | ACME Downtown      | 2018-06-01T08:00:00Z | <p>Property Overview</p> | 100      | 200       | 88 Tai Tam Reservoir Rd | 3      | 2         | 2           |
+      | 2  | Diego Apartments | ACME Uptown        | 2018-06-01T08:00:00Z | <p>Uptown Overview</p>   | 100      | 200       | Add 1                   | 3      | 2         | 3           |
+      | 3  | Diego Apartments | No Published Units | 2018-06-01T08:00:00Z | <p>Overview</p>          | 100      | 200       | Add 1                   | 3      | 2         | 4           |
+      | 4  | Diego Apartments | Different City     | 2018-06-01T08:00:00Z | <p>Overview</p>          | 100      | 200       | Add 1                   | 2      | 1         | 5           |
     And the following properties:
       | ID | Account          | Name          | Overview        | Latitude | Longitude | CityID | CountryID |
       | 10 | Diego Apartments | Not Published | <p>Overview</p> | 100      | 200       | 3      | 2         |
@@ -68,6 +68,7 @@ Feature: Listings
         }],
         "latitude": 100,
         "longitude": 200,
+        "minimumStay": 2,
         "name": "ACME Downtown",
         "overview": "<p>Property Overview</p>",
         "postalCode": null,
