@@ -48,6 +48,8 @@ const (
 	PropertiesPublishPath = "/properties/:id/publish"
 	// PropertyPath to access a specific property
 	PropertyPath = "/properties/:id"
+	// SearchPath to search for listings
+	SearchPath = "/search"
 	// UnitPath to access a specific unit
 	UnitPath = "/units/:id"
 	// UnitsPath to access units
@@ -67,6 +69,8 @@ func (a *Application) AddRoutes(e *gin.Engine) {
 	a.route(e.GET, CountriesPath, flactions.NewCountriesList, withRepository)
 
 	a.route(e.GET, DashboardPath, flactions.NewDashboard, withRepository, loadSession, requireUser, requireAccount)
+
+	a.route(e.GET, SearchPath, flactions.NewSearch, withRepository)
 
 	a.routeAuthentication(e)
 	a.routeImages(e)

@@ -184,6 +184,24 @@ func performGETStep(path string) func() error {
 	}
 }
 
+func performGETWithQueryStep(path string) func(*gherkin.DataTable) error {
+	return func(table *gherkin.DataTable) error {
+		params, err := assist.ParseMap(table)
+		if err != nil {
+			return err
+		}
+
+		p := path
+		sep := "?"
+		for key, value := range params {
+			p += sep + key + "=" + value
+			sep = "&"
+		}
+
+		return perform("GET", p, nil)
+	}
+}
+
 func perform(method, path string, body io.Reader) error {
 	response = httptest.NewRecorder()
 
