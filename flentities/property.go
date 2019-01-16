@@ -15,6 +15,7 @@ type Property struct {
 	DeletedAt       *time.Time `json:"-"`
 	Name            *string    `json:"name"`
 	PublishedAt     *time.Time `json:"publishedAt"`
+	EverPublished   bool       `json:"everPublished"`
 	AccountID       uint       `json:"-"`
 	Account         *Account   `json:"-"`
 	Address1        *string    `json:"address1"`

@@ -66,6 +66,7 @@ Feature: Properties Management
         "id": 1,
         "updatedAt": "2018-06-05T08:00:00Z",
         "publishedAt": null,
+        "everPublished": false,
         "name": "ACME Downtown",
         "address1": "Add. One",
         "address2": "Add. Two",
@@ -243,8 +244,8 @@ Feature: Properties Management
 
   Scenario: Publishing my property
     Given the following properties:
-      | ID | Account          | Name          | Address1 | Address2 | Address3   | CityID | PostalCode | MinimumStay | Deposit | Cleaning | NearestAirport | NearestSubway | NearbyLocations | Overview   | Latitude | Longitude |
-      | 1  | Diego Apartments | ACME Downtown | Add. One | Add. Two | Add. Three | 3      | 223344     | 3           | 150     | daily    | IGU            | Central Park  | Pharmacy        | Nice place | 34.69374 | 135.50218 |
+      | ID | Account          | Name          | Address1 | Address2 | Address3   | CityID | PostalCode | MinimumStay | Deposit | Cleaning | NearestAirport | NearestSubway | NearbyLocations | Overview   | Latitude | Longitude | EverPublished |
+      | 1  | Diego Apartments | ACME Downtown | Add. One | Add. Two | Add. Three | 3      | 223344     | 3           | 150     | daily    | IGU            | Central Park  | Pharmacy        | Nice place | 34.69374 | 135.50218 | false         |
     And the following images:
       | ID | Property      | Uploaded | Name      | URL                                | Type       | Size    | Position |
       | 1  | ACME Downtown | true     | front.jpg | https://s3.amazonaws.com/front.jpg | image/jpeg | 1000000 | 1        |
@@ -255,13 +256,13 @@ Feature: Properties Management
     When I publish property "1"
     Then the system should respond with "OK"
     And I should have the following properties:
-      | ID | Account          | Name          | PublishedAt          |
-      | 1  | Diego Apartments | ACME Downtown | 2018-06-05T08:00:00Z |
+      | ID | Account          | Name          | PublishedAt          | EverPublished |
+      | 1  | Diego Apartments | ACME Downtown | 2018-06-05T08:00:00Z | true          |
 
   Scenario: Publishing a property with missing information
     Given the following properties:
-      | ID | Account          |
-      | 1  | Diego Apartments |
+      | ID | Account          | EverPublished |
+      | 1  | Diego Apartments | false         |
     And the following images:
       | ID | PropertyID | Uploaded | Name      | URL                                | Type       | Size    | Position |
       | 1  | 1          | false    | front.jpg | https://s3.amazonaws.com/front.jpg | image/jpeg | 1000000 | 2        |
@@ -272,18 +273,18 @@ Feature: Properties Management
       | At least one amenity is required |
       | At least one image is required   |
     And I should have the following properties:
-      | ID | Account          | PublishedAt |
-      | 1  | Diego Apartments |             |
+      | ID | Account          | PublishedAt | EverPublished |
+      | 1  | Diego Apartments |             | false         |
 
   Scenario: Listing my properties
     Given the following accounts:
       | Name              |
       | Antoni Apartments |
     And the following properties:
-      | ID | Account           | Name          | Address1                | Address2 | CityID | PostalCode | PublishedAt          | UpdatedAt            |
-      | 1  | Diego Apartments  | ACME Downtown | 88 Tai Tam Reservoir Rd | Tai Tam  | 3      | 111        | 2018-06-05T08:00:00Z | 2018-06-05T08:00:00Z |
-      | 2  | Diego Apartments  | ACME Uptown   | 90 Tai Tam Reservoir Rd | Tai Tam  | 3      | 222        | 2018-06-05T08:00:00Z | 2018-06-05T08:00:00Z |
-      | 3  | Antoni Apartments | ACME          | Add. One                | Add. Two | 3      | 333        | 2018-06-05T08:00:00Z | 2018-06-05T08:00:00Z |
+      | ID | Account           | Name          | Address1                | Address2 | CityID | PostalCode | PublishedAt          | UpdatedAt            | EverPublished |
+      | 1  | Diego Apartments  | ACME Downtown | 88 Tai Tam Reservoir Rd | Tai Tam  | 3      | 111        | 2018-06-05T08:00:00Z | 2018-06-05T08:00:00Z | false         |
+      | 2  | Diego Apartments  | ACME Uptown   | 90 Tai Tam Reservoir Rd | Tai Tam  | 3      | 222        | 2018-06-05T08:00:00Z | 2018-06-05T08:00:00Z | true          |
+      | 3  | Antoni Apartments | ACME          | Add. One                | Add. Two | 3      | 333        | 2018-06-05T08:00:00Z | 2018-06-05T08:00:00Z | false         |
     And the following images:
       | ID | Property      | Uploaded | Name      | URL                                | Type       | Size    | Position |
       | 1  | ACME Downtown | true     | front.jpg | https://s3.amazonaws.com/front.jpg | image/jpeg | 1000000 | 2        |
@@ -300,6 +301,7 @@ Feature: Properties Management
         "name": "ACME Downtown",
         "updatedAt": "2018-06-05T08:00:00Z",
         "publishedAt": "2018-06-05T08:00:00Z",
+        "everPublished": false,
         "address1": "88 Tai Tam Reservoir Rd",
         "address2": "Tai Tam",
         "address3": null,
@@ -378,6 +380,7 @@ Feature: Properties Management
         "id": 2,
         "updatedAt": "2018-06-05T08:00:00Z",
         "publishedAt": "2018-06-05T08:00:00Z",
+        "everPublished": true,
         "name": "ACME Uptown",
         "address1": "90 Tai Tam Reservoir Rd",
         "address2": "Tai Tam",
