@@ -133,3 +133,18 @@ Feature: Searching for Units
         }]
       }]
       """
+
+  Scenario: Paginating listings
+    Given the following properties:
+      | ID | Account          | Name          | PublishedAt          | Overview                 | Latitude | Longitude | Address1                | CityID | CountryID | MinimumStay |
+      | 1  | Diego Apartments | ACME Downtown | 2018-06-01T08:00:00Z | <p>Property Overview</p> | 100      | 200       | 88 Tai Tam Reservoir Rd | 2      | 1         | 2           |
+    And the following units:
+      | ID | Property      | Name       | Bedrooms | Bathrooms | SizeM2 | MaxOccupancy | Count | PublishedAt          | BasePriceCents |
+      | 11 | ACME Downtown | Double Apt | 2        | 2         | 62     | 6            | 10    | 2018-06-01T08:00:00Z | 12000          |
+    When I search for units with the following filters:
+      | cityID | 2 |
+      | page   | 2 |
+    Then the system should respond with "OK" and the following JSON:
+      """
+      []
+      """

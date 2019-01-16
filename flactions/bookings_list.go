@@ -8,8 +8,6 @@ import (
 	"github.com/nerde/fuji-lane-back/flviews"
 )
 
-const bookingsPageSize = defaultPageSize
-
 // BookingsList lists user bookings
 type BookingsList struct {
 	paginatedAction
@@ -17,10 +15,12 @@ type BookingsList struct {
 
 // Perform executes the action
 func (a *BookingsList) Perform() {
+	a.addPageDiagnostic()
+
 	user := a.CurrentUser()
 
 	bookings := []*flentities.Booking{}
-	err := a.paginate(a.Repository().Order("check_in desc").Preload("Unit.Property"), a.page(), bookingsPageSize).Find(
+	err := a.paginate(a.Repository().Order("check_in desc").Preload("Unit.Property"), a.getPage(), defaultPageSize).Find(
 		&bookings, map[string]interface{}{"user_id": user.ID}).Error
 	if err != nil {
 		a.ServerError(err)
@@ -34,5 +34,5 @@ func (a *BookingsList) Perform() {
 
 // NewBookingsList returns a new BookingsList action
 func NewBookingsList(c Context) Action {
-	return &BookingsList{paginatedAction: paginatedAction{c}}
+	return &BookingsList{paginatedAction: paginatedAction{Context: c}}
 }
