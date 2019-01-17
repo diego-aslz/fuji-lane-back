@@ -68,6 +68,7 @@ Feature: Properties Management
         "publishedAt": null,
         "everPublished": false,
         "name": "ACME Downtown",
+        "slug": "acme-downtown",
         "address1": "Add. One",
         "address2": "Add. Two",
         "address3": "Add. Three",
@@ -175,8 +176,8 @@ Feature: Properties Management
       | Longitude       | 135.50218                    |
     Then the system should respond with "OK"
     And I should have the following properties:
-      | Account          | Name          | Address1 | Address2 | Address3   | City  | PostalCode | Country | MinimumStay | Deposit | Cleaning | NearestAirport | NearestSubway | NearbyLocations | Overview                     | Latitude | Longitude |
-      | Diego Apartments | ACME Downtown | Add. One | Add. Two | Add. Three | Osaka | 223344     | Japan   | 3           | 150     | daily    | IGU            | Central Park  | Pharmacy        | <strong>Good place!</strong> | 34.69374 | 135.50218 |
+      | Account          | Name          | Slug          | Address1 | Address2 | Address3   | City  | PostalCode | Country | MinimumStay | Deposit | Cleaning | NearestAirport | NearestSubway | NearbyLocations | Overview                     | Latitude | Longitude |
+      | Diego Apartments | ACME Downtown | acme-downtown | Add. One | Add. Two | Add. Three | Osaka | 223344     | Japan   | 3           | 150     | daily    | IGU            | Central Park  | Pharmacy        | <strong>Good place!</strong> | 34.69374 | 135.50218 |
 
   Scenario: Updating my property with invalid Overview
     Given the following properties:
@@ -299,6 +300,7 @@ Feature: Properties Management
       [{
         "id": 1,
         "name": "ACME Downtown",
+        "slug": "acme-downtown",
         "updatedAt": "2018-06-05T08:00:00Z",
         "publishedAt": "2018-06-05T08:00:00Z",
         "everPublished": false,
@@ -382,6 +384,7 @@ Feature: Properties Management
         "publishedAt": "2018-06-05T08:00:00Z",
         "everPublished": true,
         "name": "ACME Uptown",
+        "slug": "acme-uptown",
         "address1": "90 Tai Tam Reservoir Rd",
         "address2": "Tai Tam",
         "address3": null,

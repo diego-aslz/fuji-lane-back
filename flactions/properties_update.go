@@ -58,11 +58,60 @@ func (a *PropertiesUpdate) Perform() {
 		return
 	}
 
-	updates := map[string]interface{}{}
-	for field, value := range a.bodyMap() {
-		if value != nil {
-			updates[field] = value
-		}
+	if a.Name != nil {
+		property.Name = a.Name
+	}
+
+	if a.Address1 != nil {
+		property.Address1 = a.Address1
+	}
+
+	if a.Address2 != nil {
+		property.Address2 = a.Address2
+	}
+
+	if a.Address3 != nil {
+		property.Address3 = a.Address3
+	}
+
+	if a.PostalCode != nil {
+		property.PostalCode = a.PostalCode
+	}
+
+	if a.Latitude != nil {
+		property.Latitude = *a.Latitude
+	}
+
+	if a.Longitude != nil {
+		property.Longitude = *a.Longitude
+	}
+
+	if a.MinimumStay != nil {
+		property.MinimumStay = a.MinimumStay
+	}
+
+	if a.Deposit != nil {
+		property.Deposit = a.Deposit
+	}
+
+	if a.Cleaning != nil {
+		property.Cleaning = a.Cleaning
+	}
+
+	if a.NearestAirport != nil {
+		property.NearestAirport = a.NearestAirport
+	}
+
+	if a.NearestSubway != nil {
+		property.NearestSubway = a.NearestSubway
+	}
+
+	if a.NearbyLocations != nil {
+		property.NearbyLocations = a.NearbyLocations
+	}
+
+	if a.Overview != nil {
+		property.Overview = a.Overview
 	}
 
 	if a.CityID != nil {
@@ -79,20 +128,8 @@ func (a *PropertiesUpdate) Perform() {
 			return
 		}
 
-		updates["city_id"] = city.ID
-		updates["country_id"] = city.CountryID
-	}
-
-	if a.Latitude != nil {
-		updates["latitude"] = *a.Latitude
-	}
-
-	if a.Longitude != nil {
-		updates["longitude"] = *a.Longitude
-	}
-
-	if a.MinimumStay != nil {
-		updates["MinimumStay"] = *a.MinimumStay
+		property.CityID = &city.ID
+		property.CountryID = &city.CountryID
 	}
 
 	a.Repository().Transaction(func(tx *flentities.Repository) {
@@ -115,7 +152,7 @@ func (a *PropertiesUpdate) Perform() {
 			}
 		}
 
-		if err := tx.Model(property).Updates(updates).Error; err != nil {
+		if err := tx.Save(property).Error; err != nil {
 			tx.Rollback()
 			a.ServerError(err)
 			return

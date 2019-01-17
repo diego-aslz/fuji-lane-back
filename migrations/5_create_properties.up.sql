@@ -7,6 +7,7 @@ CREATE TABLE properties(
   published_at timestamp without time zone,
   ever_published boolean not null default false,
   name varchar unique,
+  slug varchar unique,
   address1 varchar,
   address2 varchar,
   address3 varchar,

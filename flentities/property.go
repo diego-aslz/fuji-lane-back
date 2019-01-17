@@ -14,6 +14,7 @@ type Property struct {
 	UpdatedAt       time.Time  `json:"updatedAt"`
 	DeletedAt       *time.Time `json:"-"`
 	Name            *string    `json:"name"`
+	Slug            *string    `json:"slug"`
 	PublishedAt     *time.Time `json:"publishedAt"`
 	EverPublished   bool       `json:"everPublished"`
 	AccountID       uint       `json:"-"`
@@ -38,6 +39,16 @@ type Property struct {
 	Overview        *string    `json:"overview"`
 	Amenities       []*Amenity `json:"amenities"`
 	Units           []*Unit    `json:"units"`
+}
+
+// BeforeSave to update the slug
+func (p *Property) BeforeSave() error {
+	if p.Name != nil && *p.Name != "" {
+		slug := generateSlug(*p.Name)
+		p.Slug = &slug
+	}
+
+	return nil
 }
 
 // CanBePublished checks if this property can be marked as published and start showing up in search results
