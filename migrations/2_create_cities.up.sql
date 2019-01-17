@@ -4,5 +4,6 @@ CREATE TABLE cities(
   updated_at timestamp without time zone not null,
   deleted_at timestamp without time zone,
   name varchar not null unique,
+  slug varchar not null unique,
   country_id integer not null references countries
 );

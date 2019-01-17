@@ -10,8 +10,18 @@ import (
 type City struct {
 	gorm.Model `json:"-"`
 	Name       string  `json:"name"`
+	Slug       string  `json:"slug"`
 	CountryID  uint    `json:"countryID"`
 	Country    Country `json:"-"`
+}
+
+// BeforeCreate to setup defaults
+func (c *City) BeforeCreate() error {
+	if c.Slug == "" {
+		c.Slug = generateSlug(c.Name)
+	}
+
+	return nil
 }
 
 type cityAlias City
