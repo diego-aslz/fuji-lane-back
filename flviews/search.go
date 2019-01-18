@@ -19,6 +19,7 @@ func searchProperty(property *flentities.Property) map[string]interface{} {
 	return map[string]interface{}{
 		"id":         property.ID,
 		"name":       property.Name,
+		"slug":       property.Slug,
 		"address1":   property.Address1,
 		"address2":   property.Address2,
 		"address3":   property.Address3,
@@ -48,6 +49,7 @@ func searchUnit(u *flentities.Unit) map[string]interface{} {
 	return map[string]interface{}{
 		"id":                 u.ID,
 		"name":               u.Name,
+		"slug":               u.Slug,
 		"bedrooms":           u.Bedrooms,
 		"bathrooms":          u.Bathrooms,
 		"sizeM2":             u.SizeM2,

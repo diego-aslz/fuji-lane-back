@@ -86,8 +86,10 @@ Feature: Listings
           }],
           "name": "ACME Uptown",
           "overview": "<p>Uptown Overview</p>",
-          "sizeM2": 80
+          "sizeM2": 80,
+          "slug": "acme-uptown"
         }],
+        "slug": "acme-downtown",
         "units": [{
           "amenities": [{
             "name": "Bathrobes",
@@ -108,6 +110,7 @@ Feature: Listings
           "overview": null,
           "sixMonthsPriceCents": null,
           "sizeM2": 52,
+          "slug": "standard-apt",
           "threeMonthsPriceCents": null,
           "twelveMonthsPriceCents": null
         }, {
@@ -124,6 +127,7 @@ Feature: Listings
           "overview": null,
           "sixMonthsPriceCents": null,
           "sizeM2": 62,
+          "slug": "double-apt",
           "threeMonthsPriceCents": null,
           "twelveMonthsPriceCents": null
         }]

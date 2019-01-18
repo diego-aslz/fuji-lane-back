@@ -60,6 +60,7 @@ Feature: Searching for Units
         "name": "ACME Downtown",
         "overview": "<p>Property Overview</p>",
         "postalCode": null,
+        "slug": "acme-downtown",
         "units": [{
           "amenities": [{
             "name": "Bathrobes",
@@ -75,7 +76,8 @@ Feature: Searching for Units
           }],
           "maxOccupancy": 3,
           "name": "Standard Apt",
-          "sizeM2": 52
+          "sizeM2": 52,
+          "slug": "standard-apt"
         }, {
           "amenities": [],
           "perNightPriceCents": 12000,
@@ -85,7 +87,8 @@ Feature: Searching for Units
           "images": [],
           "maxOccupancy": 6,
           "name": "Double Apt",
-          "sizeM2": 62
+          "sizeM2": 62,
+          "slug": "double-apt"
         }]
       }]
       """
@@ -120,6 +123,7 @@ Feature: Searching for Units
         "name": "ACME Downtown",
         "overview": "<p>Property Overview</p>",
         "postalCode": null,
+        "slug": "acme-downtown",
         "units": [{
           "amenities": [],
           "perNightPriceCents": 12000,
@@ -129,7 +133,8 @@ Feature: Searching for Units
           "images": [],
           "maxOccupancy": 6,
           "name": "Double Apt",
-          "sizeM2": 62
+          "sizeM2": 62,
+          "slug": "double-apt"
         }]
       }]
       """

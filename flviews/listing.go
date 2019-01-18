@@ -9,6 +9,7 @@ func NewListing(property *flentities.Property, similarListings []*flentities.Pro
 	return map[string]interface{}{
 		"id":              property.ID,
 		"name":            property.Name,
+		"slug":            property.Slug,
 		"address1":        property.Address1,
 		"address2":        property.Address2,
 		"address3":        property.Address3,
@@ -33,6 +34,7 @@ func listingUnits(units []*flentities.Unit) []map[string]interface{} {
 		result = append(result, map[string]interface{}{
 			"id":                     u.ID,
 			"name":                   u.Name,
+			"slug":                   u.Slug,
 			"bedrooms":               u.Bedrooms,
 			"bathrooms":              u.Bathrooms,
 			"sizeM2":                 u.SizeM2,
@@ -91,6 +93,7 @@ func listingSimilarListings(similarListings []*flentities.Property) []map[string
 		result = append(result, map[string]interface{}{
 			"id":             l.ID,
 			"name":           l.Name,
+			"slug":           l.Slug,
 			"address1":       l.Address1,
 			"address2":       l.Address2,
 			"address3":       l.Address3,
