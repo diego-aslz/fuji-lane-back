@@ -23,8 +23,8 @@ Feature: Units Management
       | Count        | 15                          |
     Then the system should respond with "CREATED"
     And I should have the following units:
-      | Property      | Name         | Bedrooms | SizeM2 | MaxOccupancy | Count | Overview                    |
-      | ACME Downtown | Standard Apt | 1        | 52     | 3            | 15    | <strong>Big rooms!</strong> |
+      | Property      | Name         | Slug         | Bedrooms | SizeM2 | MaxOccupancy | Count | Overview                    |
+      | ACME Downtown | Standard Apt | standard-apt | 1        | 52     | 3            | 15    | <strong>Big rooms!</strong> |
 
   Scenario: Adding an invalid unit
     When I add the following unit:
@@ -80,8 +80,8 @@ Feature: Units Management
       | Overview               | <strong>Big windows!</strong> |
     Then the system should respond with "OK"
     And I should have the following units:
-      | Property      | Name          | Bedrooms | Bathrooms | SizeM2 | MaxOccupancy | Count | BasePriceCents | OneNightPriceCents | OneWeekPriceCents | ThreeMonthsPriceCents | SixMonthsPriceCents | TwelveMonthsPriceCents | FloorPlanImageID | Overview                      |
-      | ACME Downtown | Std Apartment | 2        | 3         | 50     | 2            | 20    | 12000          | 11000              | 40000             | 350000                | 650000              | 1200000                | 3                | <strong>Big windows!</strong> |
+      | Property      | Name          | Slug          | Bedrooms | Bathrooms | SizeM2 | MaxOccupancy | Count | BasePriceCents | OneNightPriceCents | OneWeekPriceCents | ThreeMonthsPriceCents | SixMonthsPriceCents | TwelveMonthsPriceCents | FloorPlanImageID | Overview                      |
+      | ACME Downtown | Std Apartment | std-apartment | 2        | 3         | 50     | 2            | 20    | 12000          | 11000              | 40000             | 350000                | 650000              | 1200000                | 3                | <strong>Big windows!</strong> |
 
   Scenario: Updating an unit with invalid Overview
     Given the following units:
@@ -190,6 +190,7 @@ Feature: Units Management
         "publishedAt": null,
         "propertyID": 1,
         "name": "Standard Apt",
+        "slug": "standard-apt",
         "bedrooms": 1,
         "bathrooms": 2,
         "sizeM2": 52,

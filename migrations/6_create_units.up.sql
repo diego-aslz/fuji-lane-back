@@ -6,6 +6,7 @@ CREATE TABLE units(
   property_id integer not null references properties,
   published_at timestamp without time zone,
   name varchar not null,
+  slug varchar not null,
   bedrooms integer not null,
   bathrooms integer not null,
   size_m2 integer not null,

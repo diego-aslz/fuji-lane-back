@@ -18,6 +18,7 @@ type Unit struct {
 	PropertyID             uint       `json:"propertyID"`
 	Property               *Property  `json:"-"`
 	Name                   string     `json:"name"`
+	Slug                   string     `json:"slug"`
 	Overview               *string    `json:"overview"`
 	Bedrooms               int        `json:"bedrooms"`
 	Bathrooms              int        `json:"bathrooms"`
@@ -34,6 +35,15 @@ type Unit struct {
 	FloorPlanImage         *Image     `json:"floorPlanImage"`
 	Amenities              []*Amenity `json:"amenities"`
 	Images                 []*Image   `json:"images"`
+}
+
+// BeforeSave to update the slug
+func (u *Unit) BeforeSave() error {
+	if u.Name != "" {
+		u.Slug = generateSlug(u.Name)
+	}
+
+	return nil
 }
 
 // CanBePublished checks if this unit can be marked as published and start showing up in search results
