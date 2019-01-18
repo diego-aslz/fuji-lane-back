@@ -24,3 +24,5 @@ CREATE TABLE units(
 CREATE INDEX units_property_id ON units(property_id);
 CREATE INDEX units_published_at ON units(published_at);
 CREATE INDEX units_deleted_at ON units(deleted_at);
+
+CREATE UNIQUE INDEX units_property_id_slug ON units(property_id, slug);

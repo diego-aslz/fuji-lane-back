@@ -26,6 +26,20 @@ Feature: Units Management
       | Property      | Name         | Slug         | Bedrooms | SizeM2 | MaxOccupancy | Count | Overview                    |
       | ACME Downtown | Standard Apt | standard-apt | 1        | 52     | 3            | 15    | <strong>Big rooms!</strong> |
 
+  Scenario: Adding an unit to my property which would duplicate slugs
+    Given the following units:
+      | Property      | Name         | Bedrooms | SizeM2 | MaxOccupancy | Count |
+      | ACME Downtown | Standard Apt | 1        | 52     | 3            | 15    |
+    When I add the following unit:
+      | Property     | ACME Downtown |
+      | Name         | Standard  Apt |
+      | Bedrooms     | 1             |
+      | SizeM2       | 52            |
+      | MaxOccupancy | 3             |
+      | Count        | 15            |
+    Then the system should respond with "UNPROCESSABLE ENTITY" and the following errors:
+      | Name is already in use |
+
   Scenario: Adding an invalid unit
     When I add the following unit:
       | MaxOccupancy | 3                                            |
@@ -82,6 +96,16 @@ Feature: Units Management
     And I should have the following units:
       | Property      | Name          | Slug          | Bedrooms | Bathrooms | SizeM2 | MaxOccupancy | Count | BasePriceCents | OneNightPriceCents | OneWeekPriceCents | ThreeMonthsPriceCents | SixMonthsPriceCents | TwelveMonthsPriceCents | FloorPlanImageID | Overview                      |
       | ACME Downtown | Std Apartment | std-apartment | 2        | 3         | 50     | 2            | 20    | 12000          | 11000              | 40000             | 350000                | 650000              | 1200000                | 3                | <strong>Big windows!</strong> |
+
+  Scenario: Updating an unit with a name which would duplicate slugs
+    Given the following units:
+      | Property      | Name         | Bedrooms | SizeM2 | MaxOccupancy | Count |
+      | ACME Downtown | Standard Apt | 1        | 52     | 3            | 10    |
+      | ACME Downtown | Double Apt   | 1        | 52     | 3            | 15    |
+    When I update unit "Double Apt" with the following attributes:
+      | Name | Standard  Apt |
+    Then the system should respond with "UNPROCESSABLE ENTITY" and the following errors:
+      | Name is already in use |
 
   Scenario: Updating an unit with invalid Overview
     Given the following units:

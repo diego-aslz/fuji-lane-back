@@ -180,6 +180,36 @@ Feature: Properties Management
       | Account          | Name          | Slug          | Address1 | Address2 | Address3   | City  | PostalCode | Country | MinimumStay | Deposit | Cleaning | NearestAirport | NearestSubway | NearbyLocations | Overview                     | Latitude | Longitude |
       | Diego Apartments | ACME Downtown | acme-downtown | Add. One | Add. Two | Add. Three | Osaka | 223344     | Japan   | 3           | 150     | daily    | IGU            | Central Park  | Pharmacy        | <strong>Good place!</strong> | 34.69374 | 135.50218 |
 
+  Scenario: Updating my property with an used name
+    Given the following accounts:
+      | Name             |
+      | Other Apartments |
+    And the following properties:
+      | ID | Account          |
+      | 1  | Diego Apartments |
+    And the following properties:
+      | ID | Account          | Name |
+      | 2  | Other Apartments | ACME |
+    When I update the property "1" with the following details:
+      | Name | ACME |
+    Then the system should respond with "UNPROCESSABLE ENTITY" and the following errors:
+      | Name is already in use |
+
+  Scenario: Updating my property with a name that will create a duplicated slug
+    Given the following accounts:
+      | Name             |
+      | Other Apartments |
+    And the following properties:
+      | ID | Account          |
+      | 1  | Diego Apartments |
+    And the following properties:
+      | ID | Account          | Name      |
+      | 2  | Other Apartments | ACME Down |
+    When I update the property "1" with the following details:
+      | Name | ACME  Down |
+    Then the system should respond with "UNPROCESSABLE ENTITY" and the following errors:
+      | Name is already in use |
+
   Scenario: Updating my property with invalid Overview
     Given the following properties:
       | ID | Account          |

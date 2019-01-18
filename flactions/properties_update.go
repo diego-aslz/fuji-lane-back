@@ -3,6 +3,7 @@ package flactions
 import (
 	"errors"
 	"net/http"
+	"strings"
 
 	"github.com/jinzhu/gorm"
 	"github.com/nerde/fuji-lane-back/flentities"
@@ -154,6 +155,13 @@ func (a *PropertiesUpdate) Perform() {
 
 		if err := tx.Save(property).Error; err != nil {
 			tx.Rollback()
+
+			if flentities.IsUniqueConstraintViolation(err) &&
+				(strings.Index(err.Error(), "_name") > -1 || strings.Index(err.Error(), "_slug") > -1) {
+				a.RespondError(http.StatusUnprocessableEntity, errors.New("Name is already in use"))
+				return
+			}
+
 			a.ServerError(err)
 			return
 		}
@@ -165,22 +173,6 @@ func (a *PropertiesUpdate) Perform() {
 
 		a.Respond(http.StatusOK, property)
 	})
-}
-
-func (a *PropertiesUpdate) bodyMap() map[string]*string {
-	return map[string]*string{
-		"name":             a.Name,
-		"address1":         a.Address1,
-		"address2":         a.Address2,
-		"address3":         a.Address3,
-		"postal_code":      a.PostalCode,
-		"deposit":          a.Deposit,
-		"cleaning":         a.Cleaning,
-		"nearest_airport":  a.NearestAirport,
-		"nearest_subway":   a.NearestSubway,
-		"nearby_locations": a.NearbyLocations,
-		"overview":         a.Overview,
-	}
 }
 
 // NewPropertiesUpdate returns a new PropertiesUpdate action

@@ -3,6 +3,7 @@ package flactions
 import (
 	"errors"
 	"net/http"
+	"strings"
 
 	"github.com/jinzhu/gorm"
 	"github.com/nerde/fuji-lane-back/flentities"
@@ -153,6 +154,12 @@ func (a *UnitsUpdate) Perform() {
 
 		if err := tx.Save(unit).Error; err != nil {
 			tx.Rollback()
+
+			if flentities.IsUniqueConstraintViolation(err) && strings.Index(err.Error(), "_slug") > -1 {
+				a.RespondError(http.StatusUnprocessableEntity, errors.New("Name is already in use"))
+				return
+			}
+
 			a.ServerError(err)
 			return
 		}
