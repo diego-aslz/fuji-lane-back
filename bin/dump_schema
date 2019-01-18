@@ -1,0 +1,4 @@
+#!/bin/bash
+
+pg_dump fujilane_test -sO > schema.sql
+pg_dump fujilane_test -t schema_migrations -a >> schema.sql
