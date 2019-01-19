@@ -212,6 +212,7 @@ Feature: Units Management
       {
         "id": 2,
         "publishedAt": null,
+        "everPublished": false,
         "propertyID": 1,
         "name": "Standard Apt",
         "slug": "standard-apt",
@@ -280,8 +281,8 @@ Feature: Units Management
 
   Scenario: Publishing my unit
     Given the following units:
-      | ID | Property      | Name         | Bedrooms | SizeM2 | MaxOccupancy | Count | BasePriceCents |
-      | 2  | ACME Downtown | Standard Apt | 1        | 52     | 3            | 15    | 10000          |
+      | ID | Property      | Name         | Bedrooms | SizeM2 | MaxOccupancy | Count | BasePriceCents | EverPublished |
+      | 2  | ACME Downtown | Standard Apt | 1        | 52     | 3            | 15    | 10000          | false         |
     And the following images:
       | ID | Unit         | Uploaded | Name      | URL                                | Type       | Size    | Position |
       | 1  | Standard Apt | true     | front.jpg | https://s3.amazonaws.com/front.jpg | image/jpeg | 1000000 | 1        |
@@ -292,8 +293,8 @@ Feature: Units Management
     When I publish unit "2"
     Then the system should respond with "OK"
     And I should have the following units:
-      | ID | Name         | PublishedAt          |
-      | 2  | Standard Apt | 2018-06-05T08:00:00Z |
+      | ID | Name         | PublishedAt          | EverPublished |
+      | 2  | Standard Apt | 2018-06-05T08:00:00Z | true          |
 
   Scenario: Publishing an unit with missing information
     Given the following units:
@@ -311,5 +312,5 @@ Feature: Units Management
       | At least one amenity is required |
       | At least one image is required   |
     And I should have the following units:
-      | ID | Name | PublishedAt |
-      | 2  |      |             |
+      | ID | Name | PublishedAt | EverPublished |
+      | 2  |      |             | false         |

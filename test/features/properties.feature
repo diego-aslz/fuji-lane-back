@@ -111,6 +111,7 @@ Feature: Properties Management
         "units": [{
           "id": 11,
           "publishedAt": null,
+          "everPublished": false,
           "propertyID": 1,
           "name": "Standard Apt",
           "slug": "standard-apt",
@@ -322,9 +323,9 @@ Feature: Properties Management
       | 1  | ACME Downtown | true     | front.jpg | https://s3.amazonaws.com/front.jpg | image/jpeg | 1000000 | 2        |
       | 2  | ACME Downtown | true     | back.jpg  | https://s3.amazonaws.com/back.jpg  | image/jpeg | 1000000 | 1        |
     And the following units:
-      | ID | Property      | Name           | BasePriceCents | OneNightPriceCents | OneWeekPriceCents | ThreeMonthsPriceCents | SixMonthsPriceCents | TwelveMonthsPriceCents |
-      | 2  | ACME Downtown | Standard Apt   | 10000          | 11000              | 40000             | 350000                | 650000              | 1200000                |
-      | 3  | ACME Downtown | Double-bed Apt | 11000          | 12000              | 42000             | 370000                | 670000              | 1220000                |
+      | ID | Property      | Name           | BasePriceCents | OneNightPriceCents | OneWeekPriceCents | ThreeMonthsPriceCents | SixMonthsPriceCents | TwelveMonthsPriceCents | EverPublished |
+      | 2  | ACME Downtown | Standard Apt   | 10000          | 11000              | 40000             | 350000                | 650000              | 1200000                | false         |
+      | 3  | ACME Downtown | Double-bed Apt | 11000          | 12000              | 42000             | 370000                | 670000              | 1220000                | true          |
     When I list my properties
     Then the system should respond with "OK" and the following JSON:
       """
@@ -371,6 +372,7 @@ Feature: Properties Management
         "units": [{
           "id": 2,
           "publishedAt": null,
+          "everPublished": false,
           "propertyID": 1,
           "name": "Standard Apt",
           "slug": "standard-apt",
@@ -392,6 +394,7 @@ Feature: Properties Management
         }, {
           "id": 3,
           "publishedAt": null,
+          "everPublished": true,
           "propertyID": 1,
           "name": "Double-bed Apt",
           "slug": "double-bed-apt",

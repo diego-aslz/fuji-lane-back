@@ -5,6 +5,7 @@ CREATE TABLE units(
   deleted_at timestamp without time zone,
   property_id integer not null references properties,
   published_at timestamp without time zone,
+  ever_published boolean not null default false,
   name varchar not null,
   slug varchar not null,
   bedrooms integer not null,

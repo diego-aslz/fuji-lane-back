@@ -320,6 +320,7 @@ CREATE TABLE units (
     deleted_at timestamp without time zone,
     property_id integer NOT NULL,
     published_at timestamp without time zone,
+    ever_published boolean DEFAULT false NOT NULL,
     name character varying NOT NULL,
     slug character varying NOT NULL,
     bedrooms integer NOT NULL,
