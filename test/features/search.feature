@@ -96,10 +96,11 @@ Feature: Searching for Units
       }]
       """
 
-  Scenario: Ignoring unpublished units
+  Scenario: Ignoring unpublished units or properties
     Given the following units:
       | ID | Property         | Name       | Bedrooms | Bathrooms | SizeM2 | MaxOccupancy | Count | PublishedAt          | BasePriceCents |
       | 11 | Awesome Property | Double Apt | 2        | 2         | 62     | 6            | 10    | 2018-06-01T08:00:00Z | 12000          |
+      | 13 | Draft Property   | Double Apt | 2        | 2         | 62     | 6            | 10    | 2018-06-01T08:00:00Z | 12000          |
     And the following units:
       | ID | Property         | Name         | Bedrooms | Bathrooms | SizeM2 | MaxOccupancy | Count | BasePriceCents |
       | 10 | Awesome Property | Standard Apt | 1        | 1         | 52     | 3            | 15    | 10000          |
