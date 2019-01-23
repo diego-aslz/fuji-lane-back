@@ -1,20 +1,21 @@
 package flentities
 
 import (
-	"encoding/json"
-
-	"github.com/jinzhu/gorm"
+	"time"
 )
 
 // City we support
 type City struct {
-	gorm.Model `json:"-"`
-	Name       string  `json:"name"`
-	Slug       string  `json:"slug"`
-	CountryID  uint    `json:"countryID"`
-	Country    Country `json:"-"`
-	Latitude   float32 `json:"latitude"`
-	Longitude  float32 `json:"longitude"`
+	ID        uint `gorm:"primary_key" json:"id"`
+	CreatedAt time.Time
+	UpdatedAt time.Time
+	DeletedAt *time.Time
+	Name      string  `json:"name"`
+	Slug      string  `json:"slug"`
+	CountryID uint    `json:"countryID"`
+	Country   Country `json:"-"`
+	Latitude  float32 `json:"latitude"`
+	Longitude float32 `json:"longitude"`
 }
 
 // BeforeCreate to setup defaults
@@ -23,30 +24,5 @@ func (c *City) BeforeCreate() error {
 		c.Slug = generateSlug(c.Name)
 	}
 
-	return nil
-}
-
-type cityAlias City
-
-type cityUI struct {
-	ID uint `json:"id"`
-	*cityAlias
-}
-
-// MarshalJSON returns JSON bytes for a City
-func (c *City) MarshalJSON() ([]byte, error) {
-	return json.Marshal(cityUI{
-		ID:        c.ID,
-		cityAlias: (*cityAlias)(c),
-	})
-}
-
-// UnmarshalJSON loads a City from JSON bytes
-func (c *City) UnmarshalJSON(data []byte) error {
-	aux := &cityUI{cityAlias: (*cityAlias)(c)}
-	if err := json.Unmarshal(data, &aux); err != nil {
-		return err
-	}
-	c.ID = aux.ID
 	return nil
 }
