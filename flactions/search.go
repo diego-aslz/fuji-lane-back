@@ -42,6 +42,24 @@ func (a *Search) Perform() {
 			unitConditions = unitConditions.Where(condition, bedrooms)
 			unitRawConditions = append(unitRawConditions, condition)
 			unitJoinArgs = append(unitJoinArgs, bedrooms)
+		} else {
+			a.Diagnostics().AddQuoted("bedrooms_filter_error", fmt.Sprintf("Unable to parse %s: %s", rawBedrooms,
+				err.Error()))
+		}
+	}
+
+	rawBathrooms := a.Query("bathrooms")
+	if rawBathrooms != "" {
+		bathrooms, err := strconv.Atoi(rawBathrooms)
+
+		if err == nil {
+			condition := "bathrooms >= ?"
+			unitConditions = unitConditions.Where(condition, bathrooms)
+			unitRawConditions = append(unitRawConditions, condition)
+			unitJoinArgs = append(unitJoinArgs, bathrooms)
+		} else {
+			a.Diagnostics().AddQuoted("bathrooms_filter_error", fmt.Sprintf("Unable to parse %s: %s", rawBathrooms,
+				err.Error()))
 		}
 	}
 
