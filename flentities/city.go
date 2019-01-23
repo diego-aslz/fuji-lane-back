@@ -13,6 +13,8 @@ type City struct {
 	Slug       string  `json:"slug"`
 	CountryID  uint    `json:"countryID"`
 	Country    Country `json:"-"`
+	Latitude   float32 `json:"latitude"`
+	Longitude  float32 `json:"longitude"`
 }
 
 // BeforeCreate to setup defaults
