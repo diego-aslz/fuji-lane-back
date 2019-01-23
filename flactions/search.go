@@ -2,8 +2,10 @@ package flactions
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/jinzhu/gorm"
 	"github.com/nerde/fuji-lane-back/flentities"
@@ -28,6 +30,20 @@ func (a *Search) Perform() {
 
 	publishedNull := map[string]interface{}{"published_at": nil}
 	unitConditions := a.Repository().Not(publishedNull).Where(map[string]interface{}{"deleted_at": nil})
+	unitRawConditions := []string{"units.published_at IS NOT NULL", "units.deleted_at IS NULL"}
+	unitJoinArgs := []interface{}{}
+
+	rawBedrooms := a.Query("bedrooms")
+	if rawBedrooms != "" {
+		bedrooms, err := strconv.Atoi(rawBedrooms)
+
+		if err == nil {
+			condition := "bedrooms >= ?"
+			unitConditions = unitConditions.Where(condition, bedrooms)
+			unitRawConditions = append(unitRawConditions, condition)
+			unitJoinArgs = append(unitJoinArgs, bedrooms)
+		}
+	}
 
 	builder := a.Repository().
 		Preload("Images", flentities.Image{Uploaded: true}, imagesDefaultOrder).
@@ -36,8 +52,8 @@ func (a *Search) Perform() {
 		Preload("Units.Images", flentities.Image{Uploaded: true}, imagesDefaultOrder).
 		Preload("Units.Amenities").
 		Where("city_id = ?", cityID).
-		Joins("INNER JOIN units ON properties.id = units.property_id AND units.published_at IS NOT NULL " +
-			"AND units.deleted_at IS NULL").
+		Joins(fmt.Sprintf("INNER JOIN units ON properties.id = units.property_id AND %s",
+			strings.Join(unitRawConditions, " AND ")), unitJoinArgs...).
 		Select("DISTINCT(properties.*)")
 
 	properties := []*flentities.Property{}
