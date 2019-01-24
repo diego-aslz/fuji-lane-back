@@ -12,8 +12,11 @@ Feature: Bookings
       | Account          | Name          |
       | Diego Apartments | ACME Downtown |
     And the following units:
-      | Property      | Name         | Bedrooms | SizeM2 | MaxOccupancy | Count | BasePriceCents | PublishedAt          |
-      | ACME Downtown | Standard Apt | 1        | 32     | 3            | 15    | 11000          | 2018-06-09T15:00:00Z |
+      | Property      | Name         | Bedrooms | SizeM2 | MaxOccupancy | Count | PublishedAt          |
+      | ACME Downtown | Standard Apt | 1        | 32     | 3            | 15    | 2018-06-09T15:00:00Z |
+    And the following prices:
+      | Unit         | MinNights | Cents |
+      | Standard Apt | 1         | 11000 |
     And I am authenticated with "diego@selzlein.com"
 
   Scenario: Listing my Bookings
@@ -79,8 +82,11 @@ Feature: Bookings
   Scenario: Trying to Book a Unit that's not published
     Given it is currently "01 Jun 18 08:00"
     And the following units:
-      | Property      | Name       | Bedrooms | SizeM2 | MaxOccupancy | Count | BasePriceCents |
-      | ACME Downtown | Double Apt | 1        | 32     | 3            | 15    | 11000          |
+      | Property      | Name       | Bedrooms | SizeM2 | MaxOccupancy | Count |
+      | ACME Downtown | Double Apt | 1        | 32     | 3            | 15    |
+    And the following prices:
+      | Unit       | MinNights | Cents |
+      | Double Apt | 1         | 11000 |
     When I create the following booking:
       | Unit     | Double Apt |
       | CheckIn  | 2018-06-09 |
@@ -91,11 +97,19 @@ Feature: Bookings
 
   Scenario Outline: Calculating Booking Prices
     Given the following units:
-      | Property      | Name            | Bedrooms | SizeM2 | MaxOccupancy | Count | OneNightPriceCents | BasePriceCents | OneWeekPriceCents | ThreeMonthsPriceCents | SixMonthsPriceCents | TwelveMonthsPriceCents | PublishedAt          |
-      | ACME Downtown | Specific Prices | 1        | 32     | 3            | 15    | 13000              | 10000          | 60000             | 750000                | 1200000             | 2200000                | 2018-06-09T15:00:00Z |
-    And the following units:
-      | Property      | Name         | Bedrooms | SizeM2 | MaxOccupancy | Count | BasePriceCents | PublishedAt          |
-      | ACME Downtown | Single Price | 1        | 32     | 3            | 15    | 10000          | 2018-06-09T15:00:00Z |
+      | Property      | Name            | Bedrooms | SizeM2 | MaxOccupancy | Count | PublishedAt          |
+      | ACME Downtown | Specific Prices | 1        | 32     | 3            | 15    | 2018-06-09T15:00:00Z |
+      | ACME Downtown | Single Price    | 1        | 32     | 3            | 15    | 2018-06-09T15:00:00Z |
+    And the following prices:
+      | Unit            | MinNights | Cents   |
+      | Specific Prices | 1         | 13000   |
+      | Specific Prices | 2         | 20000   |
+      | Specific Prices | 7         | 60000   |
+      | Specific Prices | 30        | 240000  |
+      | Specific Prices | 90        | 750000  |
+      | Specific Prices | 180       | 1200000 |
+      | Specific Prices | 365       | 2200000 |
+      | Single Price    | 1         | 10000   |
     And it is currently "01 Jun 18 08:00"
     When I create the following booking:
       | Unit     | <Unit>     |
@@ -111,18 +125,15 @@ Feature: Bookings
       | Specific Prices | 2018-07-01 | 2018-07-02 | 1      | 13000    | 13000   |
       | Specific Prices | 2018-07-01 | 2018-07-07 | 6      | 10000    | 60000   |
       | Specific Prices | 2018-07-01 | 2018-07-08 | 7      | 8571     | 60000   |
-      | Specific Prices | 2018-07-01 | 2018-09-28 | 89     | 8571     | 762857  |
+      | Specific Prices | 2018-07-01 | 2018-07-30 | 29     | 8571     | 248571  |
+      | Specific Prices | 2018-07-01 | 2018-07-31 | 30     | 8000     | 240000  |
+      | Specific Prices | 2018-07-01 | 2018-09-28 | 89     | 8000     | 712000  |
       | Specific Prices | 2018-07-01 | 2018-09-29 | 90     | 8333     | 750000  |
       | Specific Prices | 2018-07-01 | 2018-12-27 | 179    | 8333     | 1491667 |
       | Specific Prices | 2018-07-01 | 2018-12-28 | 180    | 6667     | 1200000 |
       | Specific Prices | 2018-07-01 | 2019-06-30 | 364    | 6667     | 2426667 |
       | Specific Prices | 2018-07-01 | 2019-07-01 | 365    | 6027     | 2200000 |
       | Single Price    | 2018-07-01 | 2018-07-02 | 1      | 10000    | 10000   |
-      | Single Price    | 2018-07-01 | 2018-07-07 | 6      | 10000    | 60000   |
       | Single Price    | 2018-07-01 | 2018-07-08 | 7      | 10000    | 70000   |
-      | Single Price    | 2018-07-01 | 2018-09-28 | 89     | 10000    | 890000  |
-      | Single Price    | 2018-07-01 | 2018-09-29 | 90     | 10000    | 900000  |
-      | Single Price    | 2018-07-01 | 2018-12-27 | 179    | 10000    | 1790000 |
       | Single Price    | 2018-07-01 | 2018-12-28 | 180    | 10000    | 1800000 |
-      | Single Price    | 2018-07-01 | 2019-06-30 | 364    | 10000    | 3640000 |
       | Single Price    | 2018-07-01 | 2019-07-01 | 365    | 10000    | 3650000 |

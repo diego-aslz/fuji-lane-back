@@ -50,7 +50,7 @@ func (a *BookingsCreate) Perform() {
 		a.RespondError(http.StatusUnprocessableEntity, errors.New("check in date should be in the future"))
 	}
 
-	if err := a.Repository().Find(booking.Unit).Error; err != nil {
+	if err := a.Repository().Preload("Prices").Find(booking.Unit).Error; err != nil {
 		if gorm.IsRecordNotFoundError(err) {
 			a.invalidUnit()
 		} else {

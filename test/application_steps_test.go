@@ -114,12 +114,16 @@ func timePtrComparer(raw string, rawActual interface{}) error {
 		return fmt.Errorf("%v is not *time.Time", rawActual)
 	}
 
-	if at == nil {
+	if at == nil && raw == "" {
+		return nil
+	}
+
+	if raw == "" || at == nil {
 		if raw == "" {
-			return nil
+			raw = "<nil>"
 		}
 
-		return fmt.Errorf("Expected %v, but got NULL", raw)
+		return fmt.Errorf("Expected %v, but got %v", raw, at)
 	}
 
 	return timeComparer(raw, *at)

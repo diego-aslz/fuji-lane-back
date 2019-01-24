@@ -78,24 +78,48 @@ Feature: Units Management
       | ID | Unit         | Name          | Uploaded |
       | 3  | Standard Apt | blueprint.jpg | true     |
     When I update unit "Standard Apt" with the following attributes:
-      | Name                   | Std Apartment                 |
-      | Bedrooms               | 2                             |
-      | Bathrooms              | 3                             |
-      | SizeM2                 | 50                            |
-      | MaxOccupancy           | 2                             |
-      | Count                  | 20                            |
-      | BasePriceCents         | 12000                         |
-      | OneNightPriceCents     | 11000                         |
-      | OneWeekPriceCents      | 40000                         |
-      | ThreeMonthsPriceCents  | 350000                        |
-      | SixMonthsPriceCents    | 650000                        |
-      | TwelveMonthsPriceCents | 1200000                       |
-      | FloorPlanImageID       | 3                             |
-      | Overview               | <strong>Big windows!</strong> |
+      | Name             | Std Apartment                                                                   |
+      | Bedrooms         | 2                                                                               |
+      | Bathrooms        | 3                                                                               |
+      | SizeM2           | 50                                                                              |
+      | MaxOccupancy     | 2                                                                               |
+      | Count            | 20                                                                              |
+      | Prices           | 1: 11000, 2: 12000, 7: 40000, 30: 160000, 90: 350000, 180: 650000, 365: 1200000 |
+      | FloorPlanImageID | 3                                                                               |
+      | Overview         | <strong>Big windows!</strong>                                                   |
     Then the system should respond with "OK"
     And I should have the following units:
-      | Property      | Name          | Slug          | Bedrooms | Bathrooms | SizeM2 | MaxOccupancy | Count | BasePriceCents | OneNightPriceCents | OneWeekPriceCents | ThreeMonthsPriceCents | SixMonthsPriceCents | TwelveMonthsPriceCents | FloorPlanImageID | Overview                      |
-      | ACME Downtown | Std Apartment | std-apartment | 2        | 3         | 50     | 2            | 20    | 12000          | 11000              | 40000             | 350000                | 650000              | 1200000                | 3                | <strong>Big windows!</strong> |
+      | Property      | Name          | Slug          | Bedrooms | Bathrooms | SizeM2 | MaxOccupancy | Count | FloorPlanImageID | Overview                      |
+      | ACME Downtown | Std Apartment | std-apartment | 2        | 3         | 50     | 2            | 20    | 3                | <strong>Big windows!</strong> |
+    And I should have the following prices:
+      | Unit          | MinNights | Cents   |
+      | Std Apartment | 1         | 11000   |
+      | Std Apartment | 2         | 12000   |
+      | Std Apartment | 7         | 40000   |
+      | Std Apartment | 30        | 160000  |
+      | Std Apartment | 90        | 350000  |
+      | Std Apartment | 180       | 650000  |
+      | Std Apartment | 365       | 1200000 |
+
+  Scenario: Updating unit prices
+    Given the following units:
+      | Property      | Name         |
+      | ACME Downtown | Standard Apt |
+    And the following prices:
+      | Unit         | MinNights | Cents  |
+      | Standard Apt | 1         | 11000  |
+      | Standard Apt | 2         | 12000  |
+      | Standard Apt | 30        | 160000 |
+      | Standard Apt | 90        | 300000 |
+      | Standard Apt | 180       | 600000 |
+    When I update unit "Standard Apt" with the following attributes:
+      | Prices | 1: 9000, 7: 40000, 30: 155000, 180: 0 |
+    Then the system should respond with "OK"
+    And I should have the following prices:
+      | Unit         | MinNights | Cents  |
+      | Standard Apt | 1         | 9000   |
+      | Standard Apt | 30        | 155000 |
+      | Standard Apt | 7         | 40000  |
 
   Scenario: Updating an unit with a name which would duplicate slugs
     Given the following units:
@@ -193,8 +217,16 @@ Feature: Units Management
 
   Scenario: Getting unit details
     Given the following units:
-      | ID | Property      | Name         | Bedrooms | Bathrooms | SizeM2 | MaxOccupancy | Count | BasePriceCents | OneNightPriceCents | OneWeekPriceCents | ThreeMonthsPriceCents | SixMonthsPriceCents | TwelveMonthsPriceCents | Overview                    |
-      | 2  | ACME Downtown | Standard Apt | 1        | 2         | 52     | 3            | 15    | 12000          | 11000              | 40000             | 350000                | 650000              | 1200000                | <strong>Good view!</strong> |
+      | ID | Property      | Name         | Bedrooms | Bathrooms | SizeM2 | MaxOccupancy | Count | Overview                    |
+      | 2  | ACME Downtown | Standard Apt | 1        | 2         | 52     | 3            | 15    | <strong>Good view!</strong> |
+    And the following prices:
+      | Unit         | MinNights | Cents   |
+      | Standard Apt | 1         | 11000   |
+      | Standard Apt | 2         | 12000   |
+      | Standard Apt | 7         | 40000   |
+      | Standard Apt | 90        | 350000  |
+      | Standard Apt | 180       | 650000  |
+      | Standard Apt | 365       | 1200000 |
     And the following images:
       | ID | Unit         | Name          | Uploaded | URL                                 | Type       | Size | Position |
       | 3  | Standard Apt | blueprint.jpg | true     | https://s3.amazonaws.com/blue.jpg   | image/jpeg | 5000 | 0        |
@@ -221,12 +253,6 @@ Feature: Units Management
         "sizeM2": 52,
         "maxOccupancy": 3,
         "count": 15,
-        "basePriceCents": 12000,
-        "oneNightPriceCents": 11000,
-        "oneWeekPriceCents": 40000,
-        "threeMonthsPriceCents": 350000,
-        "sixMonthsPriceCents": 650000,
-        "twelveMonthsPriceCents": 1200000,
         "overview": "<strong>Good view!</strong>",
         "floorPlanImage": {
           "id": 3,
@@ -262,7 +288,26 @@ Feature: Units Management
             "type": "bathrobes",
             "name": "Bathrobes"
           }
-        ]
+        ],
+        "prices": [{
+          "minNights": 1,
+          "cents": 11000
+        }, {
+          "minNights": 2,
+          "cents": 12000
+        }, {
+          "minNights": 7,
+          "cents": 40000
+        }, {
+          "minNights": 90,
+          "cents": 350000
+        }, {
+          "minNights": 180,
+          "cents": 650000
+        }, {
+          "minNights": 365,
+          "cents": 1200000
+        }]
       }
       """
 
@@ -281,8 +326,11 @@ Feature: Units Management
 
   Scenario: Publishing my unit
     Given the following units:
-      | ID | Property      | Name         | Bedrooms | SizeM2 | MaxOccupancy | Count | BasePriceCents | EverPublished |
-      | 2  | ACME Downtown | Standard Apt | 1        | 52     | 3            | 15    | 10000          | false         |
+      | ID | Property      | Name         | Bedrooms | SizeM2 | MaxOccupancy | Count | EverPublished |
+      | 2  | ACME Downtown | Standard Apt | 1        | 52     | 3            | 15    | false         |
+    And the following prices:
+      | Unit         | MinNights | Cents |
+      | Standard Apt | 1         | 11000 |
     And the following images:
       | ID | Unit         | Uploaded | Name      | URL                                | Type       | Size    | Position |
       | 1  | Standard Apt | true     | front.jpg | https://s3.amazonaws.com/front.jpg | image/jpeg | 1000000 | 1        |
@@ -303,6 +351,9 @@ Feature: Units Management
     And the following images:
       | ID | PropertyID | Uploaded | Name      | URL                                | Type       | Size    | Position |
       | 1  | 1          | false    | front.jpg | https://s3.amazonaws.com/front.jpg | image/jpeg | 1000000 | 2        |
+    And the following prices:
+      | UnitID | MinNights | Cents |
+      | 2      | 7         | 11000 |
     When I publish unit "2"
     Then the system should respond with "UNPROCESSABLE ENTITY" and the following errors:
       | Name is required                 |
@@ -311,6 +362,7 @@ Feature: Units Management
       | Number of Unit Type is required  |
       | At least one amenity is required |
       | At least one image is required   |
+      | Please provide a base unit price |
     And I should have the following units:
       | ID | Name | PublishedAt | EverPublished |
       | 2  |      |             | false         |

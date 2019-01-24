@@ -46,7 +46,9 @@ func (ps ListingsSearch) Search() ([]*Property, error) {
 	builder := ps.
 		Preload("Images", Image{Uploaded: true}, ImagesDefaultOrder).
 		Preload("Amenities").
-		Preload("Units", func(_ *gorm.DB) *gorm.DB { return unitConditions.Order("base_price_cents") }).
+		Preload("Units", func(_ *gorm.DB) *gorm.DB {
+			return unitConditions.Order("(SELECT cents FROM prices WHERE unit_id = units.id AND min_nights = 1)")
+		}).
 		Preload("Units.Images", Image{Uploaded: true}, ImagesDefaultOrder).
 		Preload("Units.Amenities").
 		Where("city_id = ?", ps.CityID).

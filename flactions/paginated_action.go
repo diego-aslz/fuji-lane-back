@@ -32,7 +32,7 @@ func (a paginatedAction) getPage() int {
 }
 
 func (a paginatedAction) paginate(db *gorm.DB, page, pageSize int) *gorm.DB {
-	return flentities.Repository{db}.Paginate(page, pageSize)
+	return flentities.Repository{DB: db}.Paginate(page, pageSize)
 }
 
 func (a paginatedAction) addPageDiagnostic() {

@@ -78,8 +78,8 @@ CREATE TABLE amenities (
     created_at timestamp without time zone NOT NULL,
     type character varying NOT NULL,
     name character varying,
-    property_id integer,
-    unit_id integer,
+    property_id bigint,
+    unit_id bigint,
     CONSTRAINT amenities_check CHECK ((((type)::text <> 'custom'::text) OR (name IS NOT NULL))),
     CONSTRAINT amenities_check1 CHECK (((property_id IS NOT NULL) OR (unit_id IS NOT NULL)))
 );
@@ -111,8 +111,9 @@ ALTER SEQUENCE amenities_id_seq OWNED BY amenities.id;
 CREATE TABLE bookings (
     id bigint NOT NULL,
     created_at timestamp without time zone NOT NULL,
-    user_id integer NOT NULL,
-    unit_id integer NOT NULL,
+    updated_at timestamp without time zone NOT NULL,
+    user_id bigint NOT NULL,
+    unit_id bigint NOT NULL,
     check_in date NOT NULL,
     check_out date NOT NULL,
     message text,
@@ -154,7 +155,9 @@ CREATE TABLE cities (
     deleted_at timestamp without time zone,
     name character varying NOT NULL,
     slug character varying NOT NULL,
-    country_id integer NOT NULL
+    country_id integer NOT NULL,
+    latitude numeric NOT NULL,
+    longitude numeric NOT NULL
 );
 
 
@@ -221,8 +224,8 @@ CREATE TABLE images (
     type character varying NOT NULL,
     size integer NOT NULL,
     url character varying NOT NULL,
-    property_id integer,
-    unit_id integer,
+    property_id bigint,
+    unit_id bigint,
     uploaded boolean DEFAULT false,
     "position" smallint,
     CONSTRAINT images_check CHECK (((property_id IS NOT NULL) OR (unit_id IS NOT NULL)))
@@ -249,6 +252,39 @@ ALTER SEQUENCE images_id_seq OWNED BY images.id;
 
 
 --
+-- Name: prices; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE prices (
+    id bigint NOT NULL,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL,
+    unit_id bigint NOT NULL,
+    min_nights smallint NOT NULL,
+    cents integer NOT NULL
+);
+
+
+--
+-- Name: prices_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE prices_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: prices_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE prices_id_seq OWNED BY prices.id;
+
+
+--
 -- Name: properties; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -257,7 +293,7 @@ CREATE TABLE properties (
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL,
     deleted_at timestamp without time zone,
-    account_id integer NOT NULL,
+    account_id bigint NOT NULL,
     published_at timestamp without time zone,
     ever_published boolean DEFAULT false NOT NULL,
     name character varying,
@@ -318,7 +354,7 @@ CREATE TABLE units (
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL,
     deleted_at timestamp without time zone,
-    property_id integer NOT NULL,
+    property_id bigint NOT NULL,
     published_at timestamp without time zone,
     ever_published boolean DEFAULT false NOT NULL,
     name character varying NOT NULL,
@@ -335,7 +371,7 @@ CREATE TABLE units (
     six_months_price_cents integer,
     twelve_months_price_cents integer,
     overview text,
-    floor_plan_image_id integer
+    floor_plan_image_id bigint
 );
 
 
@@ -367,7 +403,7 @@ CREATE TABLE users (
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL,
     deleted_at timestamp without time zone,
-    account_id integer,
+    account_id bigint,
     email character varying NOT NULL,
     name character varying,
     facebook_id character varying,
@@ -435,6 +471,13 @@ ALTER TABLE ONLY countries ALTER COLUMN id SET DEFAULT nextval('countries_id_seq
 --
 
 ALTER TABLE ONLY images ALTER COLUMN id SET DEFAULT nextval('images_id_seq'::regclass);
+
+
+--
+-- Name: prices id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY prices ALTER COLUMN id SET DEFAULT nextval('prices_id_seq'::regclass);
 
 
 --
@@ -536,6 +579,14 @@ ALTER TABLE ONLY countries
 
 ALTER TABLE ONLY images
     ADD CONSTRAINT images_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: prices prices_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY prices
+    ADD CONSTRAINT prices_pkey PRIMARY KEY (id);
 
 
 --
@@ -641,6 +692,13 @@ CREATE INDEX images_property_id ON images USING btree (property_id);
 --
 
 CREATE INDEX images_unit_id ON images USING btree (unit_id);
+
+
+--
+-- Name: prices_unit_id_min_nights; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX prices_unit_id_min_nights ON prices USING btree (unit_id, min_nights);
 
 
 --
@@ -771,6 +829,14 @@ ALTER TABLE ONLY images
 
 
 --
+-- Name: prices prices_unit_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY prices
+    ADD CONSTRAINT prices_unit_id_fkey FOREIGN KEY (unit_id) REFERENCES units(id);
+
+
+--
 -- Name: properties properties_account_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -845,7 +911,7 @@ SET search_path = public, pg_catalog;
 --
 
 COPY schema_migrations (version, dirty) FROM stdin;
-9	f
+10	f
 \.
 
 

@@ -47,15 +47,14 @@ func searchUnits(units []*flentities.Unit) []map[string]interface{} {
 
 func searchUnit(u *flentities.Unit) map[string]interface{} {
 	return map[string]interface{}{
-		"id":                 u.ID,
-		"name":               u.Name,
-		"slug":               u.Slug,
-		"bedrooms":           u.Bedrooms,
-		"bathrooms":          u.Bathrooms,
-		"sizeM2":             u.SizeM2,
-		"maxOccupancy":       u.MaxOccupancy,
-		"perNightPriceCents": u.BasePriceCents,
-		"amenities":          listingAmenities(u.Amenities),
-		"images":             listingImages(u.Images),
+		"id":           u.ID,
+		"name":         u.Name,
+		"slug":         u.Slug,
+		"bedrooms":     u.Bedrooms,
+		"bathrooms":    u.Bathrooms,
+		"sizeM2":       u.SizeM2,
+		"maxOccupancy": u.MaxOccupancy,
+		"amenities":    listingAmenities(u.Amenities),
+		"images":       listingImages(u.Images),
 	}
 }

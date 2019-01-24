@@ -79,6 +79,12 @@
   version = "v1.38.2"
 
 [[projects]]
+  name = "github.com/go-test/deep"
+  packages = ["."]
+  revision = "6592d9cc0a499ad2d5f574fde80a2b5c5cc3b4f5"
+  version = "v1.0.1"
+
+[[projects]]
   name = "github.com/golang-migrate/migrate"
   packages = [
     ".",
@@ -176,6 +182,15 @@
 
 [[projects]]
   branch = "master"
+  name = "golang.org/x/net"
+  packages = [
+    "html",
+    "html/atom"
+  ]
+  revision = "ed066c81e75eba56dd9bd2139ade88125b855585"
+
+[[projects]]
+  branch = "master"
   name = "golang.org/x/sys"
   packages = ["unix"]
   revision = "4910a1d54f876d7b22162a85f4d066d3ee649450"
@@ -195,6 +210,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "661a357d03ee719bbdf560227a6724b422c0cbce7817a6ef8748adfed7f33891"
+  inputs-digest = "8abd2baa7d776ee3a4fa262c8e1bcb51243651106b99f10ac3c054640827d89c"
   solver-name = "gps-cdcl"
   solver-version = 1

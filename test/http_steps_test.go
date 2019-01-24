@@ -1,8 +1,8 @@
 package fujilane
 
 import (
-	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -12,6 +12,7 @@ import (
 
 	"github.com/DATA-DOG/godog"
 	"github.com/DATA-DOG/godog/gherkin"
+	"github.com/go-test/deep"
 )
 
 var response *httptest.ResponseRecorder
@@ -71,10 +72,8 @@ func assertResponseStatusAndJSON(status string, rawJSON *gherkin.DocString) erro
 		return fmt.Errorf("Unable to unmarshal %s: %s", response.Body.String(), err.Error())
 	}
 
-	if !reflect.DeepEqual(expectedBody, actualBody) {
-		indented := &bytes.Buffer{}
-		json.Indent(indented, []byte(response.Body.String()), "", "  ")
-		return fmt.Errorf("Response body does not match:\nExpected: %s\nGot: %s", rawJSON.Content, indented.String())
+	if diff := deep.Equal(expectedBody, actualBody); diff != nil {
+		return errors.New(strings.Join(diff, "\n"))
 	}
 
 	return nil

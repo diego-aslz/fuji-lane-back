@@ -10,32 +10,27 @@ import (
 // Unit represents a type of rentable unit inside a Property. An individual property can have multiple units at
 // different prices for rent
 type Unit struct {
-	ID                     uint       `gorm:"primary_key" json:"id"`
-	CreatedAt              time.Time  `json:"-"`
-	UpdatedAt              time.Time  `json:"-"`
-	DeletedAt              *time.Time `json:"-"`
-	PublishedAt            *time.Time `json:"publishedAt"`
-	EverPublished          bool       `json:"everPublished"`
-	PropertyID             uint       `json:"propertyID"`
-	Property               *Property  `json:"-"`
-	Name                   string     `json:"name"`
-	Slug                   string     `json:"slug"`
-	Overview               *string    `json:"overview"`
-	Bedrooms               int        `json:"bedrooms"`
-	Bathrooms              int        `json:"bathrooms"`
-	SizeM2                 int        `json:"sizeM2"`
-	MaxOccupancy           *int       `json:"maxOccupancy"`
-	Count                  int        `json:"count"`
-	BasePriceCents         *int       `json:"basePriceCents"`
-	OneNightPriceCents     *int       `json:"oneNightPriceCents"`
-	OneWeekPriceCents      *int       `json:"oneWeekPriceCents"`
-	ThreeMonthsPriceCents  *int       `json:"threeMonthsPriceCents"`
-	SixMonthsPriceCents    *int       `json:"sixMonthsPriceCents"`
-	TwelveMonthsPriceCents *int       `json:"twelveMonthsPriceCents"`
-	FloorPlanImageID       *uint      `json:"-"`
-	FloorPlanImage         *Image     `json:"floorPlanImage"`
-	Amenities              []*Amenity `json:"amenities"`
-	Images                 []*Image   `json:"images"`
+	ID               uint       `gorm:"primary_key" json:"id"`
+	CreatedAt        time.Time  `json:"-"`
+	UpdatedAt        time.Time  `json:"-"`
+	DeletedAt        *time.Time `json:"-"`
+	PublishedAt      *time.Time `json:"publishedAt"`
+	EverPublished    bool       `json:"everPublished"`
+	PropertyID       uint       `json:"propertyID"`
+	Property         *Property  `json:"-"`
+	Name             string     `json:"name"`
+	Slug             string     `json:"slug"`
+	Overview         *string    `json:"overview"`
+	Bedrooms         int        `json:"bedrooms"`
+	Bathrooms        int        `json:"bathrooms"`
+	SizeM2           int        `json:"sizeM2"`
+	MaxOccupancy     *int       `json:"maxOccupancy"`
+	Count            int        `json:"count"`
+	FloorPlanImageID *uint      `json:"-"`
+	FloorPlanImage   *Image     `json:"floorPlanImage"`
+	Amenities        []*Amenity `json:"amenities"`
+	Images           []*Image   `json:"images"`
+	Prices           []*Price   `json:"prices"`
 }
 
 // BeforeSave to update the slug
@@ -71,9 +66,37 @@ func (u *Unit) CanBePublished() []error {
 		errs = append(errs, errors.New("At least one amenity is required"))
 	}
 
-	if len(u.Images) < 1 {
+	if !u.hasUploadedImages() {
 		errs = append(errs, errors.New("At least one image is required"))
 	}
 
+	if u.basePriceCents() == 0 {
+		errs = append(errs, errors.New("Please provide a base unit price"))
+	}
+
 	return errs
+}
+
+func (u *Unit) basePriceCents() int {
+	if u.Prices == nil || len(u.Prices) == 0 {
+		return 0
+	}
+
+	for _, p := range u.Prices {
+		if p.MinNights == 1 {
+			return p.Cents
+		}
+	}
+
+	return 0
+}
+
+func (u *Unit) hasUploadedImages() bool {
+	for _, i := range u.Images {
+		if i.Uploaded {
+			return true
+		}
+	}
+
+	return false
 }

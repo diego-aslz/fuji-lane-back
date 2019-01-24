@@ -18,7 +18,8 @@ func (a *PropertiesList) Perform() {
 	properties := []*flentities.Property{}
 	err := a.Repository().Order("name").
 		Preload("Images", flentities.Image{Uploaded: true}, flentities.ImagesDefaultOrder).
-		Preload("Units").Find(&properties, map[string]interface{}{"account_id": user.AccountID}).Error
+		Preload("Units.Prices").
+		Find(&properties, map[string]interface{}{"account_id": user.AccountID}).Error
 	if err != nil {
 		a.ServerError(err)
 		return

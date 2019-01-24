@@ -13,12 +13,6 @@ CREATE TABLE units(
   size_m2 int not null,
   max_occupancy int,
   count int not null,
-  base_price_cents int,
-  one_night_price_cents int,
-  one_week_price_cents int,
-  three_months_price_cents int,
-  six_months_price_cents int,
-  twelve_months_price_cents int,
   overview text
 );
 

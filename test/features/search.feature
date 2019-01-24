@@ -22,10 +22,15 @@ Feature: Searching for Units
 
   Scenario: Searching for units in a city
     Given the following units:
-      | ID | Property              | Name         | Bedrooms | Bathrooms | SizeM2 | MaxOccupancy | Count | PublishedAt          | BasePriceCents |
-      | 11 | Awesome Property      | Double Apt   | 2        | 2         | 62     | 6            | 10    | 2018-06-01T08:00:00Z | 12000          |
-      | 10 | Awesome Property      | Standard Apt | 1        | 1         | 52     | 3            | 15    | 2018-06-01T08:00:00Z | 10000          |
-      | 12 | Other City's Property | Triple Apt   | 3        | 4         | 80     | 6            | 5     | 2018-06-01T08:00:00Z | 20000          |
+      | ID | Property              | Name         | Bedrooms | Bathrooms | SizeM2 | MaxOccupancy | Count | PublishedAt          |
+      | 11 | Awesome Property      | Double Apt   | 2        | 2         | 62     | 6            | 10    | 2018-06-01T08:00:00Z |
+      | 10 | Awesome Property      | Standard Apt | 1        | 1         | 52     | 3            | 15    | 2018-06-01T08:00:00Z |
+      | 12 | Other City's Property | Triple Apt   | 3        | 4         | 80     | 6            | 5     | 2018-06-01T08:00:00Z |
+    And the following prices:
+      | Unit         | MinNights | Cents |
+      | Double Apt   | 1         | 12000 |
+      | Standard Apt | 1         | 10000 |
+      | Triple Apt   | 1         | 20000 |
     And the following images:
       | ID | Property         | Uploaded | Name      | URL                                | Type       | Size    | Position |
       | 1  | Awesome Property | true     | front.jpg | https://s3.amazonaws.com/front.jpg | image/jpeg | 1000000 | 1        |
@@ -70,7 +75,6 @@ Feature: Searching for Units
             "name": "Bathrobes",
             "type": "bathrobes"
           }],
-          "perNightPriceCents": 10000,
           "bathrooms": 1,
           "bedrooms": 1,
           "id": 10,
@@ -84,7 +88,6 @@ Feature: Searching for Units
           "slug": "standard-apt"
         }, {
           "amenities": [],
-          "perNightPriceCents": 12000,
           "bathrooms": 2,
           "bedrooms": 2,
           "id": 11,
@@ -99,13 +102,13 @@ Feature: Searching for Units
 
   Scenario: Ignoring unpublished units or properties
     Given the following units:
-      | ID | Property         | Name       | Bedrooms | Bathrooms | SizeM2 | MaxOccupancy | Count | PublishedAt          | BasePriceCents |
-      | 11 | Awesome Property | Double Apt | 2        | 2         | 62     | 6            | 10    | 2018-06-01T08:00:00Z | 12000          |
-      | 13 | Draft Property   | Double Apt | 2        | 2         | 62     | 6            | 10    | 2018-06-01T08:00:00Z | 12000          |
+      | ID | Property         | Name       | Bedrooms | Bathrooms | SizeM2 | MaxOccupancy | Count | PublishedAt          |
+      | 11 | Awesome Property | Double Apt | 2        | 2         | 62     | 6            | 10    | 2018-06-01T08:00:00Z |
+      | 13 | Draft Property   | Double Apt | 2        | 2         | 62     | 6            | 10    | 2018-06-01T08:00:00Z |
     And the following units:
-      | ID | Property         | Name         | Bedrooms | Bathrooms | SizeM2 | MaxOccupancy | Count | BasePriceCents |
-      | 10 | Awesome Property | Standard Apt | 1        | 1         | 52     | 3            | 15    | 10000          |
-      | 12 | Nice Property    | Triple Apt   | 3        | 4         | 80     | 6            | 5     | 20000          |
+      | ID | Property         | Name         | Bedrooms | Bathrooms | SizeM2 | MaxOccupancy | Count |
+      | 10 | Awesome Property | Standard Apt | 1        | 1         | 52     | 3            | 15    |
+      | 12 | Nice Property    | Triple Apt   | 3        | 4         | 80     | 6            | 5     |
     When I search for units with the following filters:
       | cityID | 2 |
     Then the system should respond with "OK" and the following JSON:
@@ -127,7 +130,6 @@ Feature: Searching for Units
         "slug": "awesome-property",
         "units": [{
           "amenities": [],
-          "perNightPriceCents": 12000,
           "bathrooms": 2,
           "bedrooms": 2,
           "id": 11,
@@ -142,8 +144,8 @@ Feature: Searching for Units
 
   Scenario: Paginating listings
     Given the following units:
-      | ID | Property         | Name       | Bedrooms | Bathrooms | SizeM2 | MaxOccupancy | Count | PublishedAt          | BasePriceCents |
-      | 11 | Awesome Property | Double Apt | 2        | 2         | 62     | 6            | 10    | 2018-06-01T08:00:00Z | 12000          |
+      | ID | Property         | Name       | Bedrooms | Bathrooms | SizeM2 | MaxOccupancy | Count | PublishedAt          |
+      | 11 | Awesome Property | Double Apt | 2        | 2         | 62     | 6            | 10    | 2018-06-01T08:00:00Z |
     When I search for units with the following filters:
       | cityID | 2 |
       | page   | 2 |
@@ -154,11 +156,15 @@ Feature: Searching for Units
 
   Scenario: Searching for units with at least 2 bedrooms
     Given the following units:
-      | ID | Property         | Name         | Bedrooms | Bathrooms | SizeM2 | MaxOccupancy | Count | PublishedAt          | BasePriceCents |
-      | 11 | Awesome Property | Double Apt   | 2        | 2         | 62     | 6            | 10    | 2018-06-01T08:00:00Z | 12000          |
-      | 10 | Awesome Property | Standard Apt | 1        | 1         | 52     | 3            | 15    | 2018-06-01T08:00:00Z | 10000          |
-      | 12 | Awesome Property | Triple Apt   | 3        | 4         | 80     | 6            | 5     | 2018-06-01T08:00:00Z | 20000          |
-      | 13 | Nice Property    | Basic Apt    | 1        | 1         | 20     | 1            | 5     | 2018-06-01T08:00:00Z | 20000          |
+      | ID | Property         | Name         | Bedrooms | Bathrooms | SizeM2 | MaxOccupancy | Count | PublishedAt          |
+      | 11 | Awesome Property | Double Apt   | 2        | 2         | 62     | 6            | 10    | 2018-06-01T08:00:00Z |
+      | 10 | Awesome Property | Standard Apt | 1        | 1         | 52     | 3            | 15    | 2018-06-01T08:00:00Z |
+      | 12 | Awesome Property | Triple Apt   | 3        | 4         | 80     | 6            | 5     | 2018-06-01T08:00:00Z |
+      | 13 | Nice Property    | Basic Apt    | 1        | 1         | 20     | 1            | 5     | 2018-06-01T08:00:00Z |
+    And the following prices:
+      | Unit         | MinNights | Cents |
+      | Double Apt   | 1         | 12000 |
+      | Triple Apt   | 1         | 20000 |
     When I search for units with the following filters:
       | cityID   | 2 |
       | bedrooms | 2 |
@@ -181,7 +187,6 @@ Feature: Searching for Units
         "slug": "awesome-property",
         "units": [{
           "amenities": [],
-          "perNightPriceCents": 12000,
           "bathrooms": 2,
           "bedrooms": 2,
           "id": 11,
@@ -192,7 +197,6 @@ Feature: Searching for Units
           "slug": "double-apt"
         }, {
           "amenities": [],
-          "perNightPriceCents": 20000,
           "bathrooms": 4,
           "bedrooms": 3,
           "id": 12,
@@ -207,11 +211,15 @@ Feature: Searching for Units
 
   Scenario: Searching for units with at least 2 bathrooms
     Given the following units:
-      | ID | Property         | Name         | Bedrooms | Bathrooms | SizeM2 | MaxOccupancy | Count | PublishedAt          | BasePriceCents |
-      | 11 | Awesome Property | Double Apt   | 2        | 2         | 62     | 6            | 10    | 2018-06-01T08:00:00Z | 12000          |
-      | 10 | Awesome Property | Standard Apt | 1        | 1         | 52     | 3            | 15    | 2018-06-01T08:00:00Z | 10000          |
-      | 12 | Awesome Property | Triple Apt   | 3        | 4         | 80     | 6            | 5     | 2018-06-01T08:00:00Z | 20000          |
-      | 13 | Nice Property    | Basic Apt    | 1        | 1         | 20     | 1            | 5     | 2018-06-01T08:00:00Z | 20000          |
+      | ID | Property         | Name         | Bedrooms | Bathrooms | SizeM2 | MaxOccupancy | Count | PublishedAt          |
+      | 11 | Awesome Property | Double Apt   | 2        | 2         | 62     | 6            | 10    | 2018-06-01T08:00:00Z |
+      | 10 | Awesome Property | Standard Apt | 1        | 1         | 52     | 3            | 15    | 2018-06-01T08:00:00Z |
+      | 12 | Awesome Property | Triple Apt   | 3        | 4         | 80     | 6            | 5     | 2018-06-01T08:00:00Z |
+      | 13 | Nice Property    | Basic Apt    | 1        | 1         | 20     | 1            | 5     | 2018-06-01T08:00:00Z |
+    And the following prices:
+      | Unit         | MinNights | Cents |
+      | Double Apt   | 1         | 12000 |
+      | Triple Apt   | 1         | 20000 |
     When I search for units with the following filters:
       | cityID    | 2 |
       | bathrooms | 2 |
@@ -234,7 +242,6 @@ Feature: Searching for Units
         "slug": "awesome-property",
         "units": [{
           "amenities": [],
-          "perNightPriceCents": 12000,
           "bathrooms": 2,
           "bedrooms": 2,
           "id": 11,
@@ -245,7 +252,6 @@ Feature: Searching for Units
           "slug": "double-apt"
         }, {
           "amenities": [],
-          "perNightPriceCents": 20000,
           "bathrooms": 4,
           "bedrooms": 3,
           "id": 12,

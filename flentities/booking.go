@@ -38,33 +38,16 @@ func (b *Booking) calculatePrice() {
 		return
 	}
 
-	perNight := (float64)(*b.Unit.BasePriceCents)
-	switch {
-	case b.Nights >= 365:
-		perNight = b.safePrice(b.Unit.TwelveMonthsPriceCents, 365.0)
-		break
-	case b.Nights >= 180:
-		perNight = b.safePrice(b.Unit.SixMonthsPriceCents, 180.0)
-		break
-	case b.Nights >= 90:
-		perNight = b.safePrice(b.Unit.ThreeMonthsPriceCents, 90.0)
-		break
-	case b.Nights >= 7:
-		perNight = b.safePrice(b.Unit.OneWeekPriceCents, 7.0)
-		break
-	case b.Nights == 1:
-		perNight = b.safePrice(b.Unit.OneNightPriceCents, 1.0)
-		break
+	lastMinNights := 0
+	perNight := 0.0
+
+	for _, p := range b.Unit.Prices {
+		if p.MinNights > lastMinNights && p.MinNights <= b.Nights {
+			lastMinNights = p.MinNights
+			perNight = float64(p.Cents) / float64(p.MinNights)
+		}
 	}
 
 	b.NightPriceCents = (int)(math.Round(perNight))
 	b.TotalCents = (int)(math.Round((float64)(b.Nights) * perNight))
-}
-
-func (b *Booking) safePrice(cents *int, days float64) float64 {
-	if cents == nil || *cents == 0 {
-		return (float64)(*b.Unit.BasePriceCents)
-	}
-
-	return (float64)(*cents) / days
 }

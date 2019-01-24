@@ -35,6 +35,7 @@ func (a *PropertiesShow) Perform() {
 		Preload("Images", flentities.Image{Uploaded: true}, flentities.ImagesDefaultOrder).
 		Preload("Units.Images", flentities.Image{Uploaded: true}, flentities.ImagesDefaultOrder).
 		Preload("Units.Amenities").
+		Preload("Units.Prices").
 		Find(property, conditions).Error
 
 	if err != nil {

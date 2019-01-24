@@ -24,11 +24,17 @@ Feature: Listings
       | ID | Account          | Name          | Overview        | Latitude | Longitude | CityID | CountryID |
       | 10 | Diego Apartments | Not Published | <p>Overview</p> | 100      | 200       | 3      | 2         |
     And the following units:
-      | ID | Property       | Name         | Bedrooms | Bathrooms | SizeM2 | MaxOccupancy | Count | PublishedAt          | BasePriceCents |
-      | 11 | ACME Downtown  | Double Apt   | 2        | 2         | 62     | 6            | 10    | 2018-06-01T08:00:00Z | 12000          |
-      | 10 | ACME Downtown  | Standard Apt | 1        | 1         | 52     | 3            | 15    | 2018-06-01T08:00:00Z | 10000          |
-      | 12 | ACME Uptown    | Triple Apt   | 3        | 4         | 80     | 6            | 5     | 2018-06-01T08:00:00Z | 20000          |
-      | 13 | Different City | Triple Apt   | 3        | 4         | 80     | 6            | 5     | 2018-06-01T08:00:00Z | 20000          |
+      | ID | Property       | Name         | Bedrooms | Bathrooms | SizeM2 | MaxOccupancy | Count | PublishedAt          |
+      | 11 | ACME Downtown  | Double Apt   | 2        | 2         | 62     | 6            | 10    | 2018-06-01T08:00:00Z |
+      | 10 | ACME Downtown  | Standard Apt | 1        | 1         | 52     | 3            | 15    | 2018-06-01T08:00:00Z |
+      | 12 | ACME Uptown    | Triple Apt   | 3        | 4         | 80     | 6            | 5     | 2018-06-01T08:00:00Z |
+      | 13 | Different City | Penthouse    | 3        | 4         | 80     | 6            | 5     | 2018-06-01T08:00:00Z |
+    And the following prices:
+      | Unit            | MinNights | Cents |
+      | Double Apt      | 1         | 12000 |
+      | Standard Apt    | 1         | 10000 |
+      | Triple Apt      | 1         | 20000 |
+      | Penthouse       | 1         | 20000 |
     And the following units:
       | ID | Property           | Name                  |
       | 22 | ACME Downtown      | Unpublished Penthouse |
@@ -76,7 +82,10 @@ Feature: Listings
           "address1": "Add 1",
           "address2": null,
           "address3": null,
-          "basePriceCents": 20000,
+          "prices": [{
+            "minNights": 1,
+            "cents": 20000
+          }],
           "bathrooms": 4,
           "bedrooms": 3,
           "id": 2,
@@ -95,7 +104,10 @@ Feature: Listings
             "name": "Bathrobes",
             "type": "bathrobes"
           }],
-          "basePriceCents": 10000,
+          "prices": [{
+            "minNights": 1,
+            "cents": 10000
+          }],
           "bathrooms": 1,
           "bedrooms": 1,
           "id": 10,
@@ -105,31 +117,24 @@ Feature: Listings
           }],
           "maxOccupancy": 3,
           "name": "Standard Apt",
-          "oneNightPriceCents": null,
-          "oneWeekPriceCents": null,
           "overview": null,
-          "sixMonthsPriceCents": null,
           "sizeM2": 52,
-          "slug": "standard-apt",
-          "threeMonthsPriceCents": null,
-          "twelveMonthsPriceCents": null
+          "slug": "standard-apt"
         }, {
           "amenities": [],
-          "basePriceCents": 12000,
+          "prices": [{
+            "minNights": 1,
+            "cents": 12000
+          }],
           "bathrooms": 2,
           "bedrooms": 2,
           "id": 11,
           "images": [],
           "maxOccupancy": 6,
           "name": "Double Apt",
-          "oneNightPriceCents": null,
-          "oneWeekPriceCents": null,
           "overview": null,
-          "sixMonthsPriceCents": null,
           "sizeM2": 62,
-          "slug": "double-apt",
-          "threeMonthsPriceCents": null,
-          "twelveMonthsPriceCents": null
+          "slug": "double-apt"
         }]
       }
       """
@@ -139,8 +144,8 @@ Feature: Listings
       | ID | Account          | Name          | Overview                 | Latitude | Longitude | Address1                | CityID | CountryID |
       | 1  | Diego Apartments | ACME Downtown | <p>Property Overview</p> | 100      | 200       | 88 Tai Tam Reservoir Rd | 3      | 2         |
     And the following units:
-      | ID | Property      | Name       | Bedrooms | Bathrooms | SizeM2 | MaxOccupancy | Count | PublishedAt          | BasePriceCents |
-      | 11 | ACME Downtown | Double Apt | 2        | 2         | 62     | 6            | 10    | 2018-06-01T08:00:00Z | 12000          |
+      | ID | Property      | Name       | Bedrooms | Bathrooms | SizeM2 | MaxOccupancy | Count | PublishedAt          |
+      | 11 | ACME Downtown | Double Apt | 2        | 2         | 62     | 6            | 10    | 2018-06-01T08:00:00Z |
     When I get listing details for "ACME Downtown"
     Then the system should respond with "NOT FOUND"
 
@@ -149,8 +154,8 @@ Feature: Listings
       | ID | Account          | Name          | Overview                 | PublishedAt          | Latitude | Longitude | Address1                | CityID | CountryID |
       | 1  | Diego Apartments | ACME Downtown | <p>Property Overview</p> | 2018-06-01T08:00:00Z | 100      | 200       | 88 Tai Tam Reservoir Rd | 3      | 2         |
     And the following units:
-      | ID | Property      | Name       | Bedrooms | Bathrooms | SizeM2 | MaxOccupancy | Count | BasePriceCents |
-      | 11 | ACME Downtown | Double Apt | 2        | 2         | 62     | 6            | 10    | 12000          |
+      | ID | Property      | Name       | Bedrooms | Bathrooms | SizeM2 | MaxOccupancy | Count |
+      | 11 | ACME Downtown | Double Apt | 2        | 2         | 62     | 6            | 10    |
     When I get listing details for "ACME Downtown"
     Then the system should respond with "NOT FOUND"
 
@@ -163,8 +168,8 @@ Feature: Listings
       | ID | Account          | Name          | Overview                 | Latitude | Longitude | Address1                | CityID | CountryID |
       | 1  | Diego Apartments | ACME Downtown | <p>Property Overview</p> | 100      | 200       | 88 Tai Tam Reservoir Rd | 3      | 2         |
     And the following units:
-      | ID | Property      | Name       | Bedrooms | Bathrooms | SizeM2 | MaxOccupancy | Count | PublishedAt          | BasePriceCents |
-      | 11 | ACME Downtown | Double Apt | 2        | 2         | 62     | 6            | 10    | 2018-06-01T08:00:00Z | 12000          |
+      | ID | Property      | Name       | Bedrooms | Bathrooms | SizeM2 | MaxOccupancy | Count | PublishedAt          |
+      | 11 | ACME Downtown | Double Apt | 2        | 2         | 62     | 6            | 10    | 2018-06-01T08:00:00Z |
     When I get listing details for "ACME Downtown"
     Then the system should respond with "OK"
 
@@ -177,7 +182,7 @@ Feature: Listings
       | ID | Account          | Name          | Overview                 | PublishedAt          | Latitude | Longitude | Address1                | CityID | CountryID |
       | 1  | Diego Apartments | ACME Downtown | <p>Property Overview</p> | 2018-06-01T08:00:00Z | 100      | 200       | 88 Tai Tam Reservoir Rd | 3      | 2         |
     And the following units:
-      | ID | Property      | Name       | Bedrooms | Bathrooms | SizeM2 | MaxOccupancy | Count | BasePriceCents |
-      | 11 | ACME Downtown | Double Apt | 2        | 2         | 62     | 6            | 10    | 12000          |
+      | ID | Property      | Name       | Bedrooms | Bathrooms | SizeM2 | MaxOccupancy | Count |
+      | 11 | ACME Downtown | Double Apt | 2        | 2         | 62     | 6            | 10    |
     When I get listing details for "ACME Downtown"
     Then the system should respond with "OK"

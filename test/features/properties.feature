@@ -120,12 +120,7 @@ Feature: Properties Management
           "sizeM2": 52,
           "maxOccupancy": 3,
           "count": 15,
-          "basePriceCents": null,
-          "oneNightPriceCents": null,
-          "oneWeekPriceCents": null,
-          "threeMonthsPriceCents": null,
-          "sixMonthsPriceCents": null,
-          "twelveMonthsPriceCents": null,
+          "prices": [],
           "floorPlanImage": null,
           "overview": null,
           "amenities": [{
@@ -323,9 +318,15 @@ Feature: Properties Management
       | 1  | ACME Downtown | true     | front.jpg | https://s3.amazonaws.com/front.jpg | image/jpeg | 1000000 | 2        |
       | 2  | ACME Downtown | true     | back.jpg  | https://s3.amazonaws.com/back.jpg  | image/jpeg | 1000000 | 1        |
     And the following units:
-      | ID | Property      | Name           | BasePriceCents | OneNightPriceCents | OneWeekPriceCents | ThreeMonthsPriceCents | SixMonthsPriceCents | TwelveMonthsPriceCents | EverPublished |
-      | 2  | ACME Downtown | Standard Apt   | 10000          | 11000              | 40000             | 350000                | 650000              | 1200000                | false         |
-      | 3  | ACME Downtown | Double-bed Apt | 11000          | 12000              | 42000             | 370000                | 670000              | 1220000                | true          |
+      | ID | Property      | Name           | EverPublished |
+      | 2  | ACME Downtown | Standard Apt   | false         |
+      | 3  | ACME Downtown | Double-bed Apt | true          |
+    And the following prices:
+      | Unit           | MinNights | Cents |
+      | Standard Apt   | 1         | 11000 |
+      | Standard Apt   | 2         | 20000 |
+      | Double-bed Apt | 1         | 12000 |
+      | Double-bed Apt | 2         | 22000 |
     When I list my properties
     Then the system should respond with "OK" and the following JSON:
       """
@@ -381,12 +382,13 @@ Feature: Properties Management
           "sizeM2": 0,
           "maxOccupancy": null,
           "count": 0,
-          "basePriceCents": 10000,
-          "oneNightPriceCents": 11000,
-          "oneWeekPriceCents": 40000,
-          "threeMonthsPriceCents": 350000,
-          "sixMonthsPriceCents": 650000,
-          "twelveMonthsPriceCents": 1200000,
+          "prices": [{
+            "minNights": 1,
+            "cents": 11000
+          }, {
+            "minNights": 2,
+            "cents": 20000
+          }],
           "floorPlanImage": null,
           "amenities": null,
           "images": null,
@@ -403,12 +405,13 @@ Feature: Properties Management
           "sizeM2": 0,
           "maxOccupancy": null,
           "count": 0,
-          "basePriceCents": 11000,
-          "oneNightPriceCents": 12000,
-          "oneWeekPriceCents": 42000,
-          "threeMonthsPriceCents": 370000,
-          "sixMonthsPriceCents": 670000,
-          "twelveMonthsPriceCents": 1220000,
+          "prices": [{
+            "minNights": 1,
+            "cents": 12000
+          }, {
+            "minNights": 2,
+            "cents": 22000
+          }],
           "floorPlanImage": null,
           "amenities": null,
           "images": null,

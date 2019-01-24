@@ -27,9 +27,15 @@ func (a *ListingsShow) Perform() {
 
 	property := &flentities.Property{}
 
-	err = a.Repository().Preload("Amenities").Preload("Images", flentities.Image{Uploaded: true}, flentities.ImagesDefaultOrder).
-		Preload("Units", func(db *gorm.DB) *gorm.DB { return db.Not(publishedNull).Order("units.base_price_cents") }).
-		Preload("Units.Images", flentities.Image{Uploaded: true}, flentities.ImagesDefaultOrder).Preload("Units.Amenities").
+	err = a.Repository().
+		Preload("Amenities").
+		Preload("Images", flentities.Image{Uploaded: true}, flentities.ImagesDefaultOrder).
+		Preload("Units", func(db *gorm.DB) *gorm.DB {
+			return db.Not(publishedNull).Order("(SELECT cents FROM prices WHERE unit_id = units.id AND min_nights = 1)")
+		}).
+		Preload("Units.Images", flentities.Image{Uploaded: true}, flentities.ImagesDefaultOrder).
+		Preload("Units.Amenities").
+		Preload("Units.Prices").
 		Where(id).Find(property).Error
 
 	if err != nil {
@@ -50,11 +56,14 @@ func (a *ListingsShow) Perform() {
 	}
 
 	similarListings := []*flentities.Property{}
-	err = a.Repository().Preload("Images", flentities.Image{Uploaded: true}, flentities.ImagesDefaultOrder,
-		func(db *gorm.DB) *gorm.DB { return db.Limit(1) }).
+	err = a.Repository().
+		Preload("Images", flentities.Image{Uploaded: true}, flentities.ImagesDefaultOrder,
+			func(db *gorm.DB) *gorm.DB { return db.Limit(1) }).
 		Preload("Units", func(db *gorm.DB) *gorm.DB {
-			return db.Not(publishedNull).Order("units.base_price_cents").Limit(1)
+			return db.Not(publishedNull).Order("(SELECT cents FROM prices WHERE unit_id = units.id AND min_nights = 1)").
+				Limit(1)
 		}).
+		Preload("Units.Prices").
 		Where(map[string]interface{}{"city_id": property.CityID}).
 		Where("id in (?)", a.Repository().Table("units").Select("property_id").Not(publishedNull).QueryExpr()).
 		Not(publishedNull).Not(property.ID).Limit(3).Find(&similarListings).Error

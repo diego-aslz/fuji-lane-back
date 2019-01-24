@@ -53,14 +53,34 @@ func requestUnitsCreate(table *gherkin.DataTable) error {
 	return performPOST(flweb.UnitsPath, body)
 }
 
+type unitsUpdateBodyTable struct {
+	flactions.UnitsUpdateBody
+	Prices string
+}
+
 func requestUnitsUpdate(name string, table *gherkin.DataTable) error {
-	body, err := assist.CreateInstance(new(flactions.UnitsUpdateBody), table)
+	body, err := assist.CreateInstance(new(unitsUpdateBodyTable), table)
 	if err != nil {
 		return err
 	}
 
+	b := body.(*unitsUpdateBodyTable)
+
+	if b.Prices != "" {
+		b.UnitsUpdateBody.Prices = []flactions.UnitPriceBody{}
+		for _, rawPrice := range strings.Split(b.Prices, ", ") {
+			parts := strings.Split(rawPrice, ": ")
+
+			price := flactions.UnitPriceBody{}
+			price.MinNights, _ = strconv.Atoi(parts[0])
+			price.Cents, _ = strconv.Atoi(parts[1])
+
+			b.UnitsUpdateBody.Prices = append(b.UnitsUpdateBody.Prices, price)
+		}
+	}
+
 	var bodyIO io.Reader
-	if bodyIO, err = bodyFromObject(body); err != nil {
+	if bodyIO, err = bodyFromObject(b.UnitsUpdateBody); err != nil {
 		return err
 	}
 

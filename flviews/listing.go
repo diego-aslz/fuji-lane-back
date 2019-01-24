@@ -32,22 +32,17 @@ func listingUnits(units []*flentities.Unit) []map[string]interface{} {
 
 	for _, u := range units {
 		result = append(result, map[string]interface{}{
-			"id":                     u.ID,
-			"name":                   u.Name,
-			"slug":                   u.Slug,
-			"bedrooms":               u.Bedrooms,
-			"bathrooms":              u.Bathrooms,
-			"sizeM2":                 u.SizeM2,
-			"maxOccupancy":           u.MaxOccupancy,
-			"oneNightPriceCents":     u.OneNightPriceCents,
-			"basePriceCents":         u.BasePriceCents,
-			"oneWeekPriceCents":      u.OneWeekPriceCents,
-			"threeMonthsPriceCents":  u.ThreeMonthsPriceCents,
-			"sixMonthsPriceCents":    u.SixMonthsPriceCents,
-			"twelveMonthsPriceCents": u.TwelveMonthsPriceCents,
-			"overview":               u.Overview,
-			"amenities":              listingAmenities(u.Amenities),
-			"images":                 listingImages(u.Images),
+			"id":           u.ID,
+			"name":         u.Name,
+			"slug":         u.Slug,
+			"bedrooms":     u.Bedrooms,
+			"bathrooms":    u.Bathrooms,
+			"sizeM2":       u.SizeM2,
+			"maxOccupancy": u.MaxOccupancy,
+			"overview":     u.Overview,
+			"amenities":    listingAmenities(u.Amenities),
+			"images":       listingImages(u.Images),
+			"prices":       u.Prices,
 		})
 	}
 
@@ -91,18 +86,18 @@ func listingSimilarListings(similarListings []*flentities.Property) []map[string
 		}
 
 		result = append(result, map[string]interface{}{
-			"id":             l.ID,
-			"name":           l.Name,
-			"slug":           l.Slug,
-			"address1":       l.Address1,
-			"address2":       l.Address2,
-			"address3":       l.Address3,
-			"overview":       l.Overview,
-			"images":         listingImages(l.Images),
-			"bedrooms":       l.Units[0].Bedrooms,
-			"bathrooms":      l.Units[0].Bathrooms,
-			"sizeM2":         l.Units[0].SizeM2,
-			"basePriceCents": l.Units[0].BasePriceCents,
+			"id":        l.ID,
+			"name":      l.Name,
+			"slug":      l.Slug,
+			"address1":  l.Address1,
+			"address2":  l.Address2,
+			"address3":  l.Address3,
+			"overview":  l.Overview,
+			"images":    listingImages(l.Images),
+			"bedrooms":  l.Units[0].Bedrooms,
+			"bathrooms": l.Units[0].Bathrooms,
+			"sizeM2":    l.Units[0].SizeM2,
+			"prices":    l.Units[0].Prices,
 		})
 	}
 

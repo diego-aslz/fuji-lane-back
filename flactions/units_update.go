@@ -9,22 +9,23 @@ import (
 	"github.com/nerde/fuji-lane-back/flentities"
 )
 
+// UnitPriceBody is the payload for a single unit price
+type UnitPriceBody struct {
+	MinNights int `json:"minNights"`
+	Cents     int `json:"cents"`
+}
+
 // UnitsUpdateBody is the representation of the payload for creating a Unit
 type UnitsUpdateBody struct {
-	Name                   string  `json:"name"`
-	Overview               *string `json:"overview"`
-	Bedrooms               int     `json:"bedrooms"`
-	Bathrooms              int     `json:"bathrooms"`
-	SizeM2                 int     `json:"sizeM2"`
-	MaxOccupancy           *int    `json:"maxOccupancy"`
-	Count                  int     `json:"count"`
-	BasePriceCents         *int    `json:"basePriceCents"`
-	OneNightPriceCents     *int    `json:"oneNightPriceCents"`
-	OneWeekPriceCents      *int    `json:"oneWeekPriceCents"`
-	ThreeMonthsPriceCents  *int    `json:"threeMonthsPriceCents"`
-	SixMonthsPriceCents    *int    `json:"sixMonthsPriceCents"`
-	TwelveMonthsPriceCents *int    `json:"twelveMonthsPriceCents"`
-	FloorPlanImageID       *uint   `json:"floorPlanImageID"`
+	Name             string          `json:"name"`
+	Overview         *string         `json:"overview"`
+	Bedrooms         int             `json:"bedrooms"`
+	Bathrooms        int             `json:"bathrooms"`
+	SizeM2           int             `json:"sizeM2"`
+	MaxOccupancy     *int            `json:"maxOccupancy"`
+	Count            int             `json:"count"`
+	FloorPlanImageID *uint           `json:"floorPlanImageID"`
+	Prices           []UnitPriceBody `json:"prices"`
 	bodyWithAmenities
 }
 
@@ -46,7 +47,7 @@ func (a *UnitsUpdate) Perform() {
 	unit := &flentities.Unit{}
 
 	conditions := map[string]interface{}{"id": a.Param("id")}
-	err := a.Repository().Preload("Property").Preload("Amenities").Find(unit, conditions).Error
+	err := a.Repository().Preload("Property").Preload("Amenities").Preload("Prices").Find(unit, conditions).Error
 	if gorm.IsRecordNotFoundError(err) {
 		a.Diagnostics().AddQuoted("reason", "Could not find unit")
 		a.RespondNotFound()
@@ -91,30 +92,6 @@ func (a *UnitsUpdate) Perform() {
 		unit.MaxOccupancy = a.MaxOccupancy
 	}
 
-	if a.BasePriceCents != nil {
-		unit.BasePriceCents = a.BasePriceCents
-	}
-
-	if a.OneNightPriceCents != nil {
-		unit.OneNightPriceCents = a.OneNightPriceCents
-	}
-
-	if a.OneWeekPriceCents != nil {
-		unit.OneWeekPriceCents = a.OneWeekPriceCents
-	}
-
-	if a.ThreeMonthsPriceCents != nil {
-		unit.ThreeMonthsPriceCents = a.ThreeMonthsPriceCents
-	}
-
-	if a.SixMonthsPriceCents != nil {
-		unit.SixMonthsPriceCents = a.SixMonthsPriceCents
-	}
-
-	if a.TwelveMonthsPriceCents != nil {
-		unit.TwelveMonthsPriceCents = a.TwelveMonthsPriceCents
-	}
-
 	if a.FloorPlanImageID != nil {
 		image := &flentities.Image{}
 		image.ID = *a.FloorPlanImageID
@@ -150,6 +127,42 @@ func (a *UnitsUpdate) Perform() {
 				a.ServerError(err)
 				return
 			}
+		}
+
+		if a.Prices != nil && len(a.Prices) > 0 {
+			minNightsFound := []int{}
+
+			for _, pBody := range a.Prices {
+				if pBody.Cents == 0 {
+					continue
+				}
+
+				var price *flentities.Price
+
+				for _, p := range unit.Prices {
+					if p.MinNights == pBody.MinNights {
+						price = p
+						break
+					}
+				}
+
+				if price == nil {
+					price = &flentities.Price{Unit: unit}
+				}
+
+				price.MinNights = pBody.MinNights
+				price.Cents = pBody.Cents
+
+				if err := tx.Save(price).Error; err != nil {
+					tx.Rollback()
+					a.ServerError(err)
+					return
+				}
+
+				minNightsFound = append(minNightsFound, price.MinNights)
+			}
+
+			tx.Where("unit_id = ? AND min_nights NOT IN (?)", unit.ID, minNightsFound).Delete(&flentities.Price{})
 		}
 
 		if err := tx.Save(unit).Error; err != nil {
