@@ -5,7 +5,7 @@ CREATE TABLE cities(
   deleted_at timestamp without time zone,
   name varchar not null unique,
   slug varchar not null unique,
-  country_id integer not null references countries,
+  country_id int not null references countries,
   latitude decimal not null,
   longitude decimal not null
 );

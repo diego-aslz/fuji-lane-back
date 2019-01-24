@@ -3,7 +3,7 @@ CREATE TABLE users(
   created_at timestamp without time zone not null,
   updated_at timestamp without time zone not null,
   deleted_at timestamp without time zone,
-  account_id int references accounts,
+  account_id bigint references accounts,
   email varchar not null unique,
   name varchar,
   facebook_id varchar,

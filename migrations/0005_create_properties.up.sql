@@ -3,7 +3,7 @@ CREATE TABLE properties(
   created_at timestamp without time zone not null,
   updated_at timestamp without time zone not null,
   deleted_at timestamp without time zone,
-  account_id int not null references accounts,
+  account_id bigint not null references accounts,
   published_at timestamp without time zone,
   ever_published boolean not null default false,
   name varchar unique,
