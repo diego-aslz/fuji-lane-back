@@ -30,8 +30,11 @@ func (a *PropertiesShow) Perform() {
 	}
 
 	property := &flentities.Property{}
-	err = a.Repository().Preload("Amenities").Preload("Images", flentities.Image{Uploaded: true}, imagesDefaultOrder).
-		Preload("Units.Images", flentities.Image{Uploaded: true}, imagesDefaultOrder).Preload("Units.Amenities").
+	err = a.Repository().
+		Preload("Amenities").
+		Preload("Images", flentities.Image{Uploaded: true}, flentities.ImagesDefaultOrder).
+		Preload("Units.Images", flentities.Image{Uploaded: true}, flentities.ImagesDefaultOrder).
+		Preload("Units.Amenities").
 		Find(property, conditions).Error
 
 	if err != nil {

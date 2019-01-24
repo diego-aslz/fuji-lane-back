@@ -26,7 +26,7 @@ func (a *UnitsShow) Perform() {
 	properties := a.Repository().UserProperties(user).Select("id")
 
 	unit := &flentities.Unit{}
-	err = a.Repository().Preload("Amenities").Preload("Images", flentities.Image{Uploaded: true}, imagesDefaultOrder).
+	err = a.Repository().Preload("Amenities").Preload("Images", flentities.Image{Uploaded: true}, flentities.ImagesDefaultOrder).
 		Where(map[string]interface{}{"id": id}).Where("property_id IN (?)", properties.QueryExpr()).Find(unit).Error
 
 	if err != nil {

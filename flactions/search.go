@@ -5,9 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
-	"strings"
 
-	"github.com/jinzhu/gorm"
 	"github.com/nerde/fuji-lane-back/flentities"
 	"github.com/nerde/fuji-lane-back/flviews"
 )
@@ -19,63 +17,23 @@ type Search struct {
 
 // Perform the action
 func (a *Search) Perform() {
-	cityID := a.Query("cityID")
-	if cityID == "" {
+	filters := flentities.ListingsSearchFilters{Page: a.getPage(), PerPage: defaultPageSize}
+
+	a.withIntFilter("cityID", func(i int) { filters.CityID = uint(i) })
+
+	if filters.CityID == 0 {
 		a.RespondError(http.StatusBadRequest, errors.New("Please provide a City to filter by"))
 		return
 	}
 
 	a.addPageDiagnostic()
-	a.Diagnostics().Add("cityID", cityID)
+	a.Diagnostics().Add("cityID", fmt.Sprint(filters.CityID))
 
-	publishedNull := map[string]interface{}{"published_at": nil}
-	unitConditions := a.Repository().Not(publishedNull).Where(map[string]interface{}{"deleted_at": nil})
-	unitRawConditions := []string{"units.published_at IS NOT NULL", "units.deleted_at IS NULL"}
-	unitJoinArgs := []interface{}{}
+	a.withIntFilter("bedrooms", func(i int) { filters.MinBedrooms = i })
+	a.withIntFilter("bathrooms", func(i int) { filters.MinBathrooms = i })
 
-	rawBedrooms := a.Query("bedrooms")
-	if rawBedrooms != "" {
-		bedrooms, err := strconv.Atoi(rawBedrooms)
-
-		if err == nil {
-			condition := "bedrooms >= ?"
-			unitConditions = unitConditions.Where(condition, bedrooms)
-			unitRawConditions = append(unitRawConditions, condition)
-			unitJoinArgs = append(unitJoinArgs, bedrooms)
-		} else {
-			a.Diagnostics().AddQuoted("bedrooms_filter_error", fmt.Sprintf("Unable to parse %s: %s", rawBedrooms,
-				err.Error()))
-		}
-	}
-
-	rawBathrooms := a.Query("bathrooms")
-	if rawBathrooms != "" {
-		bathrooms, err := strconv.Atoi(rawBathrooms)
-
-		if err == nil {
-			condition := "bathrooms >= ?"
-			unitConditions = unitConditions.Where(condition, bathrooms)
-			unitRawConditions = append(unitRawConditions, condition)
-			unitJoinArgs = append(unitJoinArgs, bathrooms)
-		} else {
-			a.Diagnostics().AddQuoted("bathrooms_filter_error", fmt.Sprintf("Unable to parse %s: %s", rawBathrooms,
-				err.Error()))
-		}
-	}
-
-	builder := a.Repository().
-		Preload("Images", flentities.Image{Uploaded: true}, imagesDefaultOrder).
-		Preload("Amenities").
-		Preload("Units", func(_ *gorm.DB) *gorm.DB { return unitConditions.Order("base_price_cents") }).
-		Preload("Units.Images", flentities.Image{Uploaded: true}, imagesDefaultOrder).
-		Preload("Units.Amenities").
-		Where("city_id = ?", cityID).
-		Joins(fmt.Sprintf("INNER JOIN units ON properties.id = units.property_id AND %s",
-			strings.Join(unitRawConditions, " AND ")), unitJoinArgs...).
-		Select("DISTINCT(properties.*)")
-
-	properties := []*flentities.Property{}
-	if err := a.paginate(builder, a.getPage(), defaultPageSize).Find(&properties).Error; err != nil {
+	properties, err := flentities.ListingsSearch{Repository: a.Repository(), ListingsSearchFilters: filters}.Search()
+	if err != nil {
 		a.ServerError(err)
 		return
 	}
@@ -83,6 +41,22 @@ func (a *Search) Perform() {
 	a.Diagnostics().Add("properties_size", strconv.Itoa(len(properties)))
 
 	a.Respond(http.StatusOK, flviews.NewSearch(properties))
+}
+
+func (a *Search) withIntFilter(name string, callback func(int)) {
+	raw := a.Query(name)
+	if raw == "" {
+		return
+	}
+
+	i, err := strconv.Atoi(raw)
+
+	if err == nil {
+		callback(i)
+	} else {
+		a.Diagnostics().AddQuoted(fmt.Sprintf("%s_filter_error", name), fmt.Sprintf("Unable to parse %s: %s", raw,
+			err.Error()))
+	}
 }
 
 // NewSearch returns a new Search action

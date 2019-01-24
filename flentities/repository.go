@@ -69,9 +69,14 @@ func (r *Repository) RemoveImage(image *Image) (err error) {
 	return
 }
 
-// UserProperties returns a *gorm.DB which selects all Properties the given user owns.
+// UserProperties returns a *gorm.DB which selects all Properties the given user owns
 func (r *Repository) UserProperties(u *User) *gorm.DB {
 	return r.Table("properties").Where(map[string]interface{}{"account_id": *u.AccountID})
+}
+
+// Paginate to paginate query
+func (r Repository) Paginate(page, perPage int) *gorm.DB {
+	return r.Limit(perPage).Offset((page - 1) * perPage)
 }
 
 // Transaction calls the callback function with a transactional Repository. Any panics will be rolled back

@@ -4,13 +4,7 @@ import (
 	"net/http"
 
 	"github.com/nerde/fuji-lane-back/flentities"
-
-	"github.com/jinzhu/gorm"
 )
-
-func imagesDefaultOrder(db *gorm.DB) *gorm.DB {
-	return db.Order("images.position, images.id")
-}
 
 // ImagesSort marks an image as uploaded
 type ImagesSort struct {

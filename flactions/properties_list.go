@@ -16,7 +16,8 @@ func (a *PropertiesList) Perform() {
 	user := a.CurrentUser()
 
 	properties := []*flentities.Property{}
-	err := a.Repository().Order("name").Preload("Images", flentities.Image{Uploaded: true}, imagesDefaultOrder).
+	err := a.Repository().Order("name").
+		Preload("Images", flentities.Image{Uploaded: true}, flentities.ImagesDefaultOrder).
 		Preload("Units").Find(&properties, map[string]interface{}{"account_id": user.AccountID}).Error
 	if err != nil {
 		a.ServerError(err)

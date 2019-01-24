@@ -3,6 +3,8 @@ package flactions
 import (
 	"strconv"
 
+	"github.com/nerde/fuji-lane-back/flentities"
+
 	"github.com/jinzhu/gorm"
 )
 
@@ -30,7 +32,7 @@ func (a paginatedAction) getPage() int {
 }
 
 func (a paginatedAction) paginate(db *gorm.DB, page, pageSize int) *gorm.DB {
-	return db.Limit(pageSize).Offset((page - 1) * pageSize)
+	return flentities.Repository{db}.Paginate(page, pageSize)
 }
 
 func (a paginatedAction) addPageDiagnostic() {
