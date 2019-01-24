@@ -1,6 +1,7 @@
 CREATE TABLE bookings(
   id bigserial primary key not null,
   created_at timestamp without time zone not null,
+  updated_at timestamp without time zone not null,
   user_id bigint not null references users,
   unit_id bigint not null references units,
   check_in date not null,

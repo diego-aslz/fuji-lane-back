@@ -9,6 +9,7 @@ import (
 type Booking struct {
 	ID              uint      `gorm:"primary_key" json:"id"`
 	CreatedAt       time.Time `json:"createdAt"`
+	UpdatedAt       time.Time `json:"-"`
 	UserID          uint      `json:"userID"`
 	User            *User     `json:"-"`
 	UnitID          uint      `json:"unitID"`
