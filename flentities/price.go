@@ -12,3 +12,8 @@ type Price struct {
 	MinNights int       `json:"minNights"`
 	Cents     int       `json:"cents"`
 }
+
+// PerNightCents returns the price per night for this price definition
+func (p Price) PerNightCents() float64 {
+	return float64(p.Cents) / float64(p.MinNights)
+}

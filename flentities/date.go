@@ -4,6 +4,7 @@ import (
 	"database/sql/driver"
 	"encoding/json"
 	"fmt"
+	"math"
 	"reflect"
 	"time"
 )
@@ -18,6 +19,11 @@ type Date struct {
 
 func (d Date) String() string {
 	return d.Time.Format(Layout)
+}
+
+// NightsFrom returns the number of nights between two dates
+func (d Date) NightsFrom(other Date) int {
+	return int(math.Ceil(d.Sub(other.Time).Hours() / 24))
 }
 
 // MarshalJSON marshals this date to a String

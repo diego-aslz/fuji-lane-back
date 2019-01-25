@@ -100,3 +100,20 @@ func (u *Unit) hasUploadedImages() bool {
 
 	return false
 }
+
+// PriceFor returns the price that should be used when booking the given number nights
+func (u *Unit) PriceFor(nights int) Price {
+	lastMinNights := 0
+	price := Price{}
+
+	if u.Prices != nil {
+		for _, p := range u.Prices {
+			if p.MinNights > lastMinNights && p.MinNights <= nights {
+				lastMinNights = p.MinNights
+				price = *p
+			}
+		}
+	}
+
+	return price
+}

@@ -30,7 +30,7 @@ func (b *Booking) Calculate() {
 }
 
 func (b *Booking) calculateNights() {
-	b.Nights = int(math.Ceil(b.CheckOut.Sub(b.CheckIn.Time).Hours() / 24))
+	b.Nights = b.CheckOut.NightsFrom(b.CheckIn)
 }
 
 func (b *Booking) calculatePrice() {
@@ -38,16 +38,12 @@ func (b *Booking) calculatePrice() {
 		return
 	}
 
-	lastMinNights := 0
-	perNight := 0.0
+	p := b.Unit.PriceFor(b.Nights)
 
-	for _, p := range b.Unit.Prices {
-		if p.MinNights > lastMinNights && p.MinNights <= b.Nights {
-			lastMinNights = p.MinNights
-			perNight = float64(p.Cents) / float64(p.MinNights)
-		}
+	if p.Cents == 0 {
+		return
 	}
 
-	b.NightPriceCents = (int)(math.Round(perNight))
-	b.TotalCents = (int)(math.Round((float64)(b.Nights) * perNight))
+	b.NightPriceCents = (int)(math.Round(p.PerNightCents()))
+	b.TotalCents = (int)(math.Round((float64)(b.Nights) * p.PerNightCents()))
 }
