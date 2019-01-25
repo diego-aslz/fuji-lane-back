@@ -51,6 +51,7 @@ func (ps ListingsSearch) Search() ([]*Property, error) {
 		}).
 		Preload("Units.Images", Image{Uploaded: true}, ImagesDefaultOrder).
 		Preload("Units.Amenities").
+		Preload("Units.Prices").
 		Where("city_id = ?", ps.CityID).
 		Joins(fmt.Sprintf("INNER JOIN units ON properties.id = units.property_id AND %s",
 			strings.Join(unitRawConditions, " AND ")), unitJoinArgs...).

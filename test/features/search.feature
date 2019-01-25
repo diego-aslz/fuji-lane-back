@@ -84,6 +84,7 @@ Feature: Searching for Units
           }],
           "maxOccupancy": 3,
           "name": "Standard Apt",
+          "perNightPriceCents": 10000,
           "sizeM2": 52,
           "slug": "standard-apt"
         }, {
@@ -94,6 +95,7 @@ Feature: Searching for Units
           "images": [],
           "maxOccupancy": 6,
           "name": "Double Apt",
+          "perNightPriceCents": 12000,
           "sizeM2": 62,
           "slug": "double-apt"
         }]
@@ -104,7 +106,10 @@ Feature: Searching for Units
     Given the following units:
       | ID | Property         | Name       | Bedrooms | Bathrooms | SizeM2 | MaxOccupancy | Count | PublishedAt          |
       | 11 | Awesome Property | Double Apt | 2        | 2         | 62     | 6            | 10    | 2018-06-01T08:00:00Z |
-      | 13 | Draft Property   | Double Apt | 2        | 2         | 62     | 6            | 10    | 2018-06-01T08:00:00Z |
+      | 13 | Draft Property   | Penthouse  | 2        | 2         | 62     | 6            | 10    | 2018-06-01T08:00:00Z |
+    And the following prices:
+      | Unit       | MinNights | Cents |
+      | Double Apt | 1         | 12000 |
     And the following units:
       | ID | Property         | Name         | Bedrooms | Bathrooms | SizeM2 | MaxOccupancy | Count |
       | 10 | Awesome Property | Standard Apt | 1        | 1         | 52     | 3            | 15    |
@@ -136,6 +141,7 @@ Feature: Searching for Units
           "images": [],
           "maxOccupancy": 6,
           "name": "Double Apt",
+          "perNightPriceCents": 12000,
           "sizeM2": 62,
           "slug": "double-apt"
         }]
@@ -162,9 +168,9 @@ Feature: Searching for Units
       | 12 | Awesome Property | Triple Apt   | 3        | 4         | 80     | 6            | 5     | 2018-06-01T08:00:00Z |
       | 13 | Nice Property    | Basic Apt    | 1        | 1         | 20     | 1            | 5     | 2018-06-01T08:00:00Z |
     And the following prices:
-      | Unit         | MinNights | Cents |
-      | Double Apt   | 1         | 12000 |
-      | Triple Apt   | 1         | 20000 |
+      | Unit       | MinNights | Cents |
+      | Double Apt | 1         | 12000 |
+      | Triple Apt | 1         | 20000 |
     When I search for units with the following filters:
       | cityID   | 2 |
       | bedrooms | 2 |
@@ -193,6 +199,7 @@ Feature: Searching for Units
           "images": [],
           "maxOccupancy": 6,
           "name": "Double Apt",
+          "perNightPriceCents": 12000,
           "sizeM2": 62,
           "slug": "double-apt"
         }, {
@@ -203,6 +210,7 @@ Feature: Searching for Units
           "images": [],
           "maxOccupancy": 6,
           "name": "Triple Apt",
+          "perNightPriceCents": 20000,
           "sizeM2": 80,
           "slug": "triple-apt"
         }]
@@ -217,9 +225,9 @@ Feature: Searching for Units
       | 12 | Awesome Property | Triple Apt   | 3        | 4         | 80     | 6            | 5     | 2018-06-01T08:00:00Z |
       | 13 | Nice Property    | Basic Apt    | 1        | 1         | 20     | 1            | 5     | 2018-06-01T08:00:00Z |
     And the following prices:
-      | Unit         | MinNights | Cents |
-      | Double Apt   | 1         | 12000 |
-      | Triple Apt   | 1         | 20000 |
+      | Unit       | MinNights | Cents |
+      | Double Apt | 1         | 12000 |
+      | Triple Apt | 1         | 20000 |
     When I search for units with the following filters:
       | cityID    | 2 |
       | bathrooms | 2 |
@@ -248,6 +256,7 @@ Feature: Searching for Units
           "images": [],
           "maxOccupancy": 6,
           "name": "Double Apt",
+          "perNightPriceCents": 12000,
           "sizeM2": 62,
           "slug": "double-apt"
         }, {
@@ -258,6 +267,7 @@ Feature: Searching for Units
           "images": [],
           "maxOccupancy": 6,
           "name": "Triple Apt",
+          "perNightPriceCents": 20000,
           "sizeM2": 80,
           "slug": "triple-apt"
         }]

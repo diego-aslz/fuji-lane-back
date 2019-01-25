@@ -40,7 +40,7 @@ func (a *Search) Perform() {
 
 	a.Diagnostics().Add("properties_size", strconv.Itoa(len(properties)))
 
-	a.Respond(http.StatusOK, flviews.NewSearch(properties))
+	a.Respond(http.StatusOK, flviews.NewSearch(properties, 1))
 }
 
 func (a *Search) withIntFilter(name string, callback func(int)) {

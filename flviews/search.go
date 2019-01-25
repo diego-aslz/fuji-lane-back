@@ -5,17 +5,17 @@ import (
 )
 
 // NewSearch returns an array of maps that expose details about properties for Search endpoint
-func NewSearch(properties []*flentities.Property) []map[string]interface{} {
+func NewSearch(properties []*flentities.Property, nights int) []map[string]interface{} {
 	result := []map[string]interface{}{}
 
 	for _, p := range properties {
-		result = append(result, searchProperty(p))
+		result = append(result, searchProperty(p, nights))
 	}
 
 	return result
 }
 
-func searchProperty(property *flentities.Property) map[string]interface{} {
+func searchProperty(property *flentities.Property, nights int) map[string]interface{} {
 	return map[string]interface{}{
 		"id":         property.ID,
 		"name":       property.Name,
@@ -31,30 +31,33 @@ func searchProperty(property *flentities.Property) map[string]interface{} {
 		"overview":   property.Overview,
 		"images":     listingImages(property.Images),
 		"amenities":  listingAmenities(property.Amenities),
-		"units":      searchUnits(property.Units),
+		"units":      searchUnits(property.Units, nights),
 	}
 }
 
-func searchUnits(units []*flentities.Unit) []map[string]interface{} {
+func searchUnits(units []*flentities.Unit, nights int) []map[string]interface{} {
 	result := []map[string]interface{}{}
 
 	for _, u := range units {
-		result = append(result, searchUnit(u))
+		result = append(result, searchUnit(u, nights))
 	}
 
 	return result
 }
 
-func searchUnit(u *flentities.Unit) map[string]interface{} {
+func searchUnit(u *flentities.Unit, nights int) map[string]interface{} {
+	price := u.PriceFor(nights)
+
 	return map[string]interface{}{
-		"id":           u.ID,
-		"name":         u.Name,
-		"slug":         u.Slug,
-		"bedrooms":     u.Bedrooms,
-		"bathrooms":    u.Bathrooms,
-		"sizeM2":       u.SizeM2,
-		"maxOccupancy": u.MaxOccupancy,
-		"amenities":    listingAmenities(u.Amenities),
-		"images":       listingImages(u.Images),
+		"id":                 u.ID,
+		"name":               u.Name,
+		"slug":               u.Slug,
+		"bedrooms":           u.Bedrooms,
+		"bathrooms":          u.Bathrooms,
+		"sizeM2":             u.SizeM2,
+		"maxOccupancy":       u.MaxOccupancy,
+		"amenities":          listingAmenities(u.Amenities),
+		"images":             listingImages(u.Images),
+		"perNightPriceCents": price.PerNightCents(),
 	}
 }
