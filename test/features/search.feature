@@ -116,37 +116,9 @@ Feature: Searching for Units
       | 12 | Nice Property    | Triple Apt   | 3        | 4         | 80     | 6            | 5     |
     When I search for units with the following filters:
       | cityID | 2 |
-    Then the system should respond with "OK" and the following JSON:
-      """
-      [{
-        "address1": "88 Tai Tam Reservoir Rd",
-        "address2": null,
-        "address3": null,
-        "amenities": [],
-        "cityID": 2,
-        "countryID": 1,
-        "id": 1,
-        "images": [],
-        "latitude": 100,
-        "longitude": 200,
-        "name": "Awesome Property",
-        "overview": "<p>Property Overview</p>",
-        "postalCode": null,
-        "slug": "awesome-property",
-        "units": [{
-          "amenities": [],
-          "bathrooms": 2,
-          "bedrooms": 2,
-          "id": 11,
-          "images": [],
-          "maxOccupancy": 6,
-          "name": "Double Apt",
-          "perNightPriceCents": 12000,
-          "sizeM2": 62,
-          "slug": "double-apt"
-        }]
-      }]
-      """
+    Then the system should respond with "OK" and the following search results:
+      | PropertyName     | Name       | PerNightPriceCents |
+      | Awesome Property | Double Apt | 12000              |
 
   Scenario: Paginating listings
     Given the following units:
@@ -174,48 +146,10 @@ Feature: Searching for Units
     When I search for units with the following filters:
       | cityID   | 2 |
       | bedrooms | 2 |
-    Then the system should respond with "OK" and the following JSON:
-      """
-      [{
-        "address1": "88 Tai Tam Reservoir Rd",
-        "address2": null,
-        "address3": null,
-        "amenities": [],
-        "cityID": 2,
-        "countryID": 1,
-        "id": 1,
-        "images": [],
-        "latitude": 100,
-        "longitude": 200,
-        "name": "Awesome Property",
-        "overview": "<p>Property Overview</p>",
-        "postalCode": null,
-        "slug": "awesome-property",
-        "units": [{
-          "amenities": [],
-          "bathrooms": 2,
-          "bedrooms": 2,
-          "id": 11,
-          "images": [],
-          "maxOccupancy": 6,
-          "name": "Double Apt",
-          "perNightPriceCents": 12000,
-          "sizeM2": 62,
-          "slug": "double-apt"
-        }, {
-          "amenities": [],
-          "bathrooms": 4,
-          "bedrooms": 3,
-          "id": 12,
-          "images": [],
-          "maxOccupancy": 6,
-          "name": "Triple Apt",
-          "perNightPriceCents": 20000,
-          "sizeM2": 80,
-          "slug": "triple-apt"
-        }]
-      }]
-      """
+    Then the system should respond with "OK" and the following search results:
+      | PropertyName     | Name       | PerNightPriceCents |
+      | Awesome Property | Double Apt | 12000              |
+      | Awesome Property | Triple Apt | 20000              |
 
   Scenario: Searching for units with at least 2 bathrooms
     Given the following units:
@@ -231,48 +165,10 @@ Feature: Searching for Units
     When I search for units with the following filters:
       | cityID    | 2 |
       | bathrooms | 2 |
-    Then the system should respond with "OK" and the following JSON:
-      """
-      [{
-        "address1": "88 Tai Tam Reservoir Rd",
-        "address2": null,
-        "address3": null,
-        "amenities": [],
-        "cityID": 2,
-        "countryID": 1,
-        "id": 1,
-        "images": [],
-        "latitude": 100,
-        "longitude": 200,
-        "name": "Awesome Property",
-        "overview": "<p>Property Overview</p>",
-        "postalCode": null,
-        "slug": "awesome-property",
-        "units": [{
-          "amenities": [],
-          "bathrooms": 2,
-          "bedrooms": 2,
-          "id": 11,
-          "images": [],
-          "maxOccupancy": 6,
-          "name": "Double Apt",
-          "perNightPriceCents": 12000,
-          "sizeM2": 62,
-          "slug": "double-apt"
-        }, {
-          "amenities": [],
-          "bathrooms": 4,
-          "bedrooms": 3,
-          "id": 12,
-          "images": [],
-          "maxOccupancy": 6,
-          "name": "Triple Apt",
-          "perNightPriceCents": 20000,
-          "sizeM2": 80,
-          "slug": "triple-apt"
-        }]
-      }]
-      """
+    Then the system should respond with "OK" and the following search results:
+      | PropertyName     | Name       | PerNightPriceCents |
+      | Awesome Property | Double Apt | 12000              |
+      | Awesome Property | Triple Apt | 20000              |
 
   Scenario: Obtaining the right price for a specific period of time and validating minimum stay
     Given the following properties:
@@ -293,45 +189,7 @@ Feature: Searching for Units
       | cityID   | 2          |
       | checkIn  | 2019-01-01 |
       | checkOut | 2019-01-03 |
-    Then the system should respond with "OK" and the following JSON:
-      """
-      [{
-        "address1": "88 Tai Tam Reservoir Rd",
-        "address2": null,
-        "address3": null,
-        "amenities": [],
-        "cityID": 2,
-        "countryID": 1,
-        "id": 1,
-        "images": [],
-        "latitude": 100,
-        "longitude": 200,
-        "name": "Awesome Property",
-        "overview": "<p>Property Overview</p>",
-        "postalCode": null,
-        "slug": "awesome-property",
-        "units": [{
-          "amenities": [],
-          "bathrooms": 2,
-          "bedrooms": 2,
-          "id": 11,
-          "images": [],
-          "maxOccupancy": 6,
-          "name": "Double Apt",
-          "perNightPriceCents": 10000,
-          "sizeM2": 62,
-          "slug": "double-apt"
-        }, {
-          "amenities": [],
-          "bathrooms": 1,
-          "bedrooms": 1,
-          "id": 10,
-          "images": [],
-          "maxOccupancy": 3,
-          "name": "Standard Apt",
-          "perNightPriceCents": 11000,
-          "sizeM2": 52,
-          "slug": "standard-apt"
-        }]
-      }]
-      """
+    Then the system should respond with "OK" and the following search results:
+      | PropertyName     | Name         | PerNightPriceCents |
+      | Awesome Property | Double Apt   | 10000              |
+      | Awesome Property | Standard Apt | 11000              |
