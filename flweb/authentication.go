@@ -54,7 +54,7 @@ func loadSession(next contextFunc) contextFunc {
 		auth := c.getHeader("Authorization")
 
 		if auth == "" {
-			c.Diagnostics().AddQuoted("session_warn", "No authentication token provided")
+			c.Diagnostics().AddQuoted("session_info", "No authentication token provided")
 		} else {
 			auth = strings.TrimPrefix(auth, "Bearer ")
 			session, err := flentities.LoadSession(auth)
