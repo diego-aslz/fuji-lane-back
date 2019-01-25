@@ -14,12 +14,32 @@ type ListingsSearchFilters struct {
 	MinBathrooms int
 	Page         int
 	PerPage      int
+	CheckIn      *Date
+	CheckOut     *Date
+	nights       int
+}
+
+// Nights returns how many nights is this query for
+func (f *ListingsSearchFilters) Nights() int {
+	if f.nights == 0 {
+		if f.hasDates() {
+			f.nights = f.CheckOut.NightsFrom(*f.CheckIn)
+		} else {
+			f.nights = 1
+		}
+	}
+
+	return f.nights
+}
+
+func (f ListingsSearchFilters) hasDates() bool {
+	return f.CheckIn != nil && f.CheckOut != nil
 }
 
 // ListingsSearch for searching for listings
 type ListingsSearch struct {
 	*Repository
-	ListingsSearchFilters
+	*ListingsSearchFilters
 }
 
 // Search searches for properties matching the filters
@@ -47,7 +67,10 @@ func (ps ListingsSearch) Search() ([]*Property, error) {
 		Preload("Images", Image{Uploaded: true}, ImagesDefaultOrder).
 		Preload("Amenities").
 		Preload("Units", func(_ *gorm.DB) *gorm.DB {
-			return unitConditions.Order("(SELECT cents FROM prices WHERE unit_id = units.id AND min_nights = 1)")
+			order := ps.Table("prices").Select("MIN(cents / min_nights)").
+				Where("unit_id = units.id").Where("min_nights <= ?", ps.Nights())
+
+			return unitConditions.Order(order.SubQuery())
 		}).
 		Preload("Units.Images", Image{Uploaded: true}, ImagesDefaultOrder).
 		Preload("Units.Amenities").
@@ -56,6 +79,10 @@ func (ps ListingsSearch) Search() ([]*Property, error) {
 		Joins(fmt.Sprintf("INNER JOIN units ON properties.id = units.property_id AND %s",
 			strings.Join(unitRawConditions, " AND ")), unitJoinArgs...).
 		Select("DISTINCT(properties.*)")
+
+	if ps.hasDates() {
+		builder = builder.Where("minimum_stay <= ?", ps.Nights())
+	}
 
 	properties := []*Property{}
 

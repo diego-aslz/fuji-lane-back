@@ -17,7 +17,7 @@ type Search struct {
 
 // Perform the action
 func (a *Search) Perform() {
-	filters := flentities.ListingsSearchFilters{Page: a.getPage(), PerPage: defaultPageSize}
+	filters := &flentities.ListingsSearchFilters{Page: a.getPage(), PerPage: defaultPageSize}
 
 	a.withIntFilter("cityID", func(i int) { filters.CityID = uint(i) })
 
@@ -31,6 +31,8 @@ func (a *Search) Perform() {
 
 	a.withIntFilter("bedrooms", func(i int) { filters.MinBedrooms = i })
 	a.withIntFilter("bathrooms", func(i int) { filters.MinBathrooms = i })
+	a.withDateFilter("checkIn", func(d flentities.Date) { filters.CheckIn = &d })
+	a.withDateFilter("checkOut", func(d flentities.Date) { filters.CheckOut = &d })
 
 	properties, err := flentities.ListingsSearch{Repository: a.Repository(), ListingsSearchFilters: filters}.Search()
 	if err != nil {
@@ -40,7 +42,7 @@ func (a *Search) Perform() {
 
 	a.Diagnostics().Add("properties_size", strconv.Itoa(len(properties)))
 
-	a.Respond(http.StatusOK, flviews.NewSearch(properties, 1))
+	a.Respond(http.StatusOK, flviews.NewSearch(properties, filters.Nights()))
 }
 
 func (a *Search) withIntFilter(name string, callback func(int)) {
@@ -53,6 +55,22 @@ func (a *Search) withIntFilter(name string, callback func(int)) {
 
 	if err == nil {
 		callback(i)
+	} else {
+		a.Diagnostics().AddQuoted(fmt.Sprintf("%s_filter_error", name), fmt.Sprintf("Unable to parse %s: %s", raw,
+			err.Error()))
+	}
+}
+
+func (a *Search) withDateFilter(name string, callback func(flentities.Date)) {
+	raw := a.Query(name)
+	if raw == "" {
+		return
+	}
+
+	d, err := flentities.ParseDate(raw)
+
+	if err == nil {
+		callback(d)
 	} else {
 		a.Diagnostics().AddQuoted(fmt.Sprintf("%s_filter_error", name), fmt.Sprintf("Unable to parse %s: %s", raw,
 			err.Error()))

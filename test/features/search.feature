@@ -273,3 +273,65 @@ Feature: Searching for Units
         }]
       }]
       """
+
+  Scenario: Obtaining the right price for a specific period of time and validating minimum stay
+    Given the following properties:
+      | ID | Account          | Name            | PublishedAt          | Overview                 | Latitude | Longitude | Address1                | CityID | CountryID | MinimumStay |
+      | 11 | Diego Apartments | Min 1 Week Stay | 2018-06-01T08:00:00Z | <p>Property Overview</p> | 100      | 200       | 88 Tai Tam Reservoir Rd | 2      | 1         | 7           |
+    And the following units:
+      | ID | Property         | Name         | Bedrooms | Bathrooms | SizeM2 | MaxOccupancy | Count | PublishedAt          |
+      | 11 | Awesome Property | Double Apt   | 2        | 2         | 62     | 6            | 10    | 2018-06-01T08:00:00Z |
+      | 10 | Awesome Property | Standard Apt | 1        | 1         | 52     | 3            | 15    | 2018-06-01T08:00:00Z |
+      | 12 | Min 1 Week Stay  | Penthouse    | 3        | 4         | 80     | 6            | 5     | 2018-06-01T08:00:00Z |
+    And the following prices:
+      | Unit         | MinNights | Cents |
+      | Double Apt   | 1         | 12000 |
+      | Double Apt   | 2         | 20000 |
+      | Standard Apt | 1         | 11000 |
+      | Penthouse    | 1         | 50000 |
+    When I search for units with the following filters:
+      | cityID   | 2          |
+      | checkIn  | 2019-01-01 |
+      | checkOut | 2019-01-03 |
+    Then the system should respond with "OK" and the following JSON:
+      """
+      [{
+        "address1": "88 Tai Tam Reservoir Rd",
+        "address2": null,
+        "address3": null,
+        "amenities": [],
+        "cityID": 2,
+        "countryID": 1,
+        "id": 1,
+        "images": [],
+        "latitude": 100,
+        "longitude": 200,
+        "name": "Awesome Property",
+        "overview": "<p>Property Overview</p>",
+        "postalCode": null,
+        "slug": "awesome-property",
+        "units": [{
+          "amenities": [],
+          "bathrooms": 2,
+          "bedrooms": 2,
+          "id": 11,
+          "images": [],
+          "maxOccupancy": 6,
+          "name": "Double Apt",
+          "perNightPriceCents": 10000,
+          "sizeM2": 62,
+          "slug": "double-apt"
+        }, {
+          "amenities": [],
+          "bathrooms": 1,
+          "bedrooms": 1,
+          "id": 10,
+          "images": [],
+          "maxOccupancy": 3,
+          "name": "Standard Apt",
+          "perNightPriceCents": 11000,
+          "sizeM2": 52,
+          "slug": "standard-apt"
+        }]
+      }]
+      """
