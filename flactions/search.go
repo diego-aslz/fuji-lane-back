@@ -46,35 +46,43 @@ func (a *Search) Perform() {
 }
 
 func (a *Search) withIntFilter(name string, callback func(int)) {
-	raw := a.Query(name)
-	if raw == "" {
-		return
-	}
+	a.withFilter(name, func(raw string) {
+		i, err := strconv.Atoi(raw)
 
-	i, err := strconv.Atoi(raw)
+		if err != nil {
+			a.addFilterErrorDiagnostic(name, raw, err)
 
-	if err == nil {
+			return
+		}
+
 		callback(i)
-	} else {
-		a.Diagnostics().AddQuoted(fmt.Sprintf("%s_filter_error", name), fmt.Sprintf("Unable to parse %s: %s", raw,
-			err.Error()))
-	}
+	})
 }
 
 func (a *Search) withDateFilter(name string, callback func(flentities.Date)) {
-	raw := a.Query(name)
-	if raw == "" {
-		return
-	}
+	a.withFilter(name, func(raw string) {
+		d, err := flentities.ParseDate(raw)
 
-	d, err := flentities.ParseDate(raw)
+		if err != nil {
+			a.addFilterErrorDiagnostic(name, raw, err)
 
-	if err == nil {
+			return
+		}
+
 		callback(d)
-	} else {
-		a.Diagnostics().AddQuoted(fmt.Sprintf("%s_filter_error", name), fmt.Sprintf("Unable to parse %s: %s", raw,
-			err.Error()))
+	})
+}
+
+func (a *Search) withFilter(name string, callback func(string)) {
+	raw := a.Query(name)
+	if raw != "" {
+		callback(raw)
 	}
+}
+
+func (a *Search) addFilterErrorDiagnostic(name, raw string, err error) {
+	a.Diagnostics().AddQuoted(fmt.Sprintf("%s_filter_error", name), fmt.Sprintf("Unable to parse %s: %s", raw,
+		err.Error()))
 }
 
 // NewSearch returns a new Search action
