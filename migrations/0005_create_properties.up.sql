@@ -26,5 +26,6 @@ CREATE TABLE properties(
 );
 
 CREATE INDEX properties_account_id ON properties(account_id);
+CREATE INDEX properties_city_id ON properties(city_id);
 CREATE INDEX properties_published_at ON properties(published_at);
 CREATE INDEX properties_deleted_at ON properties(deleted_at);

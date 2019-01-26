@@ -183,6 +183,7 @@ func refUint(i uint) *uint {
 }
 
 var tableNames = []string{
+	"prices",
 	"bookings",
 	"amenities",
 	"images",
@@ -195,6 +196,7 @@ var tableNames = []string{
 }
 
 var entities = []interface{}{
+	flentities.Price{},
 	flentities.Booking{},
 	flentities.Amenity{},
 	flentities.Image{},

@@ -1,7 +1,6 @@
 package flentities
 
 import (
-	"fmt"
 	"strings"
 
 	"github.com/jinzhu/gorm"
@@ -9,14 +8,16 @@ import (
 
 // ListingsSearchFilters are the filters to apply to a search
 type ListingsSearchFilters struct {
-	CityID       uint
-	MinBedrooms  int
-	MinBathrooms int
-	Page         int
-	PerPage      int
-	CheckIn      *Date
-	CheckOut     *Date
-	nights       int
+	CityID        uint
+	MinBedrooms   int
+	MinBathrooms  int
+	Page          int
+	PerPage       int
+	CheckIn       *Date
+	CheckOut      *Date
+	MinPriceCents int
+	MaxPriceCents int
+	nights        int
 }
 
 // Nights returns how many nights is this query for
@@ -34,6 +35,30 @@ func (f *ListingsSearchFilters) Nights() int {
 
 func (f ListingsSearchFilters) hasDates() bool {
 	return f.CheckIn != nil && f.CheckOut != nil
+}
+
+func (f *ListingsSearchFilters) pricesJoin() (string, []interface{}) {
+	join := "INNER JOIN prices ON units.id = prices.unit_id"
+	args := []interface{}{}
+
+	// Apply nights even when there are no check in and check out dates available because we'll show the user the
+	// price for one single night in that scenario. This avoids confusion if the user applies a price range filter and
+	// sees listings which for long stays would match the max price limit, but we'd still show the price for
+	// a single night to them, which would be above the max price limit.
+	join += " AND prices.min_nights <= ?"
+	args = append(args, f.Nights())
+
+	if f.MinPriceCents > 0 {
+		join += " AND prices.cents / prices.min_nights >= ?"
+		args = append(args, f.MinPriceCents)
+	}
+
+	if f.MaxPriceCents > 0 {
+		join += " AND prices.cents / prices.min_nights <= ?"
+		args = append(args, f.MaxPriceCents)
+	}
+
+	return join, args
 }
 
 // ListingsSearch for searching for listings
@@ -67,21 +92,26 @@ func (ps ListingsSearch) Search() ([]*Property, error) {
 		Preload("Images", Image{Uploaded: true}, ImagesDefaultOrder).
 		Preload("Amenities").
 		Preload("Units", func(_ *gorm.DB) *gorm.DB {
-			order := ps.Table("prices").Select("MIN(cents / min_nights)").
-				Where("unit_id = units.id").Where("min_nights <= ?", ps.Nights())
+			join, args := ps.pricesJoin()
+			unitConditions = unitConditions.Joins(join, args...)
 
-			return unitConditions.Order(order.SubQuery())
+			return unitConditions.Order("prices.cents / prices.min_nights")
 		}).
 		Preload("Units.Images", Image{Uploaded: true}, ImagesDefaultOrder).
 		Preload("Units.Amenities").
 		Preload("Units.Prices").
 		Where("city_id = ?", ps.CityID).
-		Joins(fmt.Sprintf("INNER JOIN units ON properties.id = units.property_id AND %s",
-			strings.Join(unitRawConditions, " AND ")), unitJoinArgs...).
+		Joins("INNER JOIN units ON properties.id = units.property_id AND "+strings.Join(unitRawConditions, " AND "),
+			unitJoinArgs...).
 		Select("DISTINCT(properties.*)")
 
 	if ps.hasDates() {
 		builder = builder.Where("minimum_stay <= ?", ps.Nights())
+	}
+
+	if ps.MinPriceCents > 0 || ps.MaxPriceCents > 0 {
+		join, args := ps.pricesJoin()
+		builder = builder.Joins(join, args...)
 	}
 
 	properties := []*Property{}

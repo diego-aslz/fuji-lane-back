@@ -26,13 +26,14 @@ func (a *Search) Perform() {
 		return
 	}
 
-	a.addPageDiagnostic()
-	a.Diagnostics().Add("cityID", fmt.Sprint(filters.CityID))
-
 	a.withIntFilter("bedrooms", func(i int) { filters.MinBedrooms = i })
 	a.withIntFilter("bathrooms", func(i int) { filters.MinBathrooms = i })
+	a.withIntFilter("minPriceCents", func(i int) { filters.MinPriceCents = i })
+	a.withIntFilter("maxPriceCents", func(i int) { filters.MaxPriceCents = i })
 	a.withDateFilter("checkIn", func(d flentities.Date) { filters.CheckIn = &d })
 	a.withDateFilter("checkOut", func(d flentities.Date) { filters.CheckOut = &d })
+
+	a.Diagnostics().AddJSON("filters", filters)
 
 	properties, err := flentities.ListingsSearch{Repository: a.Repository(), ListingsSearchFilters: filters}.Search()
 	if err != nil {

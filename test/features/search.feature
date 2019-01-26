@@ -193,3 +193,58 @@ Feature: Searching for Units
       | PropertyName     | Name         | PerNightPriceCents |
       | Awesome Property | Double Apt   | 10000              |
       | Awesome Property | Standard Apt | 11000              |
+
+  Scenario: Filtering by price range
+    Given the following properties:
+      | ID | Account          | Name          | PublishedAt          | Overview                 | Latitude | Longitude | Address1                | CityID | CountryID | MinimumStay |
+      | 11 | Diego Apartments | Too Expensive | 2018-06-01T08:00:00Z | <p>Property Overview</p> | 100      | 200       | 88 Tai Tam Reservoir Rd | 2      | 1         | 1           |
+    And the following units:
+      | ID | Property         | Name          | Bedrooms | Bathrooms | SizeM2 | MaxOccupancy | Count | PublishedAt          |
+      | 10 | Awesome Property | Double Apt    | 2        | 2         | 62     | 6            | 10    | 2018-06-01T08:00:00Z |
+      | 11 | Awesome Property | Standard Apt  | 1        | 1         | 52     | 3            | 15    | 2018-06-01T08:00:00Z |
+      | 12 | Awesome Property | Kitchen       | 1        | 1         | 52     | 3            | 15    | 2018-06-01T08:00:00Z |
+      | 13 | Too Expensive    | Too Expensive | 1        | 1         | 52     | 3            | 15    | 2018-06-01T08:00:00Z |
+    And the following prices:
+      | Unit          | MinNights | Cents |
+      | Kitchen       | 1         | 5000  |
+      | Standard Apt  | 1         | 11000 |
+      | Standard Apt  | 7         | 70000 |
+      | Double Apt    | 1         | 12000 |
+      | Double Apt    | 7         | 70000 |
+      | Too Expensive | 1         | 50000 |
+    When I search for units with the following filters:
+      | cityID        | 2     |
+      | minPriceCents | 9000  |
+      | maxPriceCents | 11000 |
+    Then the system should respond with "OK" and the following search results:
+      | PropertyName     | Name         | PerNightPriceCents |
+      | Awesome Property | Standard Apt | 11000              |
+
+  Scenario: Filtering by price range with dates, considering longer periods
+    Given the following properties:
+      | ID | Account          | Name          | PublishedAt          | Overview                 | Latitude | Longitude | Address1                | CityID | CountryID | MinimumStay |
+      | 11 | Diego Apartments | Too Expensive | 2018-06-01T08:00:00Z | <p>Property Overview</p> | 100      | 200       | 88 Tai Tam Reservoir Rd | 2      | 1         | 1           |
+    And the following units:
+      | ID | Property         | Name          | Bedrooms | Bathrooms | SizeM2 | MaxOccupancy | Count | PublishedAt          |
+      | 10 | Awesome Property | Double Apt    | 2        | 2         | 62     | 6            | 10    | 2018-06-01T08:00:00Z |
+      | 11 | Awesome Property | Standard Apt  | 1        | 1         | 52     | 3            | 15    | 2018-06-01T08:00:00Z |
+      | 12 | Awesome Property | Kitchen       | 1        | 1         | 52     | 3            | 15    | 2018-06-01T08:00:00Z |
+      | 13 | Too Expensive    | Too Expensive | 1        | 1         | 52     | 3            | 15    | 2018-06-01T08:00:00Z |
+    And the following prices:
+      | Unit          | MinNights | Cents |
+      | Kitchen       | 1         | 5000  |
+      | Standard Apt  | 1         | 11000 |
+      | Standard Apt  | 7         | 70000 |
+      | Double Apt    | 1         | 12000 |
+      | Double Apt    | 7         | 69000 |
+      | Too Expensive | 1         | 50000 |
+    When I search for units with the following filters:
+      | cityID        | 2          |
+      | checkIn       | 2019-01-01 |
+      | checkOut      | 2019-01-08 |
+      | minPriceCents | 9000       |
+      | maxPriceCents | 11000      |
+    Then the system should respond with "OK" and the following search results:
+      | PropertyName     | Name         | PerNightPriceCents |
+      | Awesome Property | Double Apt   | 9857               |
+      | Awesome Property | Standard Apt | 10000              |
