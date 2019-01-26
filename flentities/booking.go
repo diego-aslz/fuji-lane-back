@@ -1,7 +1,6 @@
 package flentities
 
 import (
-	"math"
 	"time"
 )
 
@@ -38,12 +37,12 @@ func (b *Booking) calculatePrice() {
 		return
 	}
 
-	p := b.Unit.PriceFor(b.Nights)
+	e := NewEstimate(b.Unit, b.Nights)
 
-	if p.Cents == 0 {
+	if e.TotalCents == 0 {
 		return
 	}
 
-	b.NightPriceCents = (int)(math.Round(p.PerNightCents()))
-	b.TotalCents = (int)(math.Round((float64)(b.Nights) * p.PerNightCents()))
+	b.NightPriceCents = e.NightPriceCents
+	b.TotalCents = e.TotalCents
 }

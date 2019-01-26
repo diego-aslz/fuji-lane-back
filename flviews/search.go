@@ -46,7 +46,7 @@ func searchUnits(units []*flentities.Unit, nights int) []map[string]interface{} 
 }
 
 func searchUnit(u *flentities.Unit, nights int) map[string]interface{} {
-	price := u.PriceFor(nights)
+	e := flentities.NewEstimate(u, nights)
 
 	return map[string]interface{}{
 		"id":                 u.ID,
@@ -58,6 +58,7 @@ func searchUnit(u *flentities.Unit, nights int) map[string]interface{} {
 		"maxOccupancy":       u.MaxOccupancy,
 		"amenities":          listingAmenities(u.Amenities),
 		"images":             listingImages(u.Images),
-		"perNightPriceCents": price.PerNightCents(),
+		"perNightPriceCents": e.NightPriceCents,
+		"totalCents":         e.TotalCents,
 	}
 }

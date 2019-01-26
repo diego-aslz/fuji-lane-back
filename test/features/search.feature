@@ -85,6 +85,7 @@ Feature: Searching for Units
           "maxOccupancy": 3,
           "name": "Standard Apt",
           "perNightPriceCents": 10000,
+          "totalCents": 10000,
           "sizeM2": 52,
           "slug": "standard-apt"
         }, {
@@ -96,6 +97,7 @@ Feature: Searching for Units
           "maxOccupancy": 6,
           "name": "Double Apt",
           "perNightPriceCents": 12000,
+          "totalCents": 12000,
           "sizeM2": 62,
           "slug": "double-apt"
         }]
@@ -117,8 +119,8 @@ Feature: Searching for Units
     When I search for units with the following filters:
       | cityID | 2 |
     Then the system should respond with "OK" and the following search results:
-      | PropertyName     | Name       | PerNightPriceCents |
-      | Awesome Property | Double Apt | 12000              |
+      | PropertyName     | Name       | PerNightPriceCents | TotalCents |
+      | Awesome Property | Double Apt | 12000              | 12000      |
 
   Scenario: Paginating listings
     Given the following units:
@@ -147,9 +149,9 @@ Feature: Searching for Units
       | cityID   | 2 |
       | bedrooms | 2 |
     Then the system should respond with "OK" and the following search results:
-      | PropertyName     | Name       | PerNightPriceCents |
-      | Awesome Property | Double Apt | 12000              |
-      | Awesome Property | Triple Apt | 20000              |
+      | PropertyName     | Name       | PerNightPriceCents | TotalCents |
+      | Awesome Property | Double Apt | 12000              | 12000      |
+      | Awesome Property | Triple Apt | 20000              | 20000      |
 
   Scenario: Searching for units with at least 2 bathrooms
     Given the following units:
@@ -166,9 +168,9 @@ Feature: Searching for Units
       | cityID    | 2 |
       | bathrooms | 2 |
     Then the system should respond with "OK" and the following search results:
-      | PropertyName     | Name       | PerNightPriceCents |
-      | Awesome Property | Double Apt | 12000              |
-      | Awesome Property | Triple Apt | 20000              |
+      | PropertyName     | Name       | PerNightPriceCents | TotalCents |
+      | Awesome Property | Double Apt | 12000              | 12000      |
+      | Awesome Property | Triple Apt | 20000              | 20000      |
 
   Scenario: Obtaining the right price for a specific period of time and validating minimum stay
     Given the following properties:
@@ -190,9 +192,9 @@ Feature: Searching for Units
       | checkIn  | 2019-01-01 |
       | checkOut | 2019-01-03 |
     Then the system should respond with "OK" and the following search results:
-      | PropertyName     | Name         | PerNightPriceCents |
-      | Awesome Property | Double Apt   | 10000              |
-      | Awesome Property | Standard Apt | 11000              |
+      | PropertyName     | Name         | PerNightPriceCents | TotalCents |
+      | Awesome Property | Double Apt   | 10000              | 20000      |
+      | Awesome Property | Standard Apt | 11000              | 22000      |
 
   Scenario: Filtering by price range
     Given the following properties:
@@ -217,8 +219,8 @@ Feature: Searching for Units
       | minPriceCents | 9000  |
       | maxPriceCents | 11000 |
     Then the system should respond with "OK" and the following search results:
-      | PropertyName     | Name         | PerNightPriceCents |
-      | Awesome Property | Standard Apt | 11000              |
+      | PropertyName     | Name         | PerNightPriceCents | TotalCents |
+      | Awesome Property | Standard Apt | 11000              | 11000      |
 
   Scenario: Filtering by price range with dates, considering longer periods
     Given the following properties:
@@ -245,6 +247,6 @@ Feature: Searching for Units
       | minPriceCents | 9000       |
       | maxPriceCents | 11000      |
     Then the system should respond with "OK" and the following search results:
-      | PropertyName     | Name         | PerNightPriceCents |
-      | Awesome Property | Double Apt   | 9857               |
-      | Awesome Property | Standard Apt | 10000              |
+      | PropertyName     | Name         | PerNightPriceCents | TotalCents |
+      | Awesome Property | Double Apt   | 9857               | 69000      |
+      | Awesome Property | Standard Apt | 10000              | 70000      |

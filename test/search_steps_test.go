@@ -12,6 +12,7 @@ import (
 type searchUnit struct {
 	Name               string `json:"name"`
 	PerNightPriceCents int    `json:"perNightPriceCents"`
+	TotalCents         int    `json:"totalCents"`
 }
 
 type searchProperty struct {
