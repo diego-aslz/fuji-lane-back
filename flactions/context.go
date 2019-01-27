@@ -22,6 +22,8 @@ type Context interface {
 	Param(string) string
 	Query(string) string
 
+	Header(string, string)
+
 	RandomSource() rand.Source
 
 	Repository() *flentities.Repository

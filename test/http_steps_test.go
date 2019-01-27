@@ -245,10 +245,35 @@ func assertResponseStatus(status string) error {
 	return fmt.Errorf("Unhandled status: %s", status)
 }
 
+func assertResponseHeaders(table *gherkin.DataTable) error {
+	if response == nil {
+		return fmt.Errorf("Response is nil, are you sure you made any HTTP request?")
+	}
+
+	rowsMap, err := assist.ParseMap(table)
+	if err != nil {
+		return err
+	}
+
+	expected := map[string][]string{}
+	actual := map[string][]string{}
+	for key, value := range rowsMap {
+		expected[key] = strings.Split(value, "|")
+		actual[key] = response.HeaderMap[key]
+	}
+
+	if diff := deep.Equal(expected, actual); diff != nil {
+		return errors.New(strings.Join(diff, "\n"))
+	}
+
+	return nil
+}
+
 func HTTPContext(s *godog.Suite) {
 	s.Step(`^the system should respond with "([^"]*)" and no body$`, assertResponseStatusAndNoBody)
 	s.Step(`^the system should respond with "([^"]*)" and the following body:$`, assertResponseStatusAndBody)
 	s.Step(`^the system should respond with "([^"]*)" and the following JSON:$`, assertResponseStatusAndJSON)
 	s.Step(`^the system should respond with "([^"]*)" and the following errors:$`, assertResponseStatusAndErrors)
 	s.Step(`^the system should respond with "([^"]*)"$`, assertResponseStatus)
+	s.Step(`^the system should respond with the following headers:$`, assertResponseHeaders)
 }

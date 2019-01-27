@@ -17,8 +17,8 @@ Feature: Searching for Units
       | 2  | Diego Apartments | Nice Property         | 2018-06-01T08:00:00Z | <p>Uptown Overview</p>   | 100      | 200       | Add 1                   | 2      | 1         | 3           |
       | 5  | Diego Apartments | Other City's Property | 2018-06-01T08:00:00Z | <p>Uptown Overview</p>   | 100      | 200       | Add 1                   | 3      | 1         | 3           |
     And the following properties:
-      | ID | Account          | Name           |
-      | 3  | Diego Apartments | Draft Property |
+      | ID | Account          | Name           | Overview                 | Latitude | Longitude | Address1                | CityID | CountryID | MinimumStay |
+      | 3  | Diego Apartments | Draft Property | <p>Property Overview</p> | 100      | 200       | 88 Tai Tam Reservoir Rd | 2      | 1         | 1           |
 
   Scenario: Searching for units in a city
     Given the following units:
@@ -103,29 +103,45 @@ Feature: Searching for Units
         }]
       }]
       """
+    And the system should respond with the following headers:
+      | Total-Properties-Count | 1     |
+      | Min-Per-Night-Cents    | 10000 |
+      | Max-Per-Night-Cents    | 12000 |
+      | Avg-Per-Night-Cents    | 11000 |
 
   Scenario: Ignoring unpublished units or properties
     Given the following units:
       | ID | Property         | Name       | Bedrooms | Bathrooms | SizeM2 | MaxOccupancy | Count | PublishedAt          |
       | 11 | Awesome Property | Double Apt | 2        | 2         | 62     | 6            | 10    | 2018-06-01T08:00:00Z |
       | 13 | Draft Property   | Penthouse  | 2        | 2         | 62     | 6            | 10    | 2018-06-01T08:00:00Z |
-    And the following prices:
-      | Unit       | MinNights | Cents |
-      | Double Apt | 1         | 12000 |
     And the following units:
       | ID | Property         | Name         | Bedrooms | Bathrooms | SizeM2 | MaxOccupancy | Count |
       | 10 | Awesome Property | Standard Apt | 1        | 1         | 52     | 3            | 15    |
       | 12 | Nice Property    | Triple Apt   | 3        | 4         | 80     | 6            | 5     |
+    And the following prices:
+      | Unit         | MinNights | Cents |
+      | Standard Apt | 1         | 10000 |
+      | Double Apt   | 1         | 12000 |
+      | Triple Apt   | 1         | 15000 |
+      | Penthouse    | 1         | 80000 |
     When I search for units with the following filters:
       | cityID | 2 |
     Then the system should respond with "OK" and the following search results:
       | PropertyName     | Name       | PerNightCents | TotalCents |
       | Awesome Property | Double Apt | 12000         | 12000      |
+    And the system should respond with the following headers:
+      | Total-Properties-Count | 1     |
+      | Min-Per-Night-Cents    | 12000 |
+      | Max-Per-Night-Cents    | 12000 |
+      | Avg-Per-Night-Cents    | 12000 |
 
   Scenario: Paginating listings
     Given the following units:
       | ID | Property         | Name       | Bedrooms | Bathrooms | SizeM2 | MaxOccupancy | Count | PublishedAt          |
       | 11 | Awesome Property | Double Apt | 2        | 2         | 62     | 6            | 10    | 2018-06-01T08:00:00Z |
+    And the following prices:
+      | Unit       | MinNights | Cents |
+      | Double Apt | 1         | 12000 |
     When I search for units with the following filters:
       | cityID | 2 |
       | page   | 2 |
@@ -133,6 +149,11 @@ Feature: Searching for Units
       """
       []
       """
+    And the system should respond with the following headers:
+      | Total-Properties-Count | 1     |
+      | Min-Per-Night-Cents    | 12000 |
+      | Max-Per-Night-Cents    | 12000 |
+      | Avg-Per-Night-Cents    | 12000 |
 
   Scenario: Searching for units with at least 2 bedrooms
     Given the following units:
@@ -152,6 +173,11 @@ Feature: Searching for Units
       | PropertyName     | Name       | PerNightCents | TotalCents |
       | Awesome Property | Double Apt | 12000         | 12000      |
       | Awesome Property | Triple Apt | 20000         | 20000      |
+    And the system should respond with the following headers:
+      | Total-Properties-Count | 1     |
+      | Min-Per-Night-Cents    | 12000 |
+      | Max-Per-Night-Cents    | 20000 |
+      | Avg-Per-Night-Cents    | 16000 |
 
   Scenario: Searching for units with at least 2 bathrooms
     Given the following units:
@@ -171,6 +197,11 @@ Feature: Searching for Units
       | PropertyName     | Name       | PerNightCents | TotalCents |
       | Awesome Property | Double Apt | 12000         | 12000      |
       | Awesome Property | Triple Apt | 20000         | 20000      |
+    And the system should respond with the following headers:
+      | Total-Properties-Count | 1     |
+      | Min-Per-Night-Cents    | 12000 |
+      | Max-Per-Night-Cents    | 20000 |
+      | Avg-Per-Night-Cents    | 16000 |
 
   Scenario: Obtaining the right price for a specific period of time and validating minimum stay
     Given the following properties:
@@ -195,6 +226,11 @@ Feature: Searching for Units
       | PropertyName     | Name         | PerNightCents | TotalCents |
       | Awesome Property | Double Apt   | 10000         | 20000      |
       | Awesome Property | Standard Apt | 11000         | 22000      |
+    And the system should respond with the following headers:
+      | Total-Properties-Count | 1     |
+      | Min-Per-Night-Cents    | 10000 |
+      | Max-Per-Night-Cents    | 11000 |
+      | Avg-Per-Night-Cents    | 10500 |
 
   Scenario: Filtering by price range
     Given the following properties:
@@ -221,6 +257,11 @@ Feature: Searching for Units
     Then the system should respond with "OK" and the following search results:
       | PropertyName     | Name         | PerNightCents | TotalCents |
       | Awesome Property | Standard Apt | 11000         | 11000      |
+    And the system should respond with the following headers:
+      | Total-Properties-Count | 2     |
+      | Min-Per-Night-Cents    | 5000  |
+      | Max-Per-Night-Cents    | 50000 |
+      | Avg-Per-Night-Cents    | 19500 |
 
   Scenario: Filtering by price range with dates, considering longer periods
     Given the following properties:
@@ -250,3 +291,8 @@ Feature: Searching for Units
       | PropertyName     | Name         | PerNightCents | TotalCents |
       | Awesome Property | Double Apt   | 9857          | 69000      |
       | Awesome Property | Standard Apt | 10000         | 70000      |
+    And the system should respond with the following headers:
+      | Total-Properties-Count | 2     |
+      | Min-Per-Night-Cents    | 5000  |
+      | Max-Per-Night-Cents    | 50000 |
+      | Avg-Per-Night-Cents    | 18714 |

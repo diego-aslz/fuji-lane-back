@@ -2,6 +2,8 @@ package flentities
 
 import "time"
 
+const perNightPriceSQL = "prices.cents / prices.min_nights"
+
 // Price represents a unit price under specific conditions
 type Price struct {
 	ID        uint      `gorm:"primary_key" json:"-"`

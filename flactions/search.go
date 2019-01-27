@@ -35,11 +35,18 @@ func (a *Search) Perform() {
 
 	a.Diagnostics().AddJSON("filters", filters)
 
-	properties, err := flentities.ListingsSearch{Repository: a.Repository(), ListingsSearchFilters: filters}.Search()
+	result, err := flentities.ListingsSearch{Repository: a.Repository(), ListingsSearchFilters: filters}.Search()
 	if err != nil {
 		a.ServerError(err)
 		return
 	}
+
+	a.Header("Total-Properties-Count", strconv.Itoa(result.TotalPropertiesCount))
+	a.Header("Min-Per-Night-Cents", strconv.Itoa(result.MinPerNightCents))
+	a.Header("Max-Per-Night-Cents", strconv.Itoa(result.MaxPerNightCents))
+	a.Header("Avg-Per-Night-Cents", strconv.Itoa(result.AvgPerNightCents))
+
+	properties := result.Properties
 
 	a.Diagnostics().Add("properties_size", strconv.Itoa(len(properties)))
 

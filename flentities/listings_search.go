@@ -1,8 +1,6 @@
 package flentities
 
 import (
-	"strings"
-
 	"github.com/jinzhu/gorm"
 )
 
@@ -49,12 +47,12 @@ func (f *ListingsSearchFilters) pricesJoin() (string, []interface{}) {
 	args = append(args, f.Nights())
 
 	if f.MinPriceCents > 0 {
-		join += " AND prices.cents / prices.min_nights >= ?"
+		join += " AND " + perNightPriceSQL + " >= ?"
 		args = append(args, f.MinPriceCents)
 	}
 
 	if f.MaxPriceCents > 0 {
-		join += " AND prices.cents / prices.min_nights <= ?"
+		join += " AND " + perNightPriceSQL + " <= ?"
 		args = append(args, f.MaxPriceCents)
 	}
 
@@ -68,53 +66,87 @@ type ListingsSearch struct {
 }
 
 // Search searches for properties matching the filters
-func (ps ListingsSearch) Search() ([]*Property, error) {
-	publishedNull := map[string]interface{}{"published_at": nil}
-	unitConditions := ps.Not(publishedNull).Where(map[string]interface{}{"deleted_at": nil})
-	unitRawConditions := []string{"units.published_at IS NOT NULL", "units.deleted_at IS NULL"}
-	unitJoinArgs := []interface{}{}
+func (s ListingsSearch) Search() (*ListingsSearchResult, error) {
+	unitConditions := s.Where("units.published_at IS NOT NULL")
 
-	if ps.MinBedrooms > 0 {
-		condition := "bedrooms >= ?"
-		unitConditions = unitConditions.Where(condition, ps.MinBedrooms)
-		unitRawConditions = append(unitRawConditions, condition)
-		unitJoinArgs = append(unitJoinArgs, ps.MinBedrooms)
+	if s.MinBedrooms > 0 {
+		unitConditions = unitConditions.Where("bedrooms >= ?", s.MinBedrooms)
 	}
 
-	if ps.MinBathrooms > 0 {
-		condition := "bathrooms >= ?"
-		unitConditions = unitConditions.Where(condition, ps.MinBathrooms)
-		unitRawConditions = append(unitRawConditions, condition)
-		unitJoinArgs = append(unitJoinArgs, ps.MinBathrooms)
+	if s.MinBathrooms > 0 {
+		unitConditions = unitConditions.Where("bathrooms >= ?", s.MinBathrooms)
 	}
 
-	builder := ps.
+	joinedUnits := unitConditions.
+		Joins("INNER JOIN properties ON units.property_id = properties.id").
+		Where("properties.city_id = ?", s.CityID).
+		Where("properties.published_at IS NOT NULL")
+
+	if s.hasDates() {
+		joinedUnits = joinedUnits.Where("properties.minimum_stay <= ?", s.Nights())
+	}
+
+	result := &ListingsSearchResult{Properties: []*Property{}}
+
+	if err := s.addMetadata(joinedUnits, result); err != nil {
+		return result, err
+	}
+
+	join, args := s.pricesJoin()
+	unitConditions = unitConditions.Joins(join, args...)
+
+	if s.MinPriceCents > 0 || s.MaxPriceCents > 0 {
+		joinedUnits = joinedUnits.Joins(join, args...)
+	}
+
+	propertyConditions := s.
+		Where("id IN (?)", joinedUnits.Model(&Unit{}).Select("property_id").QueryExpr()).
 		Preload("Images", Image{Uploaded: true}, ImagesDefaultOrder).
 		Preload("Amenities").
-		Preload("Units", func(_ *gorm.DB) *gorm.DB {
-			join, args := ps.pricesJoin()
-			unitConditions = unitConditions.Joins(join, args...)
-
-			return unitConditions.Order("prices.cents / prices.min_nights")
-		}).
+		Preload("Units", func(_ *gorm.DB) *gorm.DB { return unitConditions.Order("prices.cents / prices.min_nights") }).
 		Preload("Units.Images", Image{Uploaded: true}, ImagesDefaultOrder).
 		Preload("Units.Amenities").
-		Preload("Units.Prices").
-		Where("city_id = ?", ps.CityID).
-		Joins("INNER JOIN units ON properties.id = units.property_id AND "+strings.Join(unitRawConditions, " AND "),
-			unitJoinArgs...).
-		Select("DISTINCT(properties.*)")
+		Preload("Units.Prices")
 
-	if ps.hasDates() {
-		builder = builder.Where("minimum_stay <= ?", ps.Nights())
+	propertyConditions = Repository{propertyConditions}.Paginate(s.Page, s.PerPage)
+
+	return result, propertyConditions.Find(&result.Properties).Error
+}
+
+func (s ListingsSearch) addMetadata(unitConditions *gorm.DB, result *ListingsSearchResult) error {
+	bestPriceJoin := "INNER JOIN (" +
+		"SELECT unit_id, MAX(min_nights) min_nights FROM prices WHERE min_nights <= ? GROUP BY unit_id" +
+		") best_price ON best_price.unit_id = units.id"
+
+	selects := "COUNT(distinct property_id)"
+	selects += ", ROUND(MIN(" + perNightPriceSQL + "))"
+	selects += ", ROUND(MAX(" + perNightPriceSQL + "))"
+	selects += ", ROUND(AVG(" + perNightPriceSQL + "))"
+
+	rows, err := unitConditions.
+		Model(&Unit{}).
+		Joins(bestPriceJoin, s.Nights()).
+		Joins("INNER JOIN prices ON prices.unit_id = units.id AND prices.min_nights = best_price.min_nights").
+		Select(selects).
+		Rows()
+
+	if err != nil {
+		return err
+	}
+	defer rows.Close()
+
+	if rows.Next() {
+		err = rows.Scan(&result.TotalPropertiesCount, &result.MinPerNightCents, &result.MaxPerNightCents, &result.AvgPerNightCents)
 	}
 
-	if ps.MinPriceCents > 0 || ps.MaxPriceCents > 0 {
-		join, args := ps.pricesJoin()
-		builder = builder.Joins(join, args...)
-	}
+	return err
+}
 
-	properties := []*Property{}
-
-	return properties, Repository{builder}.Paginate(ps.Page, ps.PerPage).Find(&properties).Error
+// ListingsSearchResult represents the result of a search performed
+type ListingsSearchResult struct {
+	Properties           []*Property
+	TotalPropertiesCount int
+	MinPerNightCents     int
+	MaxPerNightCents     int
+	AvgPerNightCents     int
 }
