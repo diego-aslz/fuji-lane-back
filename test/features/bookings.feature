@@ -65,8 +65,8 @@ Feature: Bookings
       | Message  | Nothing      |
     Then the system should respond with "CREATED"
     And I should have the following bookings:
-      | User               | Unit         | CheckIn    | CheckOut   | Message | Nights | NightPriceCents | ServiceFeeCents | TotalCents |
-      | diego@selzlein.com | Standard Apt | 2018-06-09 | 2018-06-11 | Nothing | 2      | 11000           | 0               | 22000      |
+      | User               | Unit         | CheckIn    | CheckOut   | Message | Nights | PerNightCents | ServiceFeeCents | TotalCents |
+      | diego@selzlein.com | Standard Apt | 2018-06-09 | 2018-06-11 | Nothing | 2      | 11000         | 0               | 22000      |
 
   Scenario: Booking a Unit with invalid information
     Given it is currently "01 Jun 18 08:00"
@@ -117,8 +117,8 @@ Feature: Bookings
       | CheckOut | <CheckOut> |
     Then the system should respond with "CREATED"
     And I should have the following bookings:
-      | User               | Unit   | CheckIn   | CheckOut   | Nights   | NightPriceCents | TotalCents |
-      | diego@selzlein.com | <Unit> | <CheckIn> | <CheckOut> | <Nights> | <PerNight>      | <Total>    |
+      | User               | Unit   | CheckIn   | CheckOut   | Nights   | PerNightCents | TotalCents |
+      | diego@selzlein.com | <Unit> | <CheckIn> | <CheckOut> | <Nights> | <PerNight>    | <Total>    |
 
     Examples:
       | Unit            | CheckIn    | CheckOut   | Nights | PerNight | Total   |

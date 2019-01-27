@@ -117,7 +117,7 @@ CREATE TABLE bookings (
     check_in date NOT NULL,
     check_out date NOT NULL,
     message text,
-    night_price_cents integer NOT NULL,
+    per_night_cents integer NOT NULL,
     nights integer NOT NULL,
     service_fee_cents integer NOT NULL,
     total_cents integer NOT NULL,
@@ -364,12 +364,6 @@ CREATE TABLE units (
     size_m2 integer NOT NULL,
     max_occupancy integer,
     count integer NOT NULL,
-    base_price_cents integer,
-    one_night_price_cents integer,
-    one_week_price_cents integer,
-    three_months_price_cents integer,
-    six_months_price_cents integer,
-    twelve_months_price_cents integer,
     overview text,
     floor_plan_image_id bigint
 );
@@ -706,6 +700,13 @@ CREATE UNIQUE INDEX prices_unit_id_min_nights ON prices USING btree (unit_id, mi
 --
 
 CREATE INDEX properties_account_id ON properties USING btree (account_id);
+
+
+--
+-- Name: properties_city_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX properties_city_id ON properties USING btree (city_id);
 
 
 --

@@ -7,7 +7,7 @@ CREATE TABLE bookings(
   check_in date not null,
   check_out date not null,
   message text,
-  night_price_cents int not null,
+  per_night_cents int not null,
   nights int not null check (nights > 0),
   service_fee_cents int not null,
   total_cents int not null

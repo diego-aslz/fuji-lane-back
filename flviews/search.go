@@ -49,16 +49,16 @@ func searchUnit(u *flentities.Unit, nights int) map[string]interface{} {
 	e := flentities.NewEstimate(u, nights)
 
 	return map[string]interface{}{
-		"id":                 u.ID,
-		"name":               u.Name,
-		"slug":               u.Slug,
-		"bedrooms":           u.Bedrooms,
-		"bathrooms":          u.Bathrooms,
-		"sizeM2":             u.SizeM2,
-		"maxOccupancy":       u.MaxOccupancy,
-		"amenities":          listingAmenities(u.Amenities),
-		"images":             listingImages(u.Images),
-		"perNightPriceCents": e.NightPriceCents,
-		"totalCents":         e.TotalCents,
+		"id":            u.ID,
+		"name":          u.Name,
+		"slug":          u.Slug,
+		"bedrooms":      u.Bedrooms,
+		"bathrooms":     u.Bathrooms,
+		"sizeM2":        u.SizeM2,
+		"maxOccupancy":  u.MaxOccupancy,
+		"amenities":     listingAmenities(u.Amenities),
+		"images":        listingImages(u.Images),
+		"perNightCents": e.PerNightCents,
+		"totalCents":    e.TotalCents,
 	}
 }

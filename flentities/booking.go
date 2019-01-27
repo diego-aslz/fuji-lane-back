@@ -16,7 +16,7 @@ type Booking struct {
 	CheckIn         Date      `json:"checkIn"`
 	CheckOut        Date      `json:"checkOut"`
 	Message         *string   `json:"message"`
-	NightPriceCents int       `json:"nightPriceCents"`
+	PerNightCents   int       `json:"perNightCents"`
 	Nights          int       `json:"nights"`
 	ServiceFeeCents int       `json:"serviceFeeCents"`
 	TotalCents      int       `json:"totalCents"`
@@ -43,6 +43,6 @@ func (b *Booking) calculatePrice() {
 		return
 	}
 
-	b.NightPriceCents = e.NightPriceCents
+	b.PerNightCents = e.PerNightCents
 	b.TotalCents = e.TotalCents
 }

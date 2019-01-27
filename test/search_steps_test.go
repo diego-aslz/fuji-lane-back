@@ -10,9 +10,9 @@ import (
 )
 
 type searchUnit struct {
-	Name               string `json:"name"`
-	PerNightPriceCents int    `json:"perNightPriceCents"`
-	TotalCents         int    `json:"totalCents"`
+	Name          string `json:"name"`
+	PerNightCents int    `json:"perNightCents"`
+	TotalCents    int    `json:"totalCents"`
 }
 
 type searchProperty struct {
