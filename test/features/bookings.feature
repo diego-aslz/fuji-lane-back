@@ -26,7 +26,7 @@ Feature: Bookings
       | 2  | diego@selzlein.com   | Standard Apt | 2018-06-15 | 2018-06-16 | 1      |
       | 3  | djeison@selzlein.com | Standard Apt | 2018-07-09 | 2018-07-11 | 2      |
     When I list my bookings
-    Then the system should respond with "OK" and the following JSON:
+    Then I should receive an "OK" response with the following JSON:
       """
       [{
         "id": 2,
@@ -51,7 +51,7 @@ Feature: Bookings
       | 1  | diego@selzlein.com | Standard Apt | 2018-06-09 | 2018-06-11 | 2      |
       | 2  | diego@selzlein.com | Standard Apt | 2018-06-15 | 2018-06-16 | 1      |
     When I list my bookings for page "2"
-    Then the system should respond with "OK" and the following JSON:
+    Then I should receive an "OK" response with the following JSON:
       """
       []
       """
@@ -63,7 +63,7 @@ Feature: Bookings
       | CheckIn  | 2018-06-09   |
       | CheckOut | 2018-06-11   |
       | Message  | Nothing      |
-    Then the system should respond with "CREATED"
+    Then I should receive a "CREATED" response
     And I should have the following bookings:
       | User               | Unit         | CheckIn    | CheckOut   | Message | Nights | PerNightCents | ServiceFeeCents | TotalCents |
       | diego@selzlein.com | Standard Apt | 2018-06-09 | 2018-06-11 | Nothing | 2      | 11000         | 0               | 22000      |
@@ -72,7 +72,7 @@ Feature: Bookings
     Given it is currently "01 Jun 18 08:00"
     When I create the following booking:
       | Message | Nothing |
-    Then the system should respond with "UNPROCESSABLE ENTITY" and the following errors:
+    Then I should receive an "UNPROCESSABLE ENTITY" response with the following errors:
       | unit is required                   |
       | check in is required               |
       | check in should be in the future   |
@@ -92,7 +92,7 @@ Feature: Bookings
       | CheckIn  | 2018-06-09 |
       | CheckOut | 2018-06-11 |
       | Message  | Nothing    |
-    Then the system should respond with "UNPROCESSABLE ENTITY" and the following errors:
+    Then I should receive an "UNPROCESSABLE ENTITY" response with the following errors:
       | unit is invalid |
 
   Scenario Outline: Calculating Booking Prices
@@ -115,7 +115,7 @@ Feature: Bookings
       | Unit     | <Unit>     |
       | CheckIn  | <CheckIn>  |
       | CheckOut | <CheckOut> |
-    Then the system should respond with "CREATED"
+    Then I should receive a "CREATED" response
     And I should have the following bookings:
       | User               | Unit   | CheckIn   | CheckOut   | Nights   | PerNightCents | TotalCents |
       | diego@selzlein.com | <Unit> | <CheckIn> | <CheckOut> | <Nights> | <PerNight>    | <Total>    |

@@ -7,7 +7,7 @@ Feature: Email Sign Up
     When the following user signs up with his email:
       | email    | diego@selzlein.com |
       | password | 12345678           |
-    Then the system should respond with "CREATED" and the following body:
+    Then I should receive a "CREATED" response with the following body:
       | issuedAt   | 2018-06-01T08:00:00Z |
       | renewAfter | 2018-06-05T08:00:00Z |
       | expiresAt  | 2018-06-08T08:00:00Z |
@@ -19,7 +19,7 @@ Feature: Email Sign Up
     When the following user signs up with his email:
       | email    | diego   |
       | password | 1234567 |
-    Then the system should respond with "UNPROCESSABLE ENTITY" and the following errors:
+    Then I should receive an "UNPROCESSABLE ENTITY" response with the following errors:
       | Invalid email: diego                |
       | Invalid password: minimum size is 8 |
     And I should have no users
@@ -31,7 +31,7 @@ Feature: Email Sign Up
     When the following user signs up with his email:
       | email    | diego@selzlein.com |
       | password | 12345678           |
-    Then the system should respond with "UNPROCESSABLE ENTITY" and the following errors:
+    Then I should receive an "UNPROCESSABLE ENTITY" response with the following errors:
       | Invalid email: already in use |
     And I should have the following users:
       | Email              | Name                 | LastSignedIn         |

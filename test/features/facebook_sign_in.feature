@@ -15,7 +15,7 @@ Feature: Facebook Signing In
     Then I should have the following users:
       | Email              | Name           | FacebookID | LastSignedIn         |
       | diego@selzlein.com | Diego Selzlein | 123        | 2018-06-01T08:00:00Z |
-    And the system should respond with "OK" and the following body:
+    And I should receive an "OK" response with the following body:
       | issuedAt   | 2018-06-01T08:00:00Z |
       | renewAfter | 2018-06-05T08:00:00Z |
       | expiresAt  | 2018-06-08T08:00:00Z |
@@ -35,7 +35,7 @@ Feature: Facebook Signing In
     Then I should have the following users:
       | Email              | Name           | FacebookID | LastSignedIn         |
       | diego@selzlein.com | Diego Selzlein | 123        | 2018-06-01T08:00:00Z |
-    And the system should respond with "OK" and the following body:
+    And I should receive an "OK" response with the following body:
       | issuedAt   | 2018-06-01T08:00:00Z |
       | renewAfter | 2018-06-05T08:00:00Z |
       | expiresAt  | 2018-06-08T08:00:00Z |
@@ -55,7 +55,7 @@ Feature: Facebook Signing In
     Then I should have the following users:
       | Email              | Name           | FacebookID | LastSignedIn         |
       | diego@selzlein.com | Diego Selzlein | 123        | 2018-06-01T08:00:00Z |
-    And the system should respond with "OK" and the following body:
+    And I should receive an "OK" response with the following body:
       | issuedAt   | 2018-06-01T08:00:00Z |
       | renewAfter | 2018-06-05T08:00:00Z |
       | expiresAt  | 2018-06-08T08:00:00Z |
@@ -75,7 +75,7 @@ Feature: Facebook Signing In
     Then I should have the following users:
       | Email                    | Name           | FacebookID | LastSignedIn         |
       | diego+other@selzlein.com | Diego Selzlein | 123        | 2018-06-01T08:00:00Z |
-    And the system should respond with "OK" and the following body:
+    And I should receive an "OK" response with the following body:
       | issuedAt   | 2018-06-01T08:00:00Z     |
       | renewAfter | 2018-06-05T08:00:00Z     |
       | expiresAt  | 2018-06-08T08:00:00Z     |
@@ -87,7 +87,7 @@ Feature: Facebook Signing In
       | name        | Diego Selzlein     |
       | email       | diego@selzlein.com |
     Then I should have no users
-    And the system should respond with "UNAUTHORIZED" and the following errors:
+    And I should receive an "UNAUTHORIZED" response with the following errors:
       | You could not be authenticated |
 
   Scenario: Signing in with invalid token
@@ -100,5 +100,5 @@ Feature: Facebook Signing In
       | name        | Diego Selzlein     |
       | email       | diego@selzlein.com |
     Then I should have no users
-    And the system should respond with "UNAUTHORIZED" and the following errors:
+    And I should receive an "UNAUTHORIZED" response with the following errors:
       | You could not be authenticated |

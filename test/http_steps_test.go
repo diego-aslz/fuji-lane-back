@@ -270,10 +270,10 @@ func assertResponseHeaders(table *gherkin.DataTable) error {
 }
 
 func HTTPContext(s *godog.Suite) {
-	s.Step(`^the system should respond with "([^"]*)" and no body$`, assertResponseStatusAndNoBody)
-	s.Step(`^the system should respond with "([^"]*)" and the following body:$`, assertResponseStatusAndBody)
-	s.Step(`^the system should respond with "([^"]*)" and the following JSON:$`, assertResponseStatusAndJSON)
-	s.Step(`^the system should respond with "([^"]*)" and the following errors:$`, assertResponseStatusAndErrors)
-	s.Step(`^the system should respond with "([^"]*)"$`, assertResponseStatus)
-	s.Step(`^the system should respond with the following headers:$`, assertResponseHeaders)
+	s.Step(`^I should receive an? "([^"]*)" response with no body$`, assertResponseStatusAndNoBody)
+	s.Step(`^I should receive an? "([^"]*)" response with the following body:$`, assertResponseStatusAndBody)
+	s.Step(`^I should receive an? "([^"]*)" response with the following JSON:$`, assertResponseStatusAndJSON)
+	s.Step(`^I should receive an? "([^"]*)" response with the following errors:$`, assertResponseStatusAndErrors)
+	s.Step(`^I should receive an? "([^"]*)" response$`, assertResponseStatus)
+	s.Step(`^I should receive the following headers:$`, assertResponseHeaders)
 }

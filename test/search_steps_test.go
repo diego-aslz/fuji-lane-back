@@ -51,5 +51,5 @@ func assertSearchResults(status string, table *gherkin.DataTable) error {
 
 func SearchContext(s *godog.Suite) {
 	s.Step(`^I search for units with the following filters:$`, performGETWithQueryStep(flweb.SearchPath))
-	s.Step(`^the system should respond with "([^"]*)" and the following search results:$`, assertSearchResults)
+	s.Step(`^I should receive an? "([^"]*)" response with the following search results:$`, assertSearchResults)
 }

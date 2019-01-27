@@ -9,7 +9,7 @@ Feature: User Profile
       | Name     | Diego Selzlein        |
       | Email    | diego+fl@selzlein.com |
       | Password | 12345678              |
-    Then the system should respond with "OK"
+    Then I should receive an "OK" response
     And I should have the following users:
       | Email                 | Name           |
       | diego+fl@selzlein.com | Diego Selzlein |
@@ -23,7 +23,7 @@ Feature: User Profile
       | Name     | Diego Selzlein        |
       | Email    | diego+fl@selzlein.com |
       | Password | 123456789             |
-    Then the system should respond with "UNAUTHORIZED" and the following errors:
+    Then I should receive an "UNAUTHORIZED" response with the following errors:
       | Password is incorrect |
     And I should have the following users:
       | Email              | Name |
@@ -37,7 +37,7 @@ Feature: User Profile
     When I update my user details with:
       | Email    | diego+fl |
       | Password | 12345678 |
-    Then the system should respond with "UNPROCESSABLE ENTITY" and the following errors:
+    Then I should receive an "UNPROCESSABLE ENTITY" response with the following errors:
       | Invalid email: diego+fl |
     And I should have the following users:
       | Email              | Name |

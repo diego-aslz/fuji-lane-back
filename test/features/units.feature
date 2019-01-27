@@ -21,7 +21,7 @@ Feature: Units Management
       | SizeM2       | 52                          |
       | MaxOccupancy | 3                           |
       | Count        | 15                          |
-    Then the system should respond with "CREATED"
+    Then I should receive a "CREATED" response
     And I should have the following units:
       | Property      | Name         | Slug         | Bedrooms | SizeM2 | MaxOccupancy | Count | Overview                    |
       | ACME Downtown | Standard Apt | standard-apt | 1        | 52     | 3            | 15    | <strong>Big rooms!</strong> |
@@ -37,14 +37,14 @@ Feature: Units Management
       | SizeM2       | 52            |
       | MaxOccupancy | 3             |
       | Count        | 15            |
-    Then the system should respond with "UNPROCESSABLE ENTITY" and the following errors:
+    Then I should receive an "UNPROCESSABLE ENTITY" response with the following errors:
       | Name is already in use |
 
   Scenario: Adding an invalid unit
     When I add the following unit:
       | MaxOccupancy | 3                                            |
       | Overview     | <strong>Big rooms!<script></script></strong> |
-    Then the system should respond with "UNPROCESSABLE ENTITY" and the following errors:
+    Then I should receive an "UNPROCESSABLE ENTITY" response with the following errors:
       | property is required                  |
       | name is required                      |
       | bedrooms is required                  |
@@ -67,7 +67,7 @@ Feature: Units Management
       | SizeM2       | 52           |
       | MaxOccupancy | 3            |
       | Count        | 15           |
-    Then the system should respond with "NOT FOUND"
+    Then I should receive a "NOT FOUND" response
     And I should have no units
 
   Scenario: Updating an unit
@@ -87,7 +87,7 @@ Feature: Units Management
       | Prices           | 1: 11000, 2: 12000, 7: 40000, 30: 160000, 90: 350000, 180: 650000, 365: 1200000 |
       | FloorPlanImageID | 3                                                                               |
       | Overview         | <strong>Big windows!</strong>                                                   |
-    Then the system should respond with "OK"
+    Then I should receive an "OK" response
     And I should have the following units:
       | Property      | Name          | Slug          | Bedrooms | Bathrooms | SizeM2 | MaxOccupancy | Count | FloorPlanImageID | Overview                      |
       | ACME Downtown | Std Apartment | std-apartment | 2        | 3         | 50     | 2            | 20    | 3                | <strong>Big windows!</strong> |
@@ -114,7 +114,7 @@ Feature: Units Management
       | Standard Apt | 180       | 600000 |
     When I update unit "Standard Apt" with the following attributes:
       | Prices | 1: 9000, 7: 40000, 30: 155000, 180: 0 |
-    Then the system should respond with "OK"
+    Then I should receive an "OK" response
     And I should have the following prices:
       | Unit         | MinNights | Cents  |
       | Standard Apt | 1         | 9000   |
@@ -128,7 +128,7 @@ Feature: Units Management
       | ACME Downtown | Double Apt   | 1        | 52     | 3            | 15    |
     When I update unit "Double Apt" with the following attributes:
       | Name | Standard  Apt |
-    Then the system should respond with "UNPROCESSABLE ENTITY" and the following errors:
+    Then I should receive an "UNPROCESSABLE ENTITY" response with the following errors:
       | Name is already in use |
 
   Scenario: Updating an unit with invalid Overview
@@ -137,7 +137,7 @@ Feature: Units Management
       | ACME Downtown | Standard Apt | 1        | 52     | 3            | 15    |
     When I update unit "Standard Apt" with the following attributes:
       | Overview | <strong>Big windows!</strong><script></script> |
-    Then the system should respond with "UNPROCESSABLE ENTITY" and the following errors:
+    Then I should receive an "UNPROCESSABLE ENTITY" response with the following errors:
       | overview: script tags are not allowed |
 
   Scenario: Updating an unit that does not belong to me
@@ -156,7 +156,7 @@ Feature: Units Management
       | SizeM2       | 50            |
       | MaxOccupancy | 2             |
       | Count        | 20            |
-    Then the system should respond with "NOT FOUND"
+    Then I should receive a "NOT FOUND" response
     And I should have the following units:
       | Property    | Name         | Bedrooms | SizeM2 | MaxOccupancy | Count |
       | ACME Uptown | Standard Apt | 1        | 52     | 3            | 15    |
@@ -182,7 +182,7 @@ Feature: Units Management
       | MaxOccupancy     | 2             |
       | Count            | 20            |
       | FloorPlanImageID | 3             |
-    Then the system should respond with "UNPROCESSABLE ENTITY" and the following errors:
+    Then I should receive an "UNPROCESSABLE ENTITY" response with the following errors:
       | floor plan image does not exist |
     And I should have the following units:
       | Property        | Name               | Bedrooms | SizeM2 | MaxOccupancy | Count |
@@ -207,7 +207,7 @@ Feature: Units Management
       | air_conditioning | Air Conditioning |
       | custom           | Soap             |
       | custom           | Windows          |
-    Then the system should respond with "OK"
+    Then I should receive an "OK" response
     And I should have the following amenities:
       | Unit         | Type             | Name    |
       | Standard Apt | desk             |         |
@@ -239,7 +239,7 @@ Feature: Units Management
       | ID | Unit         | Type      |
       | 1  | Standard Apt | bathrobes |
     When I get details for unit "Standard Apt"
-    Then the system should respond with "OK" and the following JSON:
+    Then I should receive an "OK" response with the following JSON:
       """
       {
         "id": 2,
@@ -322,7 +322,7 @@ Feature: Units Management
       | ID | Property    | Name         | Bedrooms | SizeM2 | MaxOccupancy | Count |
       | 2  | ACME Uptown | Standard Apt | 1        | 52     | 3            | 15    |
     When I get details for unit "Standard Apt"
-    Then the system should respond with "NOT FOUND"
+    Then I should receive a "NOT FOUND" response
 
   Scenario: Publishing my unit
     Given the following units:
@@ -339,7 +339,7 @@ Feature: Units Management
       | Standard Apt | bathrobes |
     And it is currently "05 Jun 18 08:00"
     When I publish unit "2"
-    Then the system should respond with "OK"
+    Then I should receive an "OK" response
     And I should have the following units:
       | ID | Name         | PublishedAt          | EverPublished |
       | 2  | Standard Apt | 2018-06-05T08:00:00Z | true          |
@@ -355,7 +355,7 @@ Feature: Units Management
       | UnitID | MinNights | Cents |
       | 2      | 7         | 11000 |
     When I publish unit "2"
-    Then the system should respond with "UNPROCESSABLE ENTITY" and the following errors:
+    Then I should receive an "UNPROCESSABLE ENTITY" response with the following errors:
       | Name is required                 |
       | Bedrooms is required             |
       | Size is required                 |

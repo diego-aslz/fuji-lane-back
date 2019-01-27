@@ -30,7 +30,7 @@ Feature: Dashboard
     When I get dashboard details for:
       | since | 2018-06-01T00:00:00Z |
       | until | 2018-06-07T00:00:00Z |
-    Then the system should respond with "OK" and the following JSON:
+    Then I should receive an "OK" response with the following JSON:
       """
       {
         "totals": {

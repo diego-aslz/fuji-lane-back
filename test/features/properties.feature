@@ -17,7 +17,7 @@ Feature: Properties Management
 
   Scenario: Adding a new property
     When I add a new property
-    Then the system should respond with "CREATED"
+    Then I should receive a "CREATED" response
     And I should have the following properties:
       | Account          |
       | Diego Apartments |
@@ -28,7 +28,7 @@ Feature: Properties Management
       | djeison@selzlein.com | Djeison Selzlein |
     And I am authenticated with "djeison@selzlein.com"
     When I add a new property
-    Then the system should respond with "PRECONDITION REQUIRED" and the following errors:
+    Then I should receive a "PRECONDITION REQUIRED" response with the following errors:
       | You need a company account to perform this action |
     And I should have no properties
 
@@ -60,7 +60,7 @@ Feature: Properties Management
       | ID | Unit         | Type   |
       | 2  | Standard Apt | toilet |
     When I get details for property "ACME Downtown"
-    Then the system should respond with "OK" and the following JSON:
+    Then I should receive an "OK" response with the following JSON:
       """
       {
         "id": 1,
@@ -149,7 +149,7 @@ Feature: Properties Management
       | Account         | Name          | Address1 | Address2 | Address3   | City  | PostalCode | Country |
       | John Apartments | ACME Downtown | Add. One | Add. Two | Add. Three | Osaka | 223344     | Japan   |
     When I get details for property "ACME Downtown"
-    Then the system should respond with "NOT FOUND"
+    Then I should receive a "NOT FOUND" response
 
   Scenario: Updating my property
     Given the following properties:
@@ -171,7 +171,7 @@ Feature: Properties Management
       | Overview        | <strong>Good place!</strong> |
       | Latitude        | 34.69374                     |
       | Longitude       | 135.50218                    |
-    Then the system should respond with "OK"
+    Then I should receive an "OK" response
     And I should have the following properties:
       | Account          | Name          | Slug          | Address1 | Address2 | Address3   | City  | PostalCode | Country | MinimumStay | Deposit | Cleaning | NearestAirport | NearestSubway | NearbyLocations | Overview                     | Latitude | Longitude |
       | Diego Apartments | ACME Downtown | acme-downtown | Add. One | Add. Two | Add. Three | Osaka | 223344     | Japan   | 3           | 150     | daily    | IGU            | Central Park  | Pharmacy        | <strong>Good place!</strong> | 34.69374 | 135.50218 |
@@ -188,7 +188,7 @@ Feature: Properties Management
       | 2  | Other Apartments | ACME |
     When I update the property "1" with the following details:
       | Name | ACME |
-    Then the system should respond with "UNPROCESSABLE ENTITY" and the following errors:
+    Then I should receive an "UNPROCESSABLE ENTITY" response with the following errors:
       | Name is already in use |
 
   Scenario: Updating my property with a name that will create a duplicated slug
@@ -203,7 +203,7 @@ Feature: Properties Management
       | 2  | Other Apartments | ACME Down |
     When I update the property "1" with the following details:
       | Name | ACME  Down |
-    Then the system should respond with "UNPROCESSABLE ENTITY" and the following errors:
+    Then I should receive an "UNPROCESSABLE ENTITY" response with the following errors:
       | Name is already in use |
 
   Scenario: Updating my property with invalid Overview
@@ -212,7 +212,7 @@ Feature: Properties Management
       | 1  | Diego Apartments |
     When I update the property "1" with the following details:
       | Overview | <strong>Big windows!</strong><script></script> |
-    Then the system should respond with "UNPROCESSABLE ENTITY" and the following errors:
+    Then I should receive an "UNPROCESSABLE ENTITY" response with the following errors:
       | overview: script tags are not allowed |
 
   Scenario: Updating a property that does not belong to me
@@ -224,7 +224,7 @@ Feature: Properties Management
       | 1  | Other Apartments |
     When I update the property "1" with the following details:
       | Name | ACME Downtown |
-    Then the system should respond with "NOT FOUND"
+    Then I should receive a "NOT FOUND" response
     And I should have the following properties:
       | Account          | Name |
       | Other Apartments |      |
@@ -247,7 +247,7 @@ Feature: Properties Management
       | restaurant | Restaurant    |
       | custom     | Casino        |
       | custom     | All Inclusive |
-    Then the system should respond with "OK"
+    Then I should receive an "OK" response
     And I should have the following amenities:
       | Property      | Type       | Name          |
       | ACME Downtown | pool       |               |
@@ -265,7 +265,7 @@ Feature: Properties Management
       | custom  | Casino  |
       | custom  | Casino  |
       | custom  |         |
-    Then the system should respond with "OK"
+    Then I should receive an "OK" response
     And I should have the following amenities:
       | Property      | Type   | Name   |
       | ACME Downtown | custom | Casino |
@@ -282,7 +282,7 @@ Feature: Properties Management
       | ACME Downtown | custom | Breakfast |
     And it is currently "05 Jun 18 08:00"
     When I publish property "1"
-    Then the system should respond with "OK"
+    Then I should receive an "OK" response
     And I should have the following properties:
       | ID | Account          | Name          | PublishedAt          | EverPublished |
       | 1  | Diego Apartments | ACME Downtown | 2018-06-05T08:00:00Z | true          |
@@ -295,7 +295,7 @@ Feature: Properties Management
       | ID | PropertyID | Uploaded | Name      | URL                                | Type       | Size    | Position |
       | 1  | 1          | false    | front.jpg | https://s3.amazonaws.com/front.jpg | image/jpeg | 1000000 | 2        |
     When I publish property "1"
-    Then the system should respond with "UNPROCESSABLE ENTITY" and the following errors:
+    Then I should receive an "UNPROCESSABLE ENTITY" response with the following errors:
       | Name is required                 |
       | Address is incomplete            |
       | At least one amenity is required |
@@ -328,7 +328,7 @@ Feature: Properties Management
       | Double-bed Apt | 1         | 12000 |
       | Double-bed Apt | 2         | 22000 |
     When I list my properties
-    Then the system should respond with "OK" and the following JSON:
+    Then I should receive an "OK" response with the following JSON:
       """
       [{
         "id": 1,

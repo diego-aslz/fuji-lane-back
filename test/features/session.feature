@@ -2,7 +2,7 @@ Feature: Session
 
   Scenario: Accessing a protected resource without an authentication token
     When I add a new property
-    Then the system should respond with "UNAUTHORIZED"
+    Then I should receive an "UNAUTHORIZED" response
     And I should have no properties
 
   Scenario: Accessing a protected resource with an authentication token for an invalid user
@@ -12,7 +12,7 @@ Feature: Session
       | RenewAfter | 2018-06-05T08:00:00Z |
       | ExpiresAt  | 2018-06-08T08:00:00Z |
     When I add a new property
-    Then the system should respond with "UNAUTHORIZED" and the following errors:
+    Then I should receive an "UNAUTHORIZED" response with the following errors:
       | You need to sign in |
     And I should have no properties
 
@@ -26,7 +26,7 @@ Feature: Session
       | RenewAfter | 2018-05-25T08:00:00Z |
       | ExpiresAt  | 2018-05-28T08:00:00Z |
     When I add a new property
-    Then the system should respond with "UNAUTHORIZED" and the following errors:
+    Then I should receive an "UNAUTHORIZED" response with the following errors:
       | Your session expired |
     And I should have no properties
 
@@ -44,7 +44,7 @@ Feature: Session
     When I sign in with:
       | email    | diego@selzlein.com |
       | password | 12345678           |
-    And the system should respond with "OK" and the following JSON:
+    And I should receive an "OK" response with the following JSON:
       """
       {
         "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJFbWFpbCI6ImRpZWdvQHNlbHpsZWluLmNvbSIsIkV4cGlyZXNBdCI6MTUyODQ0NDgwMCwiSXNzdWVkQXQiOjE1Mjc4NDAwMDAsIlJlbmV3QWZ0ZXIiOjE1MjgxODU2MDB9.k1dEBzwNMxYFsaBjMzkJFHctUk6Y-txk_GfrR6NX1Vk",
@@ -75,7 +75,7 @@ Feature: Session
       | RenewAfter | 2018-06-05T08:00:00Z |
       | ExpiresAt  | 2018-06-08T08:00:00Z |
     When I renew the session token
-    Then the system should respond with "OK" and the following body:
+    Then I should receive an "OK" response with the following body:
       | issuedAt   | 2018-06-05T08:00:00Z |
       | renewAfter | 2018-06-09T08:00:00Z |
       | expiresAt  | 2018-06-12T08:00:00Z |
@@ -91,4 +91,4 @@ Feature: Session
       | RenewAfter | 2018-06-05T08:00:00Z |
       | ExpiresAt  | 2018-06-08T08:00:00Z |
     When I renew the session token
-    Then the system should respond with "NOT MODIFIED" and no body
+    Then I should receive a "NOT MODIFIED" response with no body

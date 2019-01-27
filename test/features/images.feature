@@ -24,7 +24,7 @@ Feature: Images Management
       | Type     | image/jpeg    |
       | <Target> | <Name>        |
       | Position | 3             |
-    Then the system should respond with "OK" and the following image:
+    Then I should receive an "OK" response with the following image:
       | Name | building.jpg                                                                                                                                                                                                                                                                                         |
       | URL  | https://fujilane-test.s3.amazonaws.com/public/<Collection>/<ID>/images/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=CREDENTIAL&X-Amz-Date=DATE&X-Amz-Expires=3600&X-Amz-SignedHeaders=content-length%3Bcontent-type%3Bhost%3Bx-amz-acl&X-Amz-Signature=SIGNATURE |
     And I should have the following images:
@@ -47,7 +47,7 @@ Feature: Images Management
       | Type     | text/csv        |
       | Property | ACME Skyscraper |
       | Position | 1               |
-    Then the system should respond with "UNPROCESSABLE ENTITY" and the following errors:
+    Then I should receive an "UNPROCESSABLE ENTITY" response with the following errors:
       | name is required                           |
       | Invalid size: maximum is 20971520          |
       | Invalid type: needs to be JPEG, PNG or GIF |
@@ -69,7 +69,7 @@ Feature: Images Management
       | Type     | image/png       |
       | Property | ACME Skyscraper |
       | Position | 1               |
-    Then the system should respond with "PRECONDITION REQUIRED" and the following errors:
+    Then I should receive a "PRECONDITION REQUIRED" response with the following errors:
       | You need a company account to perform this action |
 
   Scenario Outline: Adding an image to a target I don't have access to
@@ -89,7 +89,7 @@ Feature: Images Management
       | Type     | image/png    |
       | <Target> | <Name>       |
       | Position | 1            |
-    Then the system should respond with "UNPROCESSABLE ENTITY" and the following errors:
+    Then I should receive an "UNPROCESSABLE ENTITY" response with the following errors:
       | Could not find <Target> |
 
     Examples:
@@ -109,7 +109,7 @@ Feature: Images Management
       | Standard Apt | building.jpg | https://fujilane-test.s3.amazonaws.com/public/properties/20/images/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa | false    |
     And I am authenticated with "diego@selzlein.com"
     When I mark image "building.jpg" as uploaded
-    Then the system should respond with "OK"
+    Then I should receive an "OK" response
     And I should have the following images:
       | Name         | Uploaded |
       | building.jpg | true     |
@@ -123,7 +123,7 @@ Feature: Images Management
       | ACME Skyscraper | building.jpg | https://fujilane-test.s3.amazonaws.com/public/properties/20/images/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa | false    |
     And I am authenticated with "diego@selzlein.com"
     When I mark image "building.jpg" as uploaded
-    Then the system should respond with "OK"
+    Then I should receive an "OK" response
     And I should have the following images:
       | Name         | Uploaded |
       | building.jpg | true     |
@@ -137,7 +137,7 @@ Feature: Images Management
       | ACME Skyscraper | building.jpg | https://fujilane-test.s3.amazonaws.com/public/properties/20/images/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa |
     And I am authenticated with "diego@selzlein.com"
     When I remove the image "building.jpg"
-    Then the system should respond with "OK"
+    Then I should receive an "OK" response
     And I should have no images
 
   Scenario: Removing an unit image
@@ -152,7 +152,7 @@ Feature: Images Management
       | Standard Apt | building.jpg | https://fujilane-test.s3.amazonaws.com/public/properties/20/images/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa |
     And I am authenticated with "diego@selzlein.com"
     When I remove the image "building.jpg"
-    Then the system should respond with "OK"
+    Then I should receive an "OK" response
     And I should have no images
 
   Scenario: Removing a floor plan image
@@ -173,7 +173,7 @@ Feature: Images Management
       | FloorPlanImageID | 4 |
     And I am authenticated with "diego@selzlein.com"
     When I remove the image "building3.jpg"
-    Then the system should respond with "OK"
+    Then I should receive an "OK" response
     And I should have the following images:
       | Name          |
       | building4.jpg |
@@ -194,7 +194,7 @@ Feature: Images Management
       | ACME Skyscraper | building.jpg | https://fujilane-test.s3.amazonaws.com/public/properties/20/images/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa |
     And I am authenticated with "diego@selzlein.com"
     When I remove the image "building.jpg"
-    Then the system should respond with "NOT FOUND"
+    Then I should receive a "NOT FOUND" response
     And I should have the following images:
       | Name         |
       | building.jpg |

@@ -49,7 +49,7 @@ func amenityToTableRow(r *flentities.Repository, a interface{}) (interface{}, er
 func AmenityContext(s *godog.Suite) {
 	s.Step(`^the following amenities:$`, createFromTableStep(new(amenityRow), tableRowToAmenity))
 	s.Step(`^I list amenity types for "([^"]*)"$`, requestAmenities)
-	s.Step(`^the system should respond with "([^"]*)" and the following amenity types:$`,
+	s.Step(`^I should receive an "([^"]*)" response with the following amenity types:$`,
 		assertResponseStatusAndListStep(&[]*flentities.AmenityType{}))
 	s.Step(`^I should have the following amenities:$`, assertDatabaseRecordsStep(&[]*flentities.Amenity{}, amenityToTableRow))
 }

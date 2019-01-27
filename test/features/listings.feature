@@ -55,7 +55,7 @@ Feature: Listings
       | Unit         | Type      |
       | Standard Apt | bathrobes |
     When I get listing details for "ACME Downtown"
-    Then the system should respond with "OK" and the following JSON:
+    Then I should receive an "OK" response with the following JSON:
       """
       {
         "address1": "88 Tai Tam Reservoir Rd",
@@ -147,7 +147,7 @@ Feature: Listings
       | ID | Property      | Name       | Bedrooms | Bathrooms | SizeM2 | MaxOccupancy | Count | PublishedAt          |
       | 11 | ACME Downtown | Double Apt | 2        | 2         | 62     | 6            | 10    | 2018-06-01T08:00:00Z |
     When I get listing details for "ACME Downtown"
-    Then the system should respond with "NOT FOUND"
+    Then I should receive a "NOT FOUND" response
 
   Scenario: Getting Listing Details for a published Property with no published Units
     Given the following properties:
@@ -157,7 +157,7 @@ Feature: Listings
       | ID | Property      | Name       | Bedrooms | Bathrooms | SizeM2 | MaxOccupancy | Count |
       | 11 | ACME Downtown | Double Apt | 2        | 2         | 62     | 6            | 10    |
     When I get listing details for "ACME Downtown"
-    Then the system should respond with "NOT FOUND"
+    Then I should receive a "NOT FOUND" response
 
   Scenario: Getting Listing Details for a not published Property as its owner
     Given the following users:
@@ -171,7 +171,7 @@ Feature: Listings
       | ID | Property      | Name       | Bedrooms | Bathrooms | SizeM2 | MaxOccupancy | Count | PublishedAt          |
       | 11 | ACME Downtown | Double Apt | 2        | 2         | 62     | 6            | 10    | 2018-06-01T08:00:00Z |
     When I get listing details for "ACME Downtown"
-    Then the system should respond with "OK"
+    Then I should receive an "OK" response
 
   Scenario: Getting Listing Details for a published Property with no published Units as its owner
     Given the following users:
@@ -185,4 +185,4 @@ Feature: Listings
       | ID | Property      | Name       | Bedrooms | Bathrooms | SizeM2 | MaxOccupancy | Count |
       | 11 | ACME Downtown | Double Apt | 2        | 2         | 62     | 6            | 10    |
     When I get listing details for "ACME Downtown"
-    Then the system should respond with "OK"
+    Then I should receive an "OK" response

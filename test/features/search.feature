@@ -47,7 +47,7 @@ Feature: Searching for Units
       | Standard Apt | bathrobes |
     When I search for units with the following filters:
       | cityID | 2 |
-    Then the system should respond with "OK" and the following JSON:
+    Then I should receive an "OK" response with the following JSON:
       """
       [{
         "address1": "88 Tai Tam Reservoir Rd",
@@ -103,7 +103,7 @@ Feature: Searching for Units
         }]
       }]
       """
-    And the system should respond with the following headers:
+    And I should receive the following headers:
       | Total-Properties-Count | 1     |
       | Min-Per-Night-Cents    | 10000 |
       | Max-Per-Night-Cents    | 12000 |
@@ -126,10 +126,10 @@ Feature: Searching for Units
       | Penthouse    | 1         | 80000 |
     When I search for units with the following filters:
       | cityID | 2 |
-    Then the system should respond with "OK" and the following search results:
+    Then I should receive an "OK" response with the following search results:
       | PropertyName     | Name       | PerNightCents | TotalCents |
       | Awesome Property | Double Apt | 12000         | 12000      |
-    And the system should respond with the following headers:
+    And I should receive the following headers:
       | Total-Properties-Count | 1     |
       | Min-Per-Night-Cents    | 12000 |
       | Max-Per-Night-Cents    | 12000 |
@@ -145,11 +145,11 @@ Feature: Searching for Units
     When I search for units with the following filters:
       | cityID | 2 |
       | page   | 2 |
-    Then the system should respond with "OK" and the following JSON:
+    Then I should receive an "OK" response with the following JSON:
       """
       []
       """
-    And the system should respond with the following headers:
+    And I should receive the following headers:
       | Total-Properties-Count | 1     |
       | Min-Per-Night-Cents    | 12000 |
       | Max-Per-Night-Cents    | 12000 |
@@ -169,11 +169,11 @@ Feature: Searching for Units
     When I search for units with the following filters:
       | cityID   | 2 |
       | bedrooms | 2 |
-    Then the system should respond with "OK" and the following search results:
+    Then I should receive an "OK" response with the following search results:
       | PropertyName     | Name       | PerNightCents | TotalCents |
       | Awesome Property | Double Apt | 12000         | 12000      |
       | Awesome Property | Triple Apt | 20000         | 20000      |
-    And the system should respond with the following headers:
+    And I should receive the following headers:
       | Total-Properties-Count | 1     |
       | Min-Per-Night-Cents    | 12000 |
       | Max-Per-Night-Cents    | 20000 |
@@ -193,11 +193,11 @@ Feature: Searching for Units
     When I search for units with the following filters:
       | cityID    | 2 |
       | bathrooms | 2 |
-    Then the system should respond with "OK" and the following search results:
+    Then I should receive an "OK" response with the following search results:
       | PropertyName     | Name       | PerNightCents | TotalCents |
       | Awesome Property | Double Apt | 12000         | 12000      |
       | Awesome Property | Triple Apt | 20000         | 20000      |
-    And the system should respond with the following headers:
+    And I should receive the following headers:
       | Total-Properties-Count | 1     |
       | Min-Per-Night-Cents    | 12000 |
       | Max-Per-Night-Cents    | 20000 |
@@ -222,11 +222,11 @@ Feature: Searching for Units
       | cityID   | 2          |
       | checkIn  | 2019-01-01 |
       | checkOut | 2019-01-03 |
-    Then the system should respond with "OK" and the following search results:
+    Then I should receive an "OK" response with the following search results:
       | PropertyName     | Name         | PerNightCents | TotalCents |
       | Awesome Property | Double Apt   | 10000         | 20000      |
       | Awesome Property | Standard Apt | 11000         | 22000      |
-    And the system should respond with the following headers:
+    And I should receive the following headers:
       | Total-Properties-Count | 1     |
       | Min-Per-Night-Cents    | 10000 |
       | Max-Per-Night-Cents    | 11000 |
@@ -254,10 +254,10 @@ Feature: Searching for Units
       | cityID        | 2     |
       | minPriceCents | 9000  |
       | maxPriceCents | 11000 |
-    Then the system should respond with "OK" and the following search results:
+    Then I should receive an "OK" response with the following search results:
       | PropertyName     | Name         | PerNightCents | TotalCents |
       | Awesome Property | Standard Apt | 11000         | 11000      |
-    And the system should respond with the following headers:
+    And I should receive the following headers:
       | Total-Properties-Count | 2     |
       | Min-Per-Night-Cents    | 5000  |
       | Max-Per-Night-Cents    | 50000 |
@@ -287,11 +287,11 @@ Feature: Searching for Units
       | checkOut      | 2019-01-08 |
       | minPriceCents | 9000       |
       | maxPriceCents | 11000      |
-    Then the system should respond with "OK" and the following search results:
+    Then I should receive an "OK" response with the following search results:
       | PropertyName     | Name         | PerNightCents | TotalCents |
       | Awesome Property | Double Apt   | 9857          | 69000      |
       | Awesome Property | Standard Apt | 10000         | 70000      |
-    And the system should respond with the following headers:
+    And I should receive the following headers:
       | Total-Properties-Count | 2     |
       | Min-Per-Night-Cents    | 5000  |
       | Max-Per-Night-Cents    | 50000 |

@@ -5,6 +5,6 @@ Feature: Countries
       | ID | Name      |
       | 1  | Hong Kong |
     When I list countries
-    Then the system should respond with "OK" and the following countries:
+    Then I should receive an "OK" response with the following countries:
       | ID | Name      |
       | 1  | Hong Kong |

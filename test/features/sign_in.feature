@@ -8,7 +8,7 @@ Feature: Signing In
     When I sign in with:
       | email    | diego@selzlein.com |
       | password | 12345678           |
-    Then the system should respond with "OK" and the following body:
+    Then I should receive an "OK" response with the following body:
       | issuedAt   | 2018-06-01T08:00:00Z |
       | renewAfter | 2018-06-05T08:00:00Z |
       | expiresAt  | 2018-06-08T08:00:00Z |
@@ -23,7 +23,7 @@ Feature: Signing In
     When I sign in with:
       | email    | diego@selzlein.com |
       | password | 123456789          |
-    Then the system should respond with "UNAUTHORIZED" and the following errors:
+    Then I should receive an "UNAUTHORIZED" response with the following errors:
       | Invalid email or password |
     And I should have the following users:
       | Email              | Name                 | LastSignedIn         |
@@ -36,7 +36,7 @@ Feature: Signing In
     When I sign in with:
       | email    | dieg@selzlein.com |
       | password | 12345678          |
-    Then the system should respond with "UNAUTHORIZED" and the following errors:
+    Then I should receive an "UNAUTHORIZED" response with the following errors:
       | Invalid email or password |
     And I should have the following users:
       | Email              | Name                 | LastSignedIn         |

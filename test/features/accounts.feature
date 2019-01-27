@@ -13,7 +13,7 @@ Feature: Accounts Management
       | Name     | Diego Apartments  |
       | Phone    | +55 44 99999-9999 |
       | Country  | Japan             |
-    Then the system should respond with "CREATED" and the following body:
+    Then I should receive a "CREATED" response with the following body:
       | name  | Diego Apartments  |
       | phone | +55 44 99999-9999 |
     And I should have the following accounts:

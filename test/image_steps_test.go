@@ -158,5 +158,5 @@ func ImageContext(s *godog.Suite) {
 	s.Step(`^I request an URL to upload the following image:$`, requestImagesCreate)
 	s.Step(`^I remove the image "([^"]*)"$`, requestPropertiesImagesDestroy)
 	s.Step(`^I should have no images$`, assertNoDatabaseRecordsStep(&flentities.Image{}))
-	s.Step(`^the system should respond with "([^"]*)" and the following image:$`, assertResponseStatusAndImage)
+	s.Step(`^I should receive an? "([^"]*)" response with the following image:$`, assertResponseStatusAndImage)
 }

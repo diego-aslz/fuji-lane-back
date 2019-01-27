@@ -8,6 +8,6 @@ Feature: Cities
       | ID | Country | Name  | Latitude | Longitude |
       | 10 | Japan   | Osaka | 90       | 100       |
     When I list cities
-    Then the system should respond with "OK" and the following cities:
+    Then I should receive an "OK" response with the following cities:
       | ID | CountryID | Name  | Latitude | Longitude |
       | 10 | 1         | Osaka | 90       | 100       |
