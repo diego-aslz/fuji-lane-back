@@ -2,7 +2,8 @@ package flentities
 
 import "time"
 
-const perNightPriceSQL = "prices.cents / prices.min_nights"
+// PerNightPriceSQL is the expression we use to calculate the Per Night for a Price in the database
+const PerNightPriceSQL = "prices.cents / prices.min_nights"
 
 // Price represents a unit price under specific conditions
 type Price struct {

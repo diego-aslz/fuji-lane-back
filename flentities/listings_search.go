@@ -47,12 +47,12 @@ func (f *ListingsSearchFilters) pricesJoin() (string, []interface{}) {
 	args = append(args, f.Nights())
 
 	if f.MinPriceCents > 0 {
-		join += " AND " + perNightPriceSQL + " >= ?"
+		join += " AND " + PerNightPriceSQL + " >= ?"
 		args = append(args, f.MinPriceCents)
 	}
 
 	if f.MaxPriceCents > 0 {
-		join += " AND " + perNightPriceSQL + " <= ?"
+		join += " AND " + PerNightPriceSQL + " <= ?"
 		args = append(args, f.MaxPriceCents)
 	}
 
@@ -119,9 +119,9 @@ func (s ListingsSearch) addMetadata(unitConditions *gorm.DB, result *ListingsSea
 		") best_price ON best_price.unit_id = units.id"
 
 	selects := "COUNT(distinct property_id)"
-	selects += ", ROUND(MIN(" + perNightPriceSQL + "))"
-	selects += ", ROUND(MAX(" + perNightPriceSQL + "))"
-	selects += ", ROUND(AVG(" + perNightPriceSQL + "))"
+	selects += ", ROUND(MIN(" + PerNightPriceSQL + "))"
+	selects += ", ROUND(MAX(" + PerNightPriceSQL + "))"
+	selects += ", ROUND(AVG(" + PerNightPriceSQL + "))"
 
 	rows, err := unitConditions.
 		Model(&Unit{}).
