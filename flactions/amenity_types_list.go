@@ -16,17 +16,15 @@ func (a *AmenityTypesList) Perform() {
 	target := a.Param("target")
 	a.Diagnostics().Add("target", target)
 
-	if target != "properties" && target != "units" {
+	var types []*flentities.AmenityType
+
+	if target == "properties" {
+		types = flentities.PropertyAmenityTypes
+	} else if target == "units" {
+		types = flentities.UnitAmenityTypes
+	} else {
 		a.RespondNotFound()
 		return
-	}
-
-	types := []*flentities.AmenityType{}
-
-	for _, amType := range flentities.AmenityTypes {
-		if target == "properties" && amType.ForProperties || target == "units" && amType.ForUnits {
-			types = append(types, amType)
-		}
 	}
 
 	a.Respond(http.StatusOK, types)

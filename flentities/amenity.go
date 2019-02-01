@@ -7,30 +7,34 @@ import (
 
 // AmenityType represents a recognized amenity type
 type AmenityType struct {
-	Code          string `json:"code"`
-	Name          string `json:"name"`
-	ForProperties bool   `json:"-"`
-	ForUnits      bool   `json:"-"`
+	Code string `json:"code"`
+	Name string `json:"name"`
 }
 
-// AmenityTypes supported by the system
-var AmenityTypes = []*AmenityType{
-	{"daycare", "Daycare", true, false},
-	{"gym", "Gym", true, false},
-	{"meeting_rooms", "Meeting Rooms", true, false},
-	{"pool", "Pool", true, false},
-	{"restaurant", "Restaurant", true, false},
-
-	{"air_conditioning", "Air Conditioning", false, true},
-	{"bathrobes", "Bathrobes", false, true},
-	{"blackout_curtains", "Blackout Curtains", false, true},
-	{"housekeeping", "Daily Housekeeping", false, true},
-	{"desk", "Desk", false, true},
-	{"dvd", "DVD Player", false, true},
-	{"minibar", "Minibar", false, true},
-	{"phone", "Phone", false, true},
-	{"toilet", "Toilet", false, true},
+// PropertyAmenityTypes supported by the system
+var PropertyAmenityTypes = []*AmenityType{
+	{"daycare", "Daycare"},
+	{"gym", "Gym"},
+	{"meeting_rooms", "Meeting Rooms"},
+	{"pool", "Pool"},
+	{"restaurant", "Restaurant"},
 }
+
+// UnitAmenityTypes supported by the system
+var UnitAmenityTypes = []*AmenityType{
+	{"air_conditioning", "Air Conditioning"},
+	{"bathrobes", "Bathrobes"},
+	{"blackout_curtains", "Blackout Curtains"},
+	{"housekeeping", "Daily Housekeeping"},
+	{"desk", "Desk"},
+	{"dvd", "DVD Player"},
+	{"minibar", "Minibar"},
+	{"phone", "Phone"},
+	{"toilet", "Toilet"},
+}
+
+// AmenityTypes are all amenity types supported
+var AmenityTypes = append(PropertyAmenityTypes, UnitAmenityTypes...)
 
 // Amenity associates a Property or Unit to an amenity type
 type Amenity struct {
