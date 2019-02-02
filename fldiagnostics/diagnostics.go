@@ -24,7 +24,12 @@ func (d *Diagnostics) AddQuoted(key, value string) *Diagnostics {
 
 // AddError adds an error message
 func (d *Diagnostics) AddError(err error) *Diagnostics {
-	return d.AddQuoted("error", err.Error())
+	return d.AddErrorAs("error", err)
+}
+
+// AddErrorAs adds an error with a custom key
+func (d *Diagnostics) AddErrorAs(key string, err error) *Diagnostics {
+	return d.AddQuoted(key, err.Error())
 }
 
 // AddJSON converts the value to JSON and adds it

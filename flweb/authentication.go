@@ -72,8 +72,7 @@ func loadSession(next contextFunc) contextFunc {
 
 			user, err := c.repository.FindUserByEmail(session.Email)
 			if err != nil {
-				c.Diagnostics().AddJSON("session", session).AddQuoted("reason", "Unable to load user")
-				c.ServerError(err)
+				c.Diagnostics().AddJSON("session", session).AddErrorAs("session_user_load_failed", err)
 				return
 			}
 
