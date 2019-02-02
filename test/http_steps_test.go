@@ -30,6 +30,19 @@ func assertResponseStatusAndNoBody(status string) error {
 	return nil
 }
 
+func assertResponseStatusAndEmptyList(status string) error {
+	if err := assertResponseStatus(status); err != nil {
+		return err
+	}
+
+	body := response.Body.String()
+	if body != "[]" {
+		return fmt.Errorf("Expected no body to be an empty list, got %s", body)
+	}
+
+	return nil
+}
+
 func assertResponseStatusAndBody(status string, table *gherkin.DataTable) error {
 	if err := assertResponseStatus(status); err != nil {
 		return err
@@ -271,6 +284,7 @@ func assertResponseHeaders(table *gherkin.DataTable) error {
 
 func HTTPContext(s *godog.Suite) {
 	s.Step(`^I should receive an? "([^"]*)" response with no body$`, assertResponseStatusAndNoBody)
+	s.Step(`^I should receive an? "([^"]*)" response with an empty list$`, assertResponseStatusAndEmptyList)
 	s.Step(`^I should receive an? "([^"]*)" response with the following body:$`, assertResponseStatusAndBody)
 	s.Step(`^I should receive an? "([^"]*)" response with the following JSON:$`, assertResponseStatusAndJSON)
 	s.Step(`^I should receive an? "([^"]*)" response with the following errors:$`, assertResponseStatusAndErrors)

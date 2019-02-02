@@ -119,9 +119,9 @@ func (s ListingsSearch) addMetadata(unitConditions *gorm.DB, result *ListingsSea
 		") best_price ON best_price.unit_id = units.id"
 
 	selects := "COUNT(distinct property_id)"
-	selects += ", ROUND(MIN(" + PerNightPriceSQL + "))"
-	selects += ", ROUND(MAX(" + PerNightPriceSQL + "))"
-	selects += ", ROUND(AVG(" + PerNightPriceSQL + "))"
+	selects += ", COALESCE(ROUND(MIN(" + PerNightPriceSQL + ")), 0)"
+	selects += ", COALESCE(ROUND(MAX(" + PerNightPriceSQL + ")), 0)"
+	selects += ", COALESCE(ROUND(AVG(" + PerNightPriceSQL + ")), 0)"
 
 	rows, err := unitConditions.
 		Model(&Unit{}).
@@ -136,7 +136,8 @@ func (s ListingsSearch) addMetadata(unitConditions *gorm.DB, result *ListingsSea
 	defer rows.Close()
 
 	if rows.Next() {
-		err = rows.Scan(&result.TotalPropertiesCount, &result.MinPerNightCents, &result.MaxPerNightCents, &result.AvgPerNightCents)
+		err = rows.Scan(&result.TotalPropertiesCount, &result.MinPerNightCents, &result.MaxPerNightCents,
+			&result.AvgPerNightCents)
 	}
 
 	return err

@@ -296,3 +296,13 @@ Feature: Searching for Units
       | Min-Per-Night-Cents    | 5000  |
       | Max-Per-Night-Cents    | 50000 |
       | Avg-Per-Night-Cents    | 18714 |
+
+  Scenario: No listings match
+    When I search for units with the following filters:
+      | cityID | 2 |
+    Then I should receive an "OK" response with an empty list
+    And I should receive the following headers:
+      | Total-Properties-Count | 0 |
+      | Min-Per-Night-Cents    | 0 |
+      | Max-Per-Night-Cents    | 0 |
+      | Avg-Per-Night-Cents    | 0 |
