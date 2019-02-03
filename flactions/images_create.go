@@ -51,8 +51,8 @@ func (a *ImagesCreate) Perform() {
 		id = a.UnitID
 	}
 
-	path := fmt.Sprintf("%s/%d/images/%s", collection, id, flutils.GenerateRandomString(30, a.RandomSource()))
-	url, err := a.GenerateURLToUploadPublicFile(path, a.Type, a.Size)
+	key := fmt.Sprintf("public/%s/%d/images/%s", collection, id, flutils.GenerateRandomString(30, a.RandomSource()))
+	url, err := a.GenerateURLToUploadPublicFile(key, a.Type, a.Size)
 
 	if err != nil {
 		a.ServerError(err)
@@ -61,11 +61,12 @@ func (a *ImagesCreate) Perform() {
 
 	a.Name = strings.Replace(a.Name, "/", "", -1)
 	image := &flentities.Image{
-		Name:     a.Name,
-		URL:      strings.Split(url, "?")[0],
-		Type:     a.Type,
-		Size:     a.Size,
-		Position: a.Position,
+		Name:       a.Name,
+		URL:        strings.Split(url, "?")[0],
+		Type:       a.Type,
+		Size:       a.Size,
+		StorageKey: &key,
+		Position:   a.Position,
 	}
 
 	if a.PropertyID > 0 {

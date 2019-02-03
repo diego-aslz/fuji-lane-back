@@ -227,6 +227,7 @@ CREATE TABLE images (
     property_id bigint,
     unit_id bigint,
     uploaded boolean DEFAULT false,
+    storage_key character varying,
     "position" smallint,
     CONSTRAINT images_check CHECK (((property_id IS NOT NULL) OR (unit_id IS NOT NULL)))
 );

@@ -28,8 +28,8 @@ Feature: Images Management
       | Name | building.jpg                                                                                                                                                                                                                                                                                         |
       | URL  | https://fujilane-test.s3.amazonaws.com/public/<Collection>/<ID>/images/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=CREDENTIAL&X-Amz-Date=DATE&X-Amz-Expires=3600&X-Amz-SignedHeaders=content-length%3Bcontent-type%3Bhost%3Bx-amz-acl&X-Amz-Signature=SIGNATURE |
     And I should have the following images:
-      | <Target> | Name         | URL                                                                                                   | Uploaded | Type       | Size     | Position |
-      | <Name>   | building.jpg | https://fujilane-test.s3.amazonaws.com/public/<Collection>/<ID>/images/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa | false    | image/jpeg | 15000000 | 3        |
+      | <Target> | Name         | URL                                                                                                   | Uploaded | Type       | Size     | Position | StorageKey                                                     |
+      | <Name>   | building.jpg | https://fujilane-test.s3.amazonaws.com/public/<Collection>/<ID>/images/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa | false    | image/jpeg | 15000000 | 3        | public/<Collection>/<ID>/images/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa |
 
     Examples:
       | Target   | Name            | Collection | ID |
@@ -204,7 +204,7 @@ Feature: Images Management
       | ID | Account          | Name            |
       | 5  | Diego Apartments | ACME Skyscraper |
     And the following images:
-      | ID | Position | Property        | Name      | URL                                                                                               |
+      | ID | Position | Property        | Name      | URL                                                                    |
       | 5  | 1        | ACME Skyscraper | front.jpg | https://fujilane-test.s3.amazonaws.com/public/properties/20/images/aaa |
       | 10 | 2        | ACME Skyscraper | back.jpg  | https://fujilane-test.s3.amazonaws.com/public/properties/20/images/bbb |
     And I am authenticated with "diego@selzlein.com"
@@ -224,7 +224,7 @@ Feature: Images Management
       | Account   | Name            |
       | Other Acc | ACME Skyscraper |
     And the following images:
-      | ID | Position | Property        | Name      | URL                                                                                               |
+      | ID | Position | Property        | Name      | URL                                                                    |
       | 5  | 1        | ACME Skyscraper | front.jpg | https://fujilane-test.s3.amazonaws.com/public/properties/20/images/aaa |
       | 10 | 2        | ACME Skyscraper | back.jpg  | https://fujilane-test.s3.amazonaws.com/public/properties/20/images/bbb |
     And I am authenticated with "diego@selzlein.com"

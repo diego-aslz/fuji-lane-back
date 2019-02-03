@@ -49,9 +49,11 @@ func (a *ImagesDestroy) Perform() {
 		return
 	}
 
-	if err = a.DeleteFile(image.URL); err != nil {
-		a.ServerError(err)
-		return
+	if image.StorageKey != nil && *image.StorageKey != "" {
+		if err = a.DeleteFile(*image.StorageKey); err != nil {
+			a.ServerError(err)
+			return
+		}
 	}
 
 	a.Respond(http.StatusOK, map[string]interface{}{})

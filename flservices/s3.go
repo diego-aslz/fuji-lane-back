@@ -1,7 +1,6 @@
 package flservices
 
 import (
-	"strings"
 	"time"
 
 	"github.com/aws/aws-sdk-go/aws"
@@ -23,7 +22,7 @@ type S3 struct {
 func (s S3) GenerateURLToUploadPublicFile(key, cType string, size int) (string, error) {
 	req, _ := s.service.PutObjectRequest(&s3.PutObjectInput{
 		Bucket:        aws.String(flconfig.Config.AWSBucket),
-		Key:           aws.String("public/" + key),
+		Key:           aws.String(key),
 		ACL:           aws.String(s3.ObjectCannedACLPublicRead),
 		ContentLength: aws.Int64(int64(size)),
 		ContentType:   aws.String(cType),
@@ -33,10 +32,10 @@ func (s S3) GenerateURLToUploadPublicFile(key, cType string, size int) (string, 
 }
 
 // DeleteFile removes a file stored in S3
-func (s S3) DeleteFile(path string) error {
+func (s S3) DeleteFile(key string) error {
 	_, err := s.service.DeleteObject(&s3.DeleteObjectInput{
 		Bucket: aws.String(flconfig.Config.AWSBucket),
-		Key:    aws.String(strings.Split(path, "s3.amazonaws.com/")[1]),
+		Key:    aws.String(key),
 	})
 
 	return err

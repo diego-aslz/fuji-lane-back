@@ -9,6 +9,7 @@ CREATE TABLE images(
   property_id bigint references properties,
   unit_id bigint references units check (property_id is not null or unit_id is not null),
   uploaded boolean default false,
+  storage_key varchar,
   position smallint
 );
 

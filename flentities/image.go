@@ -20,6 +20,7 @@ type Image struct {
 	Property   *Property `json:"-"`
 	UnitID     *uint     `json:"-"`
 	Unit       *Unit     `json:"-"`
+	StorageKey *string   `json:"-"`
 	Position   int       `json:"position"`
 }
 
