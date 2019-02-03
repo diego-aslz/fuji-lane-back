@@ -4,6 +4,9 @@ import (
 	"fmt"
 	"log"
 	"math/rand"
+	"os"
+	"strconv"
+	"sync"
 	"time"
 
 	"github.com/nerde/fuji-lane-back/flentities"
@@ -14,11 +17,29 @@ import (
 
 const userPasswords = "123456789"
 
-var propertyImageURLs, unitImageURLs []string
+var propertyImageURLs = []string{
+	"https://2qibqm39xjt6q46gf1rwo2g1-wpengine.netdna-ssl.com/wp-content/uploads/2018/06/12184802_web1_M1-Alderwood-EDH-180611.jpg",
+	"https://upload.wikimedia.org/wikipedia/commons/thumb/1/14/Forsyth_Barr_Building%2C_Christchurch_02.JPG/240px-Forsyth_Barr_Building%2C_Christchurch_02.JPG",
+	"https://triblive.com/csp/mediapool/sites/dt.common.streams.StreamServer.cls?STREAMOID=k7NPPpUTmn_wjH7LMbdfgM$daE2N3K4ZzOUsqbU5sYsqXrmU32razg_4hODQsDzEWCsjLu883Ygn4B49Lvm9bPe2QeMKQdVeZmXF$9l$4uCZ8QDXhaHEp3rvzXRJFdy0KqPHLoMevcTLo3h8xh70Y6N_U_CryOsw6FTOdKL_jpQ-&amp;CONTENTTYPE=image/jpeg",
+	"https://www.gannett-cdn.com/presto/2018/08/24/PWES/13a9c900-41ad-4333-a5fb-f4e93e369785-GATEWAY_PHOTO.jpg?width=534&height=712&fit=bounds&auto=webp",
+}
+
+var unitImageURLs = []string{
+	"https://37b3a77d7df28c23c767-53afc51582ca456b5a70c93dcc61a759.ssl.cf3.rackcdn.com/1024x768/54850_3971_001.jpg",
+	"https://cdngeneral.rentcafe.com/dmslivecafe/3/622878/slider_The-Gallery-Apartments-1020.jpg?quality=85&scale=both&",
+	"https://g5-assets-cld-res.cloudinary.com/image/upload/q_auto,f_auto,c_fill,g_center,h_1100,w_2000/v1504090383/g5/g5-c-i7yxybw5-mission-rock-single/g5-cl-iap27qrg-mountain-view-apartment-homes/uploads/interior-4.jpg",
+	"https://www.onni.com/wp-content/uploads/2016/11/Rental-Apartment-Page-new-min.jpg",
+	"https://cdn.vox-cdn.com/thumbor/E0jNRUTI81RBBRMSA_ZU7vq7I4g=/0x0:2400x1602/1200x675/filters:focal(682x772:1066x1156)/cdn.vox-cdn.com/uploads/chorus_image/image/54241701/LINEA_NicholasJamesPhoto_8.0.jpeg",
+}
+
 var cities []*flentities.City
 
 func main() {
 	flconfig.LoadConfiguration()
+
+	if os.Getenv("LOGS") == "" {
+		flconfig.Config.DatabaseLogs = false
+	}
 
 	if flconfig.Config.Stage == "production" {
 		log.Fatalf("Command \"populate\" should not be run in %s stage!", flconfig.Config.Stage)
@@ -32,33 +53,47 @@ func main() {
 		log.Fatal(err.Error())
 	}
 
-	propertyImageURLs = []string{
-		"https://2qibqm39xjt6q46gf1rwo2g1-wpengine.netdna-ssl.com/wp-content/uploads/2018/06/12184802_web1_M1-Alderwood-EDH-180611.jpg",
-		"https://upload.wikimedia.org/wikipedia/commons/thumb/1/14/Forsyth_Barr_Building%2C_Christchurch_02.JPG/240px-Forsyth_Barr_Building%2C_Christchurch_02.JPG",
-		"https://triblive.com/csp/mediapool/sites/dt.common.streams.StreamServer.cls?STREAMOID=k7NPPpUTmn_wjH7LMbdfgM$daE2N3K4ZzOUsqbU5sYsqXrmU32razg_4hODQsDzEWCsjLu883Ygn4B49Lvm9bPe2QeMKQdVeZmXF$9l$4uCZ8QDXhaHEp3rvzXRJFdy0KqPHLoMevcTLo3h8xh70Y6N_U_CryOsw6FTOdKL_jpQ-&amp;CONTENTTYPE=image/jpeg",
-		"https://www.gannett-cdn.com/presto/2018/08/24/PWES/13a9c900-41ad-4333-a5fb-f4e93e369785-GATEWAY_PHOTO.jpg?width=534&height=712&fit=bounds&auto=webp",
-	}
-
-	unitImageURLs = []string{
-		"https://37b3a77d7df28c23c767-53afc51582ca456b5a70c93dcc61a759.ssl.cf3.rackcdn.com/1024x768/54850_3971_001.jpg",
-		"https://cdngeneral.rentcafe.com/dmslivecafe/3/622878/slider_The-Gallery-Apartments-1020.jpg?quality=85&scale=both&",
-		"https://g5-assets-cld-res.cloudinary.com/image/upload/q_auto,f_auto,c_fill,g_center,h_1100,w_2000/v1504090383/g5/g5-c-i7yxybw5-mission-rock-single/g5-cl-iap27qrg-mountain-view-apartment-homes/uploads/interior-4.jpg",
-		"https://www.onni.com/wp-content/uploads/2016/11/Rental-Apartment-Page-new-min.jpg",
-		"https://cdn.vox-cdn.com/thumbor/E0jNRUTI81RBBRMSA_ZU7vq7I4g=/0x0:2400x1602/1200x675/filters:focal(682x772:1066x1156)/cdn.vox-cdn.com/uploads/chorus_image/image/54241701/LINEA_NicholasJamesPhoto_8.0.jpeg",
-	}
-
 	if err := listCities(); err != nil {
 		log.Fatal(err.Error())
 	}
 
-	createAccount()
+	countRaw := os.Getenv("COUNT")
+	count, _ := strconv.Atoi(countRaw)
+
+	if count == 0 {
+		count = 10
+	}
+
+	errors := []error{}
+	wg := sync.WaitGroup{}
+
+	for i := 0; i < count; i++ {
+		wg.Add(1)
+
+		go func() {
+			defer wg.Done()
+			errors = append(errors, createAccount())
+		}()
+
+		if i%10 == 9 {
+			wg.Wait()
+		}
+	}
+
+	wg.Wait()
+
+	for _, err := range errors {
+		if err != nil {
+			fmt.Println(err)
+		}
+	}
 }
 
 func createAccount() error {
 	city := randomCity()
 	return flentities.WithRepository(func(r *flentities.Repository) error {
 		acc := &flentities.Account{
-			Name:      fake.Company(),
+			Name:      fmt.Sprintf("%s %d", fake.Company(), randomInt(999)),
 			Phone:     str(fake.Phone()),
 			CountryID: ui(city.CountryID),
 		}
@@ -83,7 +118,7 @@ func createAccount() error {
 			publishedAt := time.Now()
 			publishedAt = publishedAt.AddDate(0, 0, randomInt(365)*-1)
 			prop := &flentities.Property{
-				Name:            str(fake.ProductName()),
+				Name:            str(fmt.Sprintf("%s %d", fake.FullName(), randomInt(999))),
 				PublishedAt:     &publishedAt,
 				EverPublished:   true,
 				AccountID:       acc.ID,
