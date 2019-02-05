@@ -1,6 +1,8 @@
 package flentities
 
 import (
+	"sync"
+
 	"github.com/jinzhu/gorm"
 )
 
@@ -88,9 +90,14 @@ func (s ListingsSearch) Search() (*ListingsSearchResult, error) {
 
 	result := &ListingsSearchResult{Properties: []*Property{}}
 
-	if err := s.addMetadata(joinedUnits, result); err != nil {
-		return result, err
-	}
+	var routineErr error
+	wg := sync.WaitGroup{}
+
+	wg.Add(1)
+	go func(joinedUnits *gorm.DB) {
+		defer wg.Done()
+		routineErr = s.addMetadata(joinedUnits, result)
+	}(joinedUnits)
 
 	join, args := s.pricesJoin()
 	unitConditions = unitConditions.Joins(join, args...)
@@ -110,7 +117,15 @@ func (s ListingsSearch) Search() (*ListingsSearchResult, error) {
 
 	propertyConditions = Repository{propertyConditions}.Paginate(s.Page, s.PerPage)
 
-	return result, propertyConditions.Find(&result.Properties).Error
+	err := propertyConditions.Find(&result.Properties).Error
+
+	wg.Wait()
+
+	if err == nil {
+		err = routineErr
+	}
+
+	return result, err
 }
 
 func (s ListingsSearch) addMetadata(unitConditions *gorm.DB, result *ListingsSearchResult) error {
