@@ -113,7 +113,13 @@ func (s ListingsSearch) Search() (*ListingsSearchResult, error) {
 		Preload("Units", func(_ *gorm.DB) *gorm.DB { return unitConditions.Order("prices.cents / prices.min_nights") }).
 		Preload("Units.Images", Image{Uploaded: true}, ImagesDefaultOrder).
 		Preload("Units.Amenities").
-		Preload("Units.Prices")
+		Preload("Units.Prices", func(db *gorm.DB) *gorm.DB {
+			if s.hasDates() {
+				db = db.Where("min_nights <= ?", s.Nights())
+			}
+
+			return db
+		})
 
 	propertyConditions = Repository{propertyConditions}.Paginate(s.Page, s.PerPage)
 
