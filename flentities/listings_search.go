@@ -1,6 +1,7 @@
 package flentities
 
 import (
+	"sort"
 	"sync"
 
 	"github.com/jinzhu/gorm"
@@ -110,7 +111,7 @@ func (s ListingsSearch) Search() (*ListingsSearchResult, error) {
 		Where("id IN (?)", joinedUnits.Model(&Unit{}).Select("property_id").QueryExpr()).
 		Preload("Images", Image{Uploaded: true}, ImagesDefaultOrder).
 		Preload("Amenities").
-		Preload("Units", func(_ *gorm.DB) *gorm.DB { return unitConditions.Order("prices.cents / prices.min_nights") }).
+		Preload("Units", func(_ *gorm.DB) *gorm.DB { return unitConditions.Select("DISTINCT units.*") }).
 		Preload("Units.Images", Image{Uploaded: true}, ImagesDefaultOrder).
 		Preload("Units.Amenities").
 		Preload("Units.Prices", func(db *gorm.DB) *gorm.DB {
@@ -118,12 +119,21 @@ func (s ListingsSearch) Search() (*ListingsSearchResult, error) {
 				db = db.Where("min_nights <= ?", s.Nights())
 			}
 
-			return db
+			return db.Order("min_nights")
 		})
 
 	propertyConditions = Repository{propertyConditions}.Paginate(s.Page, s.PerPage)
 
 	err := propertyConditions.Find(&result.Properties).Error
+
+	for _, p := range result.Properties {
+		sort.Slice(p.Units, func(i, j int) bool {
+			li := len(p.Units[i].Prices)
+			lj := len(p.Units[j].Prices)
+
+			return p.Units[i].Prices[li-1].PerNightCents() < p.Units[j].Prices[lj-1].PerNightCents()
+		})
+	}
 
 	wg.Wait()
 

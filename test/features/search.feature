@@ -306,3 +306,23 @@ Feature: Searching for Units
       | Min-Per-Night-Cents    | 0 |
       | Max-Per-Night-Cents    | 0 |
       | Avg-Per-Night-Cents    | 0 |
+
+  Scenario: Not duplicating units when multiple prices match
+    Given the following units:
+      | ID | Property         | Name         | Bedrooms | Bathrooms | SizeM2 | MaxOccupancy | Count | PublishedAt          |
+      | 10 | Awesome Property | Double Apt   | 2        | 2         | 62     | 6            | 10    | 2018-06-01T08:00:00Z |
+      | 11 | Nice Property    | Standard Apt | 1        | 1         | 52     | 3            | 15    | 2018-06-01T08:00:00Z |
+    And the following prices:
+      | Unit         | MinNights | Cents |
+      | Double Apt   | 1         | 12000 |
+      | Double Apt   | 2         | 22000 |
+      | Standard Apt | 1         | 11500 |
+      | Standard Apt | 2         | 21000 |
+    When I search for units with the following filters:
+      | cityID   | 2          |
+      | checkIn  | 2019-01-01 |
+      | checkOut | 2019-01-08 |
+    Then I should receive an "OK" response with the following search results:
+      | PropertyName     | Name         |
+      | Awesome Property | Double Apt   |
+      | Nice Property    | Standard Apt |

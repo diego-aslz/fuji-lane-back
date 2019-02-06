@@ -3,6 +3,7 @@ package fujilane
 import (
 	"encoding/json"
 	"fmt"
+	"sort"
 
 	"github.com/DATA-DOG/godog"
 	"github.com/DATA-DOG/godog/gherkin"
@@ -16,6 +17,7 @@ type searchUnit struct {
 }
 
 type searchProperty struct {
+	ID    uint         `json:"id"`
 	Name  string       `json:"name"`
 	Units []searchUnit `json:"units"`
 }
@@ -34,6 +36,9 @@ func assertSearchResults(status string, table *gherkin.DataTable) error {
 	if err := json.Unmarshal([]byte(response.Body.String()), &actualBody); err != nil {
 		return fmt.Errorf("Unable to unmarshal %s: %s", response.Body.String(), err.Error())
 	}
+
+	// Making sure order is deterministic so tests don't fail randomly
+	sort.Slice(actualBody, func(i, j int) bool { return actualBody[i].ID < actualBody[j].ID })
 
 	searchResults := []*searchResult{}
 	for _, prop := range actualBody {
