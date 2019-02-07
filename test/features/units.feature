@@ -204,7 +204,7 @@ Feature: Units Management
     When I update unit "Standard Apt" with the following amenities:
       | Type             | Name             |
       | desk             | Desk             |
-      | air_conditioning | Air Conditioning |
+      | air-conditioning | Air Conditioning |
       | custom           | Soap             |
       | custom           | Windows          |
     Then I should receive an "OK" response
@@ -212,7 +212,7 @@ Feature: Units Management
       | Unit         | Type             | Name    |
       | Standard Apt | desk             |         |
       | Standard Apt | custom           | Soap    |
-      | Standard Apt | air_conditioning |         |
+      | Standard Apt | air-conditioning |         |
       | Standard Apt | custom           | Windows |
 
   Scenario: Getting unit details

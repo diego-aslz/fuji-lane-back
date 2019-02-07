@@ -57,8 +57,8 @@ Feature: Properties Management
       | 5  | Standard Apt | true     | front.jpg | https://s3.amazonaws.com/front.jpg | image/jpeg | 1000000 | 2        |
       | 6  | Standard Apt | false    | back.jpg  | https://s3.amazonaws.com/back.jpg  | image/jpeg | 1000000 | 2        |
     And the following amenities:
-      | ID | Unit         | Type   |
-      | 2  | Standard Apt | toilet |
+      | ID | Unit         | Type |
+      | 2  | Standard Apt | desk |
     When I get details for property "ACME Downtown"
     Then I should receive an "OK" response with the following JSON:
       """
@@ -125,8 +125,8 @@ Feature: Properties Management
           "overview": null,
           "amenities": [{
             "id": 2,
-            "type": "toilet",
-            "name": "Toilet"
+            "type": "desk",
+            "name": "Desk"
           }],
           "images": [{
             "id": 5,
