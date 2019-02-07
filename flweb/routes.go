@@ -114,7 +114,7 @@ func (a *Application) routeProperties(e *gin.Engine) {
 
 type ginMethod func(string, ...gin.HandlerFunc) gin.IRoutes
 
-func (a *Application) route(method ginMethod, path string, actionProvider func(flactions.Context) flactions.Action,
+func (a *Application) route(method ginMethod, path string, actionProvider flactions.Provider,
 	middleware ...func(contextFunc) contextFunc) {
 
 	next := combineMiddleware(middleware...)
