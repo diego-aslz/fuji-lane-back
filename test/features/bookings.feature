@@ -67,7 +67,7 @@ Feature: Bookings
     And I should have the following bookings:
       | User               | Unit         | CheckIn    | CheckOut   | Message | Nights | PerNightCents | ServiceFeeCents | TotalCents |
       | diego@selzlein.com | Standard Apt | 2018-06-09 | 2018-06-11 | Nothing | 2      | 11000         | 0               | 22000      |
-    And "djeison@selzlein.com" should have received the following email from "diego@selzlein.com":
+    And "djeison@selzlein.com" should have received the following email:
       """
       Hi there,
 
@@ -137,7 +137,7 @@ Feature: Bookings
     And I should have the following bookings:
       | User               | Unit   | CheckIn   | CheckOut   | Nights   | PerNightCents | TotalCents |
       | diego@selzlein.com | <Unit> | <CheckIn> | <CheckOut> | <Nights> | <PerNight>    | <Total>    |
-    And "djeison@selzlein.com" should have received the following email from "diego@selzlein.com":
+    And "djeison@selzlein.com" should have received the following email:
       """
       Hi there,
 

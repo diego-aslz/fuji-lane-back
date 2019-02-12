@@ -12,8 +12,7 @@ import (
 func main() {
 	e := &email.Email{
 		To:      []string{"diegoselzlein@gmail.com"},
-		From:    "Jordan Wright <test@gmail.com>",
-		Subject: "Awesome Subject",
+		Subject: "Test Email",
 		Text:    []byte("Text Body is, of course, supported!"),
 		HTML:    []byte("<h1>Fancy HTML is supported, too!</h1>"),
 		Headers: textproto.MIMEHeader{},

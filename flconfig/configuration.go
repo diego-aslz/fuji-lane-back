@@ -11,10 +11,12 @@ import (
 
 // SMTP represents a SMTP configuration
 type SMTP struct {
-	Host     string
-	Port     int
-	User     string
-	Password string
+	Auth        string
+	DefaultFrom string
+	Host        string
+	Port        int
+	User        string
+	Password    string
 }
 
 // Configuration contains global system configuration details
@@ -61,10 +63,12 @@ func LoadConfiguration() {
 		Stage:               stage,
 		TokenSecret:         os.Getenv("TOKEN_SECRET"),
 		SMTP: SMTP{
-			Host:     os.Getenv("SMTP_HOST"),
-			Port:     getIntVar("SMTP_PORT"),
-			User:     os.Getenv("SMTP_USER"),
-			Password: os.Getenv("SMTP_PASSWORD"),
+			Auth:        os.Getenv("SMTP_AUTH"),
+			DefaultFrom: os.Getenv("SMTP_FROM"),
+			Host:        os.Getenv("SMTP_HOST"),
+			Port:        getIntVar("SMTP_PORT"),
+			User:        os.Getenv("SMTP_USER"),
+			Password:    os.Getenv("SMTP_PASSWORD"),
 		},
 	}
 }

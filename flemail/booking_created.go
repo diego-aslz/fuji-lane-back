@@ -14,25 +14,28 @@ type bookingCreated struct {
 	owner   *flentities.User
 }
 
-func (bc bookingCreated) from() string {
-	from := bc.booking.User.Email
+func (bc bookingCreated) replyTo() string {
+	replyTo := bc.booking.User.Email
 
 	if bc.booking.User.Name != nil && *bc.booking.User.Name != "" {
-		from = *bc.booking.User.Name + "<" + from + ">"
+		replyTo = *bc.booking.User.Name + "<" + replyTo + ">"
 	}
 
-	return from
+	return replyTo
 }
 
 func (bc bookingCreated) email() *email.Email {
-	return &email.Email{
+	e := &email.Email{
 		To:      []string{bc.owner.Email},
-		From:    bc.from(),
 		Subject: "[Fuji Lane] Inquire",
 		Text:    []byte(bc.textBody()),
 		// HTML:    []byte("<h1>Fancy HTML is supported, too!</h1>"),
 		Headers: textproto.MIMEHeader{},
 	}
+
+	e.Headers.Add("Reply-To", bc.replyTo())
+
+	return e
 }
 
 func (bc bookingCreated) textBody() string {

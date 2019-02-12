@@ -21,13 +21,9 @@ func (m *fakeMailer) Send(e *email.Email) error {
 	return nil
 }
 
-func assertEmail(to, from string, doc *gherkin.DocString) error {
+func assertEmail(to string, doc *gherkin.DocString) error {
 	for _, e := range mailer.emails {
 		if strings.Join(e.To, ", ") != to {
-			continue
-		}
-
-		if e.From != from {
 			continue
 		}
 
@@ -57,6 +53,6 @@ func MailerContext(s *godog.Suite) {
 		application.Mailer = mailer
 	})
 
-	s.Step(`^"([^"]*)" should have received the following email from "([^"]*)":$`, assertEmail)
+	s.Step(`^"([^"]*)" should have received the following email:$`, assertEmail)
 	s.Step(`^no emails should have been sent$`, assertNoEmails)
 }

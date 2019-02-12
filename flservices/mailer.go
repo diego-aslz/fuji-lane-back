@@ -21,7 +21,19 @@ type SMTPMailer struct {
 
 // Send an email
 func (m *SMTPMailer) Send(e *email.Email) error {
-	return e.Send(fmt.Sprintf("%s:%d", m.Host, m.Port), smtp.CRAMMD5Auth(m.User, m.Password))
+	var auth smtp.Auth
+
+	if m.Auth == "md5" {
+		auth = smtp.CRAMMD5Auth(m.User, m.Password)
+	} else {
+		auth = smtp.PlainAuth("", m.User, m.Password, m.Host)
+	}
+
+	if e.From == "" {
+		e.From = m.DefaultFrom
+	}
+
+	return e.Send(fmt.Sprintf("%s:%d", m.Host, m.Port), auth)
 }
 
 // NewSMTPMailer returns a new SMTPMailer with its configuration
