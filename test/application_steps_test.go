@@ -31,8 +31,7 @@ func (f fakeRandSource) Int63() int64 {
 	return 0
 }
 
-func (f fakeRandSource) Seed(int64) {
-}
+func (f fakeRandSource) Seed(int64) {}
 
 func setupApplication() {
 	os.Setenv("STAGE", "test")
@@ -59,13 +58,17 @@ func setupApplication() {
 	assist.RegisterParser(&time.Time{}, timePtrParser)
 	assist.RegisterParser(flentities.Date{}, dateParser)
 
-	facebookClient = &mockedFacebookClient{tokens: map[string]flservices.FacebookTokenDetails{}}
-	application = flweb.NewApplication(facebookClient)
-	application.RandSource = fakeRandSource{}
-	application.S3Service = newFakeS3(application.S3Service)
+	s3, err := flservices.NewS3()
+	if err != nil {
+		panic(err)
+	}
 
-	application.TimeFunc = func() time.Time {
-		return appTime
+	application = &flweb.Application{
+		RandSource: fakeRandSource{},
+		S3Service:  newFakeS3(s3),
+		TimeFunc: func() time.Time {
+			return appTime
+		},
 	}
 
 	router = application.CreateRouter()

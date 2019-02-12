@@ -135,6 +135,12 @@
   revision = "0b12d6b5"
 
 [[projects]]
+  name = "github.com/jordan-wright/email"
+  packages = ["."]
+  revision = "94ae17dedda217a49e3b47d68f1b54b3c946e16b"
+  version = "v3.0"
+
+[[projects]]
   name = "github.com/json-iterator/go"
   packages = ["."]
   revision = "1624edc4454b8682399def8740d46db5e4362ba4"
@@ -222,6 +228,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "1daa4a8fedbd4883ac9efb08eb9b770483ef367189425214ece6be670a2559f6"
+  inputs-digest = "9eb61fea5889470d471174a0c71948ced7f5e98166ae5a6a377f74cacd1be573"
   solver-name = "gps-cdcl"
   solver-version = 1

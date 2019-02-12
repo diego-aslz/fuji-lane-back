@@ -5,7 +5,9 @@ import (
 	"net/http"
 
 	"github.com/jinzhu/gorm"
+	"github.com/nerde/fuji-lane-back/flemail"
 	"github.com/nerde/fuji-lane-back/flentities"
+	"github.com/nerde/fuji-lane-back/flservices"
 )
 
 // BookingsCreateBody is the payload to create a booking
@@ -20,6 +22,7 @@ type BookingsCreateBody struct {
 type BookingsCreate struct {
 	BookingsCreateBody
 	Context
+	flservices.Mailer
 }
 
 // Validate the request body
@@ -34,10 +37,25 @@ func (a *BookingsCreate) Validate() []error {
 
 // Perform executes the action
 func (a *BookingsCreate) Perform() {
+	unit := &flentities.Unit{ID: a.UnitID}
+
+	if err := a.Repository().Preload("Property").Find(unit).Error; err != nil {
+		a.ServerError(err)
+		return
+	}
+
+	owner := &flentities.User{}
+
+	if err := a.Repository().Where("account_id = ?", unit.Property.AccountID).Find(owner).Error; err != nil {
+		a.ServerError(err)
+		return
+	}
+
 	booking := &flentities.Booking{
+		User:     a.CurrentUser(),
 		UserID:   a.CurrentUser().ID,
-		Unit:     &flentities.Unit{ID: a.UnitID},
-		UnitID:   a.UnitID,
+		Unit:     unit,
+		UnitID:   unit.ID,
 		CheckIn:  a.CheckIn,
 		CheckOut: a.CheckOut,
 	}
@@ -48,6 +66,7 @@ func (a *BookingsCreate) Perform() {
 
 	if booking.CheckIn.Before(a.Now()) {
 		a.RespondError(http.StatusUnprocessableEntity, errors.New("check in date should be in the future"))
+		return
 	}
 
 	if err := a.Repository().Preload("Prices").Find(booking.Unit).Error; err != nil {
@@ -72,6 +91,11 @@ func (a *BookingsCreate) Perform() {
 		return
 	}
 
+	if mail := flemail.BookingCreated(booking, owner); mail != nil {
+		a.Mailer.Send(mail)
+		a.Diagnostics().Add("email_sent", "true")
+	}
+
 	a.Respond(http.StatusCreated, booking)
 }
 
@@ -80,6 +104,6 @@ func (a *BookingsCreate) invalidUnit() {
 }
 
 // NewBookingsCreate returns a new BookingsCreate action
-func NewBookingsCreate(c Context) Action {
-	return &BookingsCreate{Context: c}
+func NewBookingsCreate(c Context, m flservices.Mailer) Action {
+	return &BookingsCreate{Context: c, Mailer: m}
 }

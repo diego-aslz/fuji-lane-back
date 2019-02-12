@@ -9,6 +9,14 @@ import (
 	yaml "gopkg.in/yaml.v2"
 )
 
+// SMTP represents a SMTP configuration
+type SMTP struct {
+	Host     string
+	Port     int
+	User     string
+	Password string
+}
+
 // Configuration contains global system configuration details
 type Configuration struct {
 	AWSRegion           string
@@ -20,6 +28,7 @@ type Configuration struct {
 	MaxImageSizeMB      int
 	Stage               string
 	TokenSecret         string
+	SMTP                SMTP
 }
 
 // Config is the current global configuration being used
@@ -36,14 +45,7 @@ func LoadConfiguration() {
 		panic(err)
 	}
 
-	maxImageSize := 0
-	maxImageSizeVar := os.Getenv("MAX_IMAGE_SIZE_MB")
-	if maxImageSizeVar != "" {
-		maxImageSize, err = strconv.Atoi(maxImageSizeVar)
-		if err != nil {
-			fmt.Printf("Unable to load MAX_IMAGE_SIZE_MB (%s), falling back to default.\n", err.Error())
-		}
-	}
+	maxImageSize := getIntVar("MAX_IMAGE_SIZE_MB")
 	if maxImageSize == 0 {
 		maxImageSize = 20
 	}
@@ -58,7 +60,28 @@ func LoadConfiguration() {
 		MaxImageSizeMB:      maxImageSize,
 		Stage:               stage,
 		TokenSecret:         os.Getenv("TOKEN_SECRET"),
+		SMTP: SMTP{
+			Host:     os.Getenv("SMTP_HOST"),
+			Port:     getIntVar("SMTP_PORT"),
+			User:     os.Getenv("SMTP_USER"),
+			Password: os.Getenv("SMTP_PASSWORD"),
+		},
 	}
+}
+
+func getIntVar(name string) int {
+	value := os.Getenv(name)
+
+	if value != "" {
+		i, err := strconv.Atoi(value)
+		if err != nil {
+			fmt.Printf("Unable to parse int var %s with value %s (%s)\n", name, value, err.Error())
+		} else {
+			return i
+		}
+	}
+
+	return 0
 }
 
 // LoadEnv loads environment variables from the YAML configuration file for the current stage. If not present, it

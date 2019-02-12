@@ -47,6 +47,11 @@ func facebookRecognizesTheFollowingTokens(table *gherkin.DataTable) error {
 }
 
 func SignInContext(s *godog.Suite) {
+	s.BeforeSuite(func() {
+		facebookClient = &mockedFacebookClient{tokens: map[string]flservices.FacebookTokenDetails{}}
+		application.FacebookClient = facebookClient
+	})
+
 	s.Step(`^Facebook recognizes the following tokens:$`, facebookRecognizesTheFollowingTokens)
 	s.Step(`^the following user signs in via Facebook:$`, postTableStep(flweb.FacebookSignInPath))
 }

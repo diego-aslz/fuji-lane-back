@@ -1,13 +1,13 @@
 Feature: Bookings
 
   Background:
-    Given the following users:
-      | Email                |
-      | diego@selzlein.com   |
-      | djeison@selzlein.com |
-    And the following accounts:
+    Given the following accounts:
       | Name             |
       | Diego Apartments |
+    Given the following users:
+      | Email                | Account          |
+      | diego@selzlein.com   |                  |
+      | djeison@selzlein.com | Diego Apartments |
     And the following properties:
       | Account          | Name          |
       | Diego Apartments | ACME Downtown |
@@ -67,6 +67,22 @@ Feature: Bookings
     And I should have the following bookings:
       | User               | Unit         | CheckIn    | CheckOut   | Message | Nights | PerNightCents | ServiceFeeCents | TotalCents |
       | diego@selzlein.com | Standard Apt | 2018-06-09 | 2018-06-11 | Nothing | 2      | 11000         | 0               | 22000      |
+    And "djeison@selzlein.com" should have received the following email from "diego@selzlein.com":
+      """
+      Hi there,
+
+      You received a new booking request:
+
+      * User: diego@selzlein.com
+      * Unit: ACME Downtown > Standard Apt
+      * Check In: 2018-06-09
+      * Check Out: 2018-06-11
+      * Nights: 2
+      * Price: $110/night
+      * Total: $220
+
+      Respond to this email to get in touch with them.
+      """
 
   Scenario: Booking a Unit with invalid information
     Given it is currently "01 Jun 18 08:00"
@@ -78,6 +94,7 @@ Feature: Bookings
       | check in should be in the future   |
       | check out is required              |
       | check out should be after check in |
+    And no emails should have been sent
 
   Scenario: Trying to Book a Unit that's not published
     Given it is currently "01 Jun 18 08:00"
@@ -94,6 +111,7 @@ Feature: Bookings
       | Message  | Nothing    |
     Then I should receive an "UNPROCESSABLE ENTITY" response with the following errors:
       | unit is invalid |
+    And no emails should have been sent
 
   Scenario Outline: Calculating Booking Prices
     Given the following units:
@@ -119,21 +137,37 @@ Feature: Bookings
     And I should have the following bookings:
       | User               | Unit   | CheckIn   | CheckOut   | Nights   | PerNightCents | TotalCents |
       | diego@selzlein.com | <Unit> | <CheckIn> | <CheckOut> | <Nights> | <PerNight>    | <Total>    |
+    And "djeison@selzlein.com" should have received the following email from "diego@selzlein.com":
+      """
+      Hi there,
+
+      You received a new booking request:
+
+      * User: diego@selzlein.com
+      * Unit: ACME Downtown > <Unit>
+      * Check In: <CheckIn>
+      * Check Out: <CheckOut>
+      * Nights: <Nights>
+      * Price: $<EmailPrice>/night
+      * Total: $<EmailTotal>
+
+      Respond to this email to get in touch with them.
+      """
 
     Examples:
-      | Unit            | CheckIn    | CheckOut   | Nights | PerNight | Total   |
-      | Specific Prices | 2018-07-01 | 2018-07-02 | 1      | 13000    | 13000   |
-      | Specific Prices | 2018-07-01 | 2018-07-07 | 6      | 10000    | 60000   |
-      | Specific Prices | 2018-07-01 | 2018-07-08 | 7      | 8571     | 60000   |
-      | Specific Prices | 2018-07-01 | 2018-07-30 | 29     | 8571     | 248571  |
-      | Specific Prices | 2018-07-01 | 2018-07-31 | 30     | 8000     | 240000  |
-      | Specific Prices | 2018-07-01 | 2018-09-28 | 89     | 8000     | 712000  |
-      | Specific Prices | 2018-07-01 | 2018-09-29 | 90     | 8333     | 750000  |
-      | Specific Prices | 2018-07-01 | 2018-12-27 | 179    | 8333     | 1491667 |
-      | Specific Prices | 2018-07-01 | 2018-12-28 | 180    | 6667     | 1200000 |
-      | Specific Prices | 2018-07-01 | 2019-06-30 | 364    | 6667     | 2426667 |
-      | Specific Prices | 2018-07-01 | 2019-07-01 | 365    | 6027     | 2200000 |
-      | Single Price    | 2018-07-01 | 2018-07-02 | 1      | 10000    | 10000   |
-      | Single Price    | 2018-07-01 | 2018-07-08 | 7      | 10000    | 70000   |
-      | Single Price    | 2018-07-01 | 2018-12-28 | 180    | 10000    | 1800000 |
-      | Single Price    | 2018-07-01 | 2019-07-01 | 365    | 10000    | 3650000 |
+      | Unit            | CheckIn    | CheckOut   | Nights | PerNight | Total   | EmailPrice | EmailTotal |
+      | Specific Prices | 2018-07-01 | 2018-07-02 | 1      | 13000    | 13000   | 130        | 130        |
+      | Specific Prices | 2018-07-01 | 2018-07-07 | 6      | 10000    | 60000   | 100        | 600        |
+      | Specific Prices | 2018-07-01 | 2018-07-08 | 7      | 8571     | 60000   | 85.71      | 600        |
+      | Specific Prices | 2018-07-01 | 2018-07-30 | 29     | 8571     | 248571  | 85.71      | 2485.71    |
+      | Specific Prices | 2018-07-01 | 2018-07-31 | 30     | 8000     | 240000  | 80         | 2400       |
+      | Specific Prices | 2018-07-01 | 2018-09-28 | 89     | 8000     | 712000  | 80         | 7120       |
+      | Specific Prices | 2018-07-01 | 2018-09-29 | 90     | 8333     | 750000  | 83.33      | 7500       |
+      | Specific Prices | 2018-07-01 | 2018-12-27 | 179    | 8333     | 1491667 | 83.33      | 14916.67   |
+      | Specific Prices | 2018-07-01 | 2018-12-28 | 180    | 6667     | 1200000 | 66.67      | 12000      |
+      | Specific Prices | 2018-07-01 | 2019-06-30 | 364    | 6667     | 2426667 | 66.67      | 24266.67   |
+      | Specific Prices | 2018-07-01 | 2019-07-01 | 365    | 6027     | 2200000 | 60.27      | 22000      |
+      | Single Price    | 2018-07-01 | 2018-07-02 | 1      | 10000    | 10000   | 100        | 100        |
+      | Single Price    | 2018-07-01 | 2018-07-08 | 7      | 10000    | 70000   | 100        | 700        |
+      | Single Price    | 2018-07-01 | 2018-12-28 | 180    | 10000    | 1800000 | 100        | 18000      |
+      | Single Price    | 2018-07-01 | 2019-07-01 | 365    | 10000    | 3650000 | 100        | 36500      |

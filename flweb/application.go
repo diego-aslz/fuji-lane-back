@@ -12,10 +12,11 @@ import (
 
 // Application is the struct that represents a Fuji Lane app
 type Application struct {
-	facebookClient flservices.FacebookClient
+	FacebookClient flservices.FacebookClient
 	TimeFunc       func() time.Time
 	RandSource     rand.Source
-	flservices.S3Service
+	Mailer         flservices.Mailer
+	S3Service      flservices.S3Service
 }
 
 // Start listening to requests
@@ -29,20 +30,21 @@ func (a *Application) CreateRouter() *gin.Engine {
 	r.Use(withDiagnostics)
 	r.Use(gin.Recovery())
 	a.AddRoutes(r)
+
 	return r
 }
 
 // NewApplication with the injected dependencies
-func NewApplication(facebookClient flservices.FacebookClient) *Application {
+func NewApplication() (*Application, error) {
 	s3, err := flservices.NewS3()
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
 	return &Application{
-		facebookClient: facebookClient,
+		FacebookClient: flservices.NewFacebookHTTPClient(),
 		TimeFunc:       time.Now,
 		RandSource:     flutils.NewRandomSource(),
 		S3Service:      s3,
-	}
+	}, nil
 }

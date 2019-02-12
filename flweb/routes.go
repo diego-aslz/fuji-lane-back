@@ -64,7 +64,7 @@ func (a *Application) AddRoutes(e *gin.Engine) {
 
 	a.route(e.GET, AmenityTypesPath, flactions.NewAmenityTypesList)
 	a.route(e.GET, BookingsPath, flactions.NewBookingsList, withRepository, loadSession, requireUser)
-	a.route(e.POST, BookingsPath, flactions.NewBookingsCreate, withRepository, loadSession, requireUser, parseBody)
+	a.route(e.POST, BookingsPath, a.bookingsCreate, withRepository, loadSession, requireUser, parseBody)
 	a.route(e.GET, CitiesPath, flactions.NewCitiesList, withRepository)
 	a.route(e.GET, CountriesPath, flactions.NewCountriesList, withRepository)
 
@@ -130,7 +130,7 @@ func (a *Application) newContext(c *gin.Context) *Context {
 }
 
 func (a *Application) facebookSignIn(c flactions.Context) flactions.Action {
-	return flactions.NewFacebookSignIn(a.facebookClient, c)
+	return flactions.NewFacebookSignIn(a.FacebookClient, c)
 }
 
 func (a *Application) imagesCreate(c flactions.Context) flactions.Action {
@@ -139,6 +139,10 @@ func (a *Application) imagesCreate(c flactions.Context) flactions.Action {
 
 func (a *Application) imagesDestroy(c flactions.Context) flactions.Action {
 	return flactions.NewImagesDestroy(a.S3Service, c)
+}
+
+func (a *Application) bookingsCreate(c flactions.Context) flactions.Action {
+	return flactions.NewBookingsCreate(c, a.Mailer)
 }
 
 func combineMiddleware(middleware ...func(contextFunc) contextFunc) contextFunc {
