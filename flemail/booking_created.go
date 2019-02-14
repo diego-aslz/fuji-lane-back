@@ -25,7 +25,12 @@ func (bc bookingCreated) replyTo() string {
 }
 
 func (bc bookingCreated) email() (*email.Email, error) {
-	body, err := renderTextTemplate(bc)
+	textBody, err := renderTextTemplate(bc)
+	if err != nil {
+		return nil, err
+	}
+
+	htmlBody, err := renderHTMLTemplate(bc)
 	if err != nil {
 		return nil, err
 	}
@@ -33,8 +38,8 @@ func (bc bookingCreated) email() (*email.Email, error) {
 	e := &email.Email{
 		To:      []string{bc.owner.Email},
 		Subject: "Booking Inquire - Fuji Lane",
-		Text:    []byte(body),
-		// HTML:    []byte("<h1>Fancy HTML is supported, too!</h1>"),
+		Text:    []byte(textBody),
+		HTML:    []byte(htmlBody),
 		Headers: textproto.MIMEHeader{},
 	}
 

@@ -1,0 +1,17 @@
+<p>Hi there,</p>
+
+<p>You received a new booking request:</p>
+
+<ul>
+  <li>User: {{ .User }}</li>
+  <li>Unit: {{ .Unit }}</li>
+  {{ with .Booking -}}
+  <li>Check In: {{ .CheckIn.Human }}</li>
+  <li>Check Out: {{ .CheckOut.Human }}</li>
+  <li>Nights: {{ .Nights }}</li>
+  {{ end -}}
+  <li>Price: {{ .PerNightPrice }}/night</li>
+  <li>Total: {{ .TotalPrice }}</li>
+</ul>
+
+<p>Respond to this email to get in touch with them.</p>

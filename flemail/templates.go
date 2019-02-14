@@ -2,25 +2,33 @@ package flemail
 
 import (
 	"bytes"
+	html "html/template"
 	"reflect"
-	txt "text/template"
+	text "text/template"
 
 	"github.com/nerde/fuji-lane-back/fujilane"
 )
 
-var tmpl *txt.Template
+var textTmpl = text.Must(text.ParseGlob(fujilane.Root() + "/flemail/templates/*.text"))
+var htmlTmpl = html.Must(html.ParseGlob(fujilane.Root() + "/flemail/templates/*.html"))
 
-func renderTextTemplate(data interface{}) (body string, err error) {
-	if tmpl == nil {
-		tmpl, err = txt.ParseGlob(fujilane.Root() + "/flemail/templates/*.text")
-		if err != nil {
-			return
-		}
+func renderTextTemplate(data interface{}) (string, error) {
+	return renderTemplate(data, "text")
+}
+
+func renderHTMLTemplate(data interface{}) (string, error) {
+	return renderTemplate(data, "html")
+}
+
+func renderTemplate(data interface{}, ext string) (string, error) {
+	buff := &bytes.Buffer{}
+
+	fn := textTmpl.ExecuteTemplate
+	if ext == "html" {
+		fn = htmlTmpl.ExecuteTemplate
 	}
 
-	buff := &bytes.Buffer{}
-	tmpl.ExecuteTemplate(buff, fujilane.ToSnake(reflect.TypeOf(data).Name())+".text", data)
-	body = buff.String()
+	err := fn(buff, fujilane.ToSnake(reflect.TypeOf(data).Name())+"."+ext, data)
 
-	return
+	return buff.String(), err
 }

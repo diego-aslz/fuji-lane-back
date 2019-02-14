@@ -69,6 +69,7 @@ Feature: Bookings
       | diego@selzlein.com | Standard Apt | 2018-06-09 | 2018-06-11 | Nothing | 2      | 11000         | 0               | 22000      |
     And "djeison@selzlein.com" should have received the following email:
       """
+      <<TEXT>>
       Hi there,
 
       You received a new booking request:
@@ -82,6 +83,22 @@ Feature: Bookings
       * Total: $220.00
 
       Respond to this email to get in touch with them.
+      <<HTML>>
+      <p>Hi there,</p>
+
+      <p>You received a new booking request:</p>
+
+      <ul>
+        <li>User: diego@selzlein.com</li>
+        <li>Unit: ACME Downtown &gt; Standard Apt</li>
+        <li>Check In: Sat, 09 Jun 2018</li>
+        <li>Check Out: Mon, 11 Jun 2018</li>
+        <li>Nights: 2</li>
+        <li>Price: $110.00/night</li>
+        <li>Total: $220.00</li>
+      </ul>
+
+      <p>Respond to this email to get in touch with them.</p>
       """
 
   Scenario: Booking a Unit with invalid information
@@ -139,6 +156,7 @@ Feature: Bookings
       | diego@selzlein.com | <Unit> | <CheckIn> | <CheckOut> | <Nights> | <PerNight>    | <Total>    |
     And "djeison@selzlein.com" should have received the following email:
       """
+      <<TEXT>>
       Hi there,
 
       You received a new booking request:
@@ -152,6 +170,22 @@ Feature: Bookings
       * Total: $<EmailTotal>
 
       Respond to this email to get in touch with them.
+      <<HTML>>
+      <p>Hi there,</p>
+
+      <p>You received a new booking request:</p>
+
+      <ul>
+        <li>User: diego@selzlein.com</li>
+        <li>Unit: ACME Downtown &gt; <Unit></li>
+        <li>Check In: <EmailCheckIn></li>
+        <li>Check Out: <EmailCheckOut></li>
+        <li>Nights: <Nights></li>
+        <li>Price: $<EmailPrice>/night</li>
+        <li>Total: $<EmailTotal></li>
+      </ul>
+
+      <p>Respond to this email to get in touch with them.</p>
       """
 
     Examples:
