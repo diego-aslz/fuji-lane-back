@@ -11,7 +11,7 @@ import (
 	"github.com/jinzhu/gorm"
 	"github.com/nerde/fuji-lane-back/flentities"
 	"github.com/nerde/fuji-lane-back/flservices"
-	"github.com/nerde/fuji-lane-back/flutils"
+	"github.com/nerde/fuji-lane-back/fujilane"
 )
 
 // ImagesCreateBody is the request body for creating a property image
@@ -51,7 +51,7 @@ func (a *ImagesCreate) Perform() {
 		id = a.UnitID
 	}
 
-	key := fmt.Sprintf("public/%s/%d/images/%s", collection, id, flutils.GenerateRandomString(30, a.RandomSource()))
+	key := fmt.Sprintf("public/%s/%d/images/%s", collection, id, fujilane.GenerateRandomString(30, a.RandomSource()))
 	url, err := a.GenerateURLToUploadPublicFile(key, a.Type, a.Size)
 
 	if err != nil {

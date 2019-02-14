@@ -4,7 +4,7 @@ import (
 	"math/rand"
 	"time"
 
-	"github.com/nerde/fuji-lane-back/flutils"
+	"github.com/nerde/fuji-lane-back/fujilane"
 
 	"github.com/gin-gonic/gin"
 	"github.com/nerde/fuji-lane-back/flservices"
@@ -44,7 +44,7 @@ func NewApplication() (*Application, error) {
 	return &Application{
 		FacebookClient: flservices.NewFacebookHTTPClient(),
 		TimeFunc:       time.Now,
-		RandSource:     flutils.NewRandomSource(),
+		RandSource:     fujilane.NewRandomSource(),
 		S3Service:      s3,
 	}, nil
 }

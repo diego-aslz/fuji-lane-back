@@ -6,7 +6,7 @@ import (
 	"os"
 	"strconv"
 
-	"github.com/nerde/fuji-lane-back/flutils"
+	"github.com/nerde/fuji-lane-back/fujilane"
 	yaml "gopkg.in/yaml.v2"
 )
 
@@ -90,7 +90,7 @@ func getIntVar(name string) int {
 // LoadEnv loads environment variables from the YAML configuration file for the current stage. If not present, it
 // does nothing
 func LoadEnv(stage string) error {
-	configFile := flutils.Root() + "/flconfig/" + stage + ".yml"
+	configFile := fujilane.Root() + "/flconfig/" + stage + ".yml"
 
 	bytes, err := ioutil.ReadFile(configFile)
 	if err != nil {

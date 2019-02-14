@@ -6,7 +6,7 @@ import (
 
 	"github.com/jordan-wright/email"
 	"github.com/nerde/fuji-lane-back/flentities"
-	"github.com/nerde/fuji-lane-back/flutils"
+	"github.com/nerde/fuji-lane-back/fujilane"
 )
 
 type bookingCreated struct {
@@ -57,11 +57,11 @@ func (bc bookingCreated) Unit() string {
 }
 
 func (bc bookingCreated) PerNightPrice() string {
-	return flutils.FormatCents(bc.Booking.PerNightCents)
+	return fujilane.FormatCents(bc.Booking.PerNightCents)
 }
 
 func (bc bookingCreated) TotalPrice() string {
-	return flutils.FormatCents(bc.Booking.TotalCents)
+	return fujilane.FormatCents(bc.Booking.TotalCents)
 }
 
 // BookingCreated returns an email to be sent when a new booking is created

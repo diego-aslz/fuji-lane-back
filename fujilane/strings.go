@@ -1,4 +1,4 @@
-package flutils
+package fujilane
 
 import "unicode"
 

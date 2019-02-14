@@ -4,7 +4,7 @@ import (
 	"errors"
 	"time"
 
-	"github.com/nerde/fuji-lane-back/flutils"
+	"github.com/nerde/fuji-lane-back/fujilane"
 )
 
 // Unit represents a type of rentable unit inside a Property. An individual property can have multiple units at
@@ -46,7 +46,7 @@ func (u *Unit) BeforeSave() error {
 func (u *Unit) CanBePublished() []error {
 	errs := []error{}
 
-	if flutils.IsBlankStr(&u.Name) {
+	if fujilane.IsBlankStr(&u.Name) {
 		errs = append(errs, errors.New("Name is required"))
 	}
 

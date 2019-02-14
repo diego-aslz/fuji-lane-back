@@ -1,4 +1,4 @@
-package flutils
+package fujilane
 
 import humanize "github.com/dustin/go-humanize"
 

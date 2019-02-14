@@ -4,7 +4,7 @@ import (
 	"errors"
 	"time"
 
-	"github.com/nerde/fuji-lane-back/flutils"
+	"github.com/nerde/fuji-lane-back/fujilane"
 )
 
 // Property contains address and can have multiple units that can be booked
@@ -55,7 +55,7 @@ func (p *Property) BeforeSave() error {
 func (p *Property) CanBePublished() []error {
 	errs := []error{}
 
-	if flutils.IsBlankStr(p.Name) {
+	if fujilane.IsBlankStr(p.Name) {
 		errs = append(errs, errors.New("Name is required"))
 	}
 
@@ -75,6 +75,6 @@ func (p *Property) CanBePublished() []error {
 }
 
 func (p *Property) isMissingAddress() bool {
-	return flutils.IsBlankStr(p.Address1) || flutils.IsBlankStr(p.PostalCode) || flutils.IsBlankUint(p.CityID) ||
+	return fujilane.IsBlankStr(p.Address1) || fujilane.IsBlankStr(p.PostalCode) || fujilane.IsBlankUint(p.CityID) ||
 		p.Latitude == 0 || p.Longitude == 0
 }

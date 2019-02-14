@@ -1,4 +1,4 @@
-package flutils
+package fujilane
 
 // IsBlankStr returns true if the given string pointer is nil or empty
 func IsBlankStr(str *string) bool {
