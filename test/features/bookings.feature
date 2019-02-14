@@ -75,11 +75,11 @@ Feature: Bookings
 
       * User: diego@selzlein.com
       * Unit: ACME Downtown > Standard Apt
-      * Check In: 2018-06-09
-      * Check Out: 2018-06-11
+      * Check In: Sat, 09 Jun 2018
+      * Check Out: Mon, 11 Jun 2018
       * Nights: 2
-      * Price: $110/night
-      * Total: $220
+      * Price: $110.00/night
+      * Total: $220.00
 
       Respond to this email to get in touch with them.
       """
@@ -145,8 +145,8 @@ Feature: Bookings
 
       * User: diego@selzlein.com
       * Unit: ACME Downtown > <Unit>
-      * Check In: <CheckIn>
-      * Check Out: <CheckOut>
+      * Check In: <EmailCheckIn>
+      * Check Out: <EmailCheckOut>
       * Nights: <Nights>
       * Price: $<EmailPrice>/night
       * Total: $<EmailTotal>
@@ -155,19 +155,19 @@ Feature: Bookings
       """
 
     Examples:
-      | Unit            | CheckIn    | CheckOut   | Nights | PerNight | Total   | EmailPrice | EmailTotal |
-      | Specific Prices | 2018-07-01 | 2018-07-02 | 1      | 13000    | 13000   | 130        | 130        |
-      | Specific Prices | 2018-07-01 | 2018-07-07 | 6      | 10000    | 60000   | 100        | 600        |
-      | Specific Prices | 2018-07-01 | 2018-07-08 | 7      | 8571     | 60000   | 85.71      | 600        |
-      | Specific Prices | 2018-07-01 | 2018-07-30 | 29     | 8571     | 248571  | 85.71      | 2485.71    |
-      | Specific Prices | 2018-07-01 | 2018-07-31 | 30     | 8000     | 240000  | 80         | 2400       |
-      | Specific Prices | 2018-07-01 | 2018-09-28 | 89     | 8000     | 712000  | 80         | 7120       |
-      | Specific Prices | 2018-07-01 | 2018-09-29 | 90     | 8333     | 750000  | 83.33      | 7500       |
-      | Specific Prices | 2018-07-01 | 2018-12-27 | 179    | 8333     | 1491667 | 83.33      | 14916.67   |
-      | Specific Prices | 2018-07-01 | 2018-12-28 | 180    | 6667     | 1200000 | 66.67      | 12000      |
-      | Specific Prices | 2018-07-01 | 2019-06-30 | 364    | 6667     | 2426667 | 66.67      | 24266.67   |
-      | Specific Prices | 2018-07-01 | 2019-07-01 | 365    | 6027     | 2200000 | 60.27      | 22000      |
-      | Single Price    | 2018-07-01 | 2018-07-02 | 1      | 10000    | 10000   | 100        | 100        |
-      | Single Price    | 2018-07-01 | 2018-07-08 | 7      | 10000    | 70000   | 100        | 700        |
-      | Single Price    | 2018-07-01 | 2018-12-28 | 180    | 10000    | 1800000 | 100        | 18000      |
-      | Single Price    | 2018-07-01 | 2019-07-01 | 365    | 10000    | 3650000 | 100        | 36500      |
+      | Unit            | CheckIn    | CheckOut   | Nights | PerNight | Total   | EmailPrice | EmailTotal | EmailCheckIn     | EmailCheckOut    |
+      | Specific Prices | 2018-07-01 | 2018-07-02 | 1      | 13000    | 13000   | 130.00     | 130.00     | Sun, 01 Jul 2018 | Mon, 02 Jul 2018 |
+      | Specific Prices | 2018-07-01 | 2018-07-07 | 6      | 10000    | 60000   | 100.00     | 600.00     | Sun, 01 Jul 2018 | Sat, 07 Jul 2018 |
+      | Specific Prices | 2018-07-01 | 2018-07-08 | 7      | 8571     | 60000   | 85.71      | 600.00     | Sun, 01 Jul 2018 | Sun, 08 Jul 2018 |
+      | Specific Prices | 2018-07-01 | 2018-07-30 | 29     | 8571     | 248571  | 85.71      | 2,485.71   | Sun, 01 Jul 2018 | Mon, 30 Jul 2018 |
+      | Specific Prices | 2018-07-01 | 2018-07-31 | 30     | 8000     | 240000  | 80.00      | 2,400.00   | Sun, 01 Jul 2018 | Tue, 31 Jul 2018 |
+      | Specific Prices | 2018-07-01 | 2018-09-28 | 89     | 8000     | 712000  | 80.00      | 7,120.00   | Sun, 01 Jul 2018 | Fri, 28 Sep 2018 |
+      | Specific Prices | 2018-07-01 | 2018-09-29 | 90     | 8333     | 750000  | 83.33      | 7,500.00   | Sun, 01 Jul 2018 | Sat, 29 Sep 2018 |
+      | Specific Prices | 2018-07-01 | 2018-12-27 | 179    | 8333     | 1491667 | 83.33      | 14,916.67  | Sun, 01 Jul 2018 | Thu, 27 Dec 2018 |
+      | Specific Prices | 2018-07-01 | 2018-12-28 | 180    | 6667     | 1200000 | 66.67      | 12,000.00  | Sun, 01 Jul 2018 | Fri, 28 Dec 2018 |
+      | Specific Prices | 2018-07-01 | 2019-06-30 | 364    | 6667     | 2426667 | 66.67      | 24,266.67  | Sun, 01 Jul 2018 | Sun, 30 Jun 2019 |
+      | Specific Prices | 2018-07-01 | 2019-07-01 | 365    | 6027     | 2200000 | 60.27      | 22,000.00  | Sun, 01 Jul 2018 | Mon, 01 Jul 2019 |
+      | Single Price    | 2018-07-01 | 2018-07-02 | 1      | 10000    | 10000   | 100.00     | 100.00     | Sun, 01 Jul 2018 | Mon, 02 Jul 2018 |
+      | Single Price    | 2018-07-01 | 2018-07-08 | 7      | 10000    | 70000   | 100.00     | 700.00     | Sun, 01 Jul 2018 | Sun, 08 Jul 2018 |
+      | Single Price    | 2018-07-01 | 2018-12-28 | 180    | 10000    | 1800000 | 100.00     | 18,000.00  | Sun, 01 Jul 2018 | Fri, 28 Dec 2018 |
+      | Single Price    | 2018-07-01 | 2019-07-01 | 365    | 10000    | 3650000 | 100.00     | 36,500.00  | Sun, 01 Jul 2018 | Mon, 01 Jul 2019 |

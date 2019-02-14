@@ -91,7 +91,13 @@ func (a *BookingsCreate) Perform() {
 		return
 	}
 
-	if mail := flemail.BookingCreated(booking, owner); mail != nil {
+	mail, err := flemail.BookingCreated(booking, owner)
+	if err != nil {
+		a.ServerError(err)
+		return
+	}
+
+	if mail != nil {
 		a.Mailer.Send(mail)
 		a.Diagnostics().Add("email_sent", "true")
 	}

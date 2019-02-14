@@ -1,0 +1,15 @@
+Hi there,
+
+You received a new booking request:
+
+* User: {{ .User }}
+* Unit: {{ .Unit }}
+{{ with .Booking -}}
+* Check In: {{ .CheckIn.Human }}
+* Check Out: {{ .CheckOut.Human }}
+* Nights: {{ .Nights }}
+{{ end -}}
+* Price: {{ .PerNightPrice }}/night
+* Total: {{ .TotalPrice }}
+
+Respond to this email to get in touch with them.

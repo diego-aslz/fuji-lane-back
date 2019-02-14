@@ -6,6 +6,7 @@ import (
 	"os"
 	"strconv"
 
+	"github.com/nerde/fuji-lane-back/flutils"
 	yaml "gopkg.in/yaml.v2"
 )
 
@@ -35,8 +36,6 @@ type Configuration struct {
 
 // Config is the current global configuration being used
 var Config *Configuration
-
-const projectPath = "github.com/nerde/fuji-lane-back"
 
 // LoadConfiguration from environment
 func LoadConfiguration() {
@@ -91,7 +90,7 @@ func getIntVar(name string) int {
 // LoadEnv loads environment variables from the YAML configuration file for the current stage. If not present, it
 // does nothing
 func LoadEnv(stage string) error {
-	configFile := os.Getenv("GOPATH") + "/src/" + projectPath + "/flconfig/" + stage + ".yml"
+	configFile := flutils.Root() + "/flconfig/" + stage + ".yml"
 
 	bytes, err := ioutil.ReadFile(configFile)
 	if err != nil {

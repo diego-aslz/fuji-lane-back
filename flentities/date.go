@@ -66,3 +66,8 @@ func (d *Date) Scan(value interface{}) (err error) {
 	}
 	return
 }
+
+// Human returns the date in a human friendly format
+func (d Date) Human() string {
+	return d.Time.Format("Mon, 02 Jan 2006")
+}

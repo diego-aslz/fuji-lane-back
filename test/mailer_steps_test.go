@@ -27,7 +27,7 @@ func assertEmail(to string, doc *gherkin.DocString) error {
 			continue
 		}
 
-		body := string(e.Text)
+		body := strings.TrimSpace(string(e.Text))
 		if body == doc.Content {
 			return nil
 		}

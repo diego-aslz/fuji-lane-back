@@ -62,6 +62,12 @@
   version = "v3.2.0"
 
 [[projects]]
+  name = "github.com/dustin/go-humanize"
+  packages = ["."]
+  revision = "9f541cc9db5d55bce703bd99987c9d5cb8eea45e"
+  version = "v1.0.0"
+
+[[projects]]
   branch = "master"
   name = "github.com/gin-contrib/sse"
   packages = ["."]
@@ -228,6 +234,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "9eb61fea5889470d471174a0c71948ced7f5e98166ae5a6a377f74cacd1be573"
+  inputs-digest = "102c2a06eead1f2466b5a813a21176f3284abce3d5d6d3a41b77078788ab84b9"
   solver-name = "gps-cdcl"
   solver-version = 1
