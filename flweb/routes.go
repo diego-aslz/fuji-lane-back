@@ -40,6 +40,8 @@ const (
 	ImagesUploadedPath = "/images/:id/uploaded"
 	// ListingPath to get listing details
 	ListingPath = "/listings/:id"
+	// NewsletterSubscribePath to subscribe to our newsletter
+	NewsletterSubscribePath = "/newsletter/subscribe"
 	// ProfilePath to publish a unit
 	ProfilePath = "/profile"
 	// PropertiesPath to access properties
@@ -61,6 +63,8 @@ const (
 // AddRoutes to a Gin Engine
 func (a *Application) AddRoutes(e *gin.Engine) {
 	a.route(e.GET, StatusPath, flactions.NewStatus)
+
+	a.route(e.POST, NewsletterSubscribePath, a.newsletterSubscribe, parseBody)
 
 	a.route(e.GET, AmenityTypesPath, flactions.NewAmenityTypesList)
 	a.route(e.GET, BookingsPath, flactions.NewBookingsList, withRepository, loadSession, requireUser)
@@ -143,6 +147,10 @@ func (a *Application) imagesDestroy(c flactions.Context) flactions.Action {
 
 func (a *Application) bookingsCreate(c flactions.Context) flactions.Action {
 	return flactions.NewBookingsCreate(c, a.Mailer)
+}
+
+func (a *Application) newsletterSubscribe(c flactions.Context) flactions.Action {
+	return flactions.NewNewsletterSubscribe(c, a.Sendgrid)
 }
 
 func combineMiddleware(middleware ...func(contextFunc) contextFunc) contextFunc {

@@ -17,6 +17,7 @@ type Application struct {
 	RandSource     rand.Source
 	Mailer         flservices.Mailer
 	S3Service      flservices.S3Service
+	Sendgrid       flservices.Sendgrid
 }
 
 // Start listening to requests
@@ -46,5 +47,6 @@ func NewApplication() (*Application, error) {
 		TimeFunc:       time.Now,
 		RandSource:     fujilane.NewRandomSource(),
 		S3Service:      s3,
+		Sendgrid:       flservices.NewSendgridAPI(),
 	}, nil
 }

@@ -22,16 +22,18 @@ type SMTP struct {
 
 // Configuration contains global system configuration details
 type Configuration struct {
-	AWSRegion           string
-	AWSBucket           string
-	DatabaseLogs        bool
-	DatabaseURL         string
-	FacebookAppID       string
-	FacebookClientToken string
-	MaxImageSizeMB      int
-	Stage               string
-	TokenSecret         string
-	SMTP                SMTP
+	AWSRegion                string
+	AWSBucket                string
+	DatabaseLogs             bool
+	DatabaseURL              string
+	FacebookAppID            string
+	FacebookClientToken      string
+	MaxImageSizeMB           int
+	Stage                    string
+	TokenSecret              string
+	SendgridKey              string
+	SendgridNewsletterListID string
+	SMTP                     SMTP
 }
 
 // Config is the current global configuration being used
@@ -52,15 +54,17 @@ func LoadConfiguration() {
 	}
 
 	Config = &Configuration{
-		AWSRegion:           os.Getenv("AWS_REGION"),
-		AWSBucket:           os.Getenv("AWS_BUCKET"),
-		DatabaseLogs:        os.Getenv("DATABASE_LOGS") == "true",
-		DatabaseURL:         os.Getenv("DATABASE_URL"),
-		FacebookAppID:       os.Getenv("FACEBOOK_APP_ID"),
-		FacebookClientToken: os.Getenv("FACEBOOK_CLIENT_TOKEN"),
-		MaxImageSizeMB:      maxImageSize,
-		Stage:               stage,
-		TokenSecret:         os.Getenv("TOKEN_SECRET"),
+		AWSRegion:                os.Getenv("AWS_REGION"),
+		AWSBucket:                os.Getenv("AWS_BUCKET"),
+		DatabaseLogs:             os.Getenv("DATABASE_LOGS") == "true",
+		DatabaseURL:              os.Getenv("DATABASE_URL"),
+		FacebookAppID:            os.Getenv("FACEBOOK_APP_ID"),
+		FacebookClientToken:      os.Getenv("FACEBOOK_CLIENT_TOKEN"),
+		MaxImageSizeMB:           maxImageSize,
+		Stage:                    stage,
+		TokenSecret:              os.Getenv("TOKEN_SECRET"),
+		SendgridKey:              os.Getenv("SENDGRID_KEY"),
+		SendgridNewsletterListID: os.Getenv("SENDGRID_NEWSLETTER_LIST_ID"),
 		SMTP: SMTP{
 			Auth:        os.Getenv("SMTP_AUTH"),
 			DefaultFrom: os.Getenv("SMTP_FROM"),
