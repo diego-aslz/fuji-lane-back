@@ -1,6 +1,6 @@
-Hi there,
+Dear property owner,
 
-You received a new booking request:
+You have received a new booking request:
 
 * User: {{ .User }}
 * Unit: {{ .Unit }}

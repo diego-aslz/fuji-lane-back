@@ -1,17 +1,22 @@
-<p>Hi there,</p>
+<div style="font-family: Proxima-Nova,Arial,sans-serif; line-height: 1.8; color: #464855; width: 500px; padding: 40px 20px;">
+  <img style="margin: 0 auto; display: block; margin-bottom: 50px;"
+    src="https://s3.amazonaws.com/fujilane-production/public/assets/leaf%402x.png" />
 
-<p>You received a new booking request:</p>
+  <p>Dear property owner,</p>
 
-<ul>
-  <li>User: {{ .User }}</li>
-  <li>Unit: {{ .Unit }}</li>
-  {{ with .Booking -}}
-  <li>Check In: {{ .CheckIn.Human }}</li>
-  <li>Check Out: {{ .CheckOut.Human }}</li>
-  <li>Nights: {{ .Nights }}</li>
-  {{ end -}}
-  <li>Price: {{ .PerNightPrice }}/night</li>
-  <li>Total: {{ .TotalPrice }}</li>
-</ul>
+  <p>You have received a new booking request:</p>
 
-<p>Respond to this email to get in touch with them.</p>
+  <ul>
+    <li>User: {{ .User }}</li>
+    <li>Unit: {{ .Unit }}</li>
+    {{ with .Booking -}}
+    <li>Check In: {{ .CheckIn.Human }}</li>
+    <li>Check Out: {{ .CheckOut.Human }}</li>
+    <li>Nights: {{ .Nights }}</li>
+    {{ end -}}
+    <li>Price: {{ .PerNightPrice }}/night</li>
+    <li>Total: {{ .TotalPrice }}</li>
+  </ul>
+
+  <p>Respond to this email to get in touch with them.</p>
+</div>

@@ -70,9 +70,9 @@ Feature: Bookings
     And "djeison@selzlein.com" should have received the following email:
       """
       <<TEXT>>
-      Hi there,
+      Dear property owner,
 
-      You received a new booking request:
+      You have received a new booking request:
 
       * User: diego@selzlein.com
       * Unit: ACME Downtown > Standard Apt
@@ -84,21 +84,26 @@ Feature: Bookings
 
       Respond to this email to get in touch with them.
       <<HTML>>
-      <p>Hi there,</p>
+      <div style="font-family: Proxima-Nova,Arial,sans-serif; line-height: 1.8; color: #464855; width: 500px; padding: 40px 20px;">
+        <img style="margin: 0 auto; display: block; margin-bottom: 50px;"
+          src="https://s3.amazonaws.com/fujilane-production/public/assets/leaf%402x.png" />
 
-      <p>You received a new booking request:</p>
+        <p>Dear property owner,</p>
 
-      <ul>
-        <li>User: diego@selzlein.com</li>
-        <li>Unit: ACME Downtown &gt; Standard Apt</li>
-        <li>Check In: Sat, 09 Jun 2018</li>
-        <li>Check Out: Mon, 11 Jun 2018</li>
-        <li>Nights: 2</li>
-        <li>Price: $110.00/night</li>
-        <li>Total: $220.00</li>
-      </ul>
+        <p>You have received a new booking request:</p>
 
-      <p>Respond to this email to get in touch with them.</p>
+        <ul>
+          <li>User: diego@selzlein.com</li>
+          <li>Unit: ACME Downtown &gt; Standard Apt</li>
+          <li>Check In: Sat, 09 Jun 2018</li>
+          <li>Check Out: Mon, 11 Jun 2018</li>
+          <li>Nights: 2</li>
+          <li>Price: $110.00/night</li>
+          <li>Total: $220.00</li>
+        </ul>
+
+        <p>Respond to this email to get in touch with them.</p>
+      </div>
       """
 
   Scenario: Booking a Unit with invalid information
@@ -157,9 +162,9 @@ Feature: Bookings
     And "djeison@selzlein.com" should have received the following email:
       """
       <<TEXT>>
-      Hi there,
+      Dear property owner,
 
-      You received a new booking request:
+      You have received a new booking request:
 
       * User: diego@selzlein.com
       * Unit: ACME Downtown > <Unit>
@@ -171,21 +176,26 @@ Feature: Bookings
 
       Respond to this email to get in touch with them.
       <<HTML>>
-      <p>Hi there,</p>
+      <div style="font-family: Proxima-Nova,Arial,sans-serif; line-height: 1.8; color: #464855; width: 500px; padding: 40px 20px;">
+        <img style="margin: 0 auto; display: block; margin-bottom: 50px;"
+          src="https://s3.amazonaws.com/fujilane-production/public/assets/leaf%402x.png" />
 
-      <p>You received a new booking request:</p>
+        <p>Dear property owner,</p>
 
-      <ul>
-        <li>User: diego@selzlein.com</li>
-        <li>Unit: ACME Downtown &gt; <Unit></li>
-        <li>Check In: <EmailCheckIn></li>
-        <li>Check Out: <EmailCheckOut></li>
-        <li>Nights: <Nights></li>
-        <li>Price: $<EmailPrice>/night</li>
-        <li>Total: $<EmailTotal></li>
-      </ul>
+        <p>You have received a new booking request:</p>
 
-      <p>Respond to this email to get in touch with them.</p>
+        <ul>
+          <li>User: diego@selzlein.com</li>
+          <li>Unit: ACME Downtown &gt; <Unit></li>
+          <li>Check In: <EmailCheckIn></li>
+          <li>Check Out: <EmailCheckOut></li>
+          <li>Nights: <Nights></li>
+          <li>Price: $<EmailPrice>/night</li>
+          <li>Total: $<EmailTotal></li>
+        </ul>
+
+        <p>Respond to this email to get in touch with them.</p>
+      </div>
       """
 
     Examples:
