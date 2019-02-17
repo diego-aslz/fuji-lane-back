@@ -4,7 +4,7 @@ Feature: Bookings
     Given the following accounts:
       | Name             |
       | Diego Apartments |
-    Given the following users:
+    And the following users:
       | Email                | Account          |
       | diego@selzlein.com   |                  |
       | djeison@selzlein.com | Diego Apartments |

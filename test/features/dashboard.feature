@@ -14,9 +14,10 @@ Feature: Dashboard
       | ACME Downtown | Standard Apt | 1        | 32     | 3            | 15    |
       | ACME Uptown   | Double Apt   | 2        | 52     | 6            | 10    |
     And the following users:
-      | Account          | Email              | Name                 |
-      | Diego Apartments | diego@selzlein.com | Diego Aguir Selzlein |
-      |                  | antoni@gmail.com   | Antoni               |
+      | Account          | Email                | Name                 |
+      | Diego Apartments | diego@selzlein.com   | Diego Aguir Selzlein |
+      |                  | antoni@gmail.com     | Antoni               |
+      |                  | djeison@selzlein.com | Djeison              |
     And I am authenticated with "diego@selzlein.com"
 
   Scenario: Getting dashboard details
@@ -65,4 +66,69 @@ Feature: Dashboard
           "visitsCount": 0
         }]
       }
+      """
+
+  Scenario: Listing my Properties' Bookings
+    Given the following bookings:
+      | ID | User                 | Unit         | CheckIn    | CheckOut   | Nights | PerNightCents | TotalCents |
+      | 1  | antoni@gmail.com     | Standard Apt | 2018-06-09 | 2018-06-11 | 2      | 10000         | 20000      |
+      | 2  | antoni@gmail.com     | Standard Apt | 2018-06-15 | 2018-06-16 | 1      | 10000         | 10000      |
+      | 3  | djeison@selzlein.com | Standard Apt | 2018-05-09 | 2018-05-11 | 2      | 10000         | 20000      |
+      | 4  | djeison@selzlein.com | Double Apt   | 2018-07-19 | 2018-07-21 | 2      | 10000         | 20000      |
+    When I list my properties' bookings
+    Then I should receive an "OK" response with the following JSON:
+      """
+      [{
+        "id": 3,
+        "propertyName": "ACME Downtown",
+        "unitName": "Standard Apt",
+        "checkIn": "2018-05-09",
+        "checkOut": "2018-05-11",
+        "nights": 2,
+        "perNightCents": 10000,
+        "totalCents": 20000,
+        "user": {
+          "name": "Djeison",
+          "email": "djeison@selzlein.com"
+        }
+      }, {
+        "id": 2,
+        "propertyName": "ACME Downtown",
+        "unitName": "Standard Apt",
+        "checkIn": "2018-06-15",
+        "checkOut": "2018-06-16",
+        "nights": 1,
+        "perNightCents": 10000,
+        "totalCents": 10000,
+        "user": {
+          "name": "Antoni",
+          "email": "antoni@gmail.com"
+        }
+      }, {
+        "id": 1,
+        "propertyName": "ACME Downtown",
+        "unitName": "Standard Apt",
+        "checkIn": "2018-06-09",
+        "checkOut": "2018-06-11",
+        "nights": 2,
+        "perNightCents": 10000,
+        "totalCents": 20000,
+        "user": {
+          "name": "Antoni",
+          "email": "antoni@gmail.com"
+        }
+      }]
+      """
+
+  Scenario: Paginating my properties' Bookings
+    Given the following bookings:
+      | ID | User                 | Unit         | CheckIn    | CheckOut   | Nights |
+      | 1  | antoni@gmail.com     | Standard Apt | 2018-06-09 | 2018-06-11 | 2      |
+      | 2  | antoni@gmail.com     | Standard Apt | 2018-06-15 | 2018-06-16 | 1      |
+      | 3  | djeison@selzlein.com | Standard Apt | 2018-05-09 | 2018-05-11 | 2      |
+      | 4  | djeison@selzlein.com | Double Apt   | 2018-07-19 | 2018-07-21 | 2      |
+    When I list my properties' bookings for page "2"
+    Then I should receive an "OK" response with the following JSON:
+      """
+      []
       """

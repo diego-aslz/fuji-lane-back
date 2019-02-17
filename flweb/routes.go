@@ -30,6 +30,8 @@ const (
 	CountriesPath = "/countries"
 	// DashboardPath for getting dashboard details
 	DashboardPath = "/dashboard"
+	// DashboardBookingsPath for accessing my properties' bookings
+	DashboardBookingsPath = "/dashboard/bookings"
 	// ImagePath to access a specific image
 	ImagePath = "/images/:id"
 	// ImagesSortPath to access images
@@ -73,6 +75,8 @@ func (a *Application) AddRoutes(e *gin.Engine) {
 	a.route(e.GET, CountriesPath, flactions.NewCountriesList, withRepository)
 
 	a.route(e.GET, DashboardPath, flactions.NewDashboard, withRepository, loadSession, requireUser, requireAccount)
+	a.route(e.GET, DashboardBookingsPath, flactions.NewDashboardBookings, withRepository, loadSession, requireUser,
+		requireAccount)
 
 	a.route(e.GET, SearchPath, flactions.NewSearch, withRepository)
 

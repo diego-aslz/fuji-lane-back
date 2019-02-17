@@ -26,12 +26,6 @@ func tableRowToBooking(r *flentities.Repository, a interface{}) (interface{}, er
 	return &row.Booking, loadAssociationByName(&row.Booking, "Unit", row.Unit)
 }
 
-func performGETStepWithPage(path string) func(string) error {
-	return func(page string) error {
-		return perform("GET", path+"?page="+page, nil)
-	}
-}
-
 type bookingBodyTable struct {
 	flactions.BookingsCreateBody
 	Unit string
@@ -79,7 +73,6 @@ func bookingToTableRow(r *flentities.Repository, a interface{}) (interface{}, er
 
 func BookingContext(s *godog.Suite) {
 	s.Step(`^the following bookings:$`, createFromTableStep(new(bookingRow), tableRowToBooking))
-	s.Step(`^I get dashboard details for:$`, performGETWithParamsStep(flweb.DashboardPath))
 	s.Step(`^I list my bookings$`, performGETStep(flweb.BookingsPath))
 	s.Step(`^I list my bookings for page "([^"]*)"$`, performGETStepWithPage(flweb.BookingsPath))
 	s.Step(`^I create the following booking:$`, requestBookingsCreate)

@@ -190,6 +190,12 @@ func performGETWithParamsStep(path string) func(*gherkin.DataTable) error {
 	}
 }
 
+func performGETStepWithPage(path string) func(string) error {
+	return func(page string) error {
+		return perform("GET", path+"?page="+page, nil)
+	}
+}
+
 func performGETStep(path string) func() error {
 	return func() error {
 		return perform("GET", path, nil)
