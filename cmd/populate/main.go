@@ -163,8 +163,7 @@ func createAccount() error {
 			}
 
 			for j := 0; j < 6; j++ {
-				publishedAt := time.Now()
-				publishedAt = publishedAt.AddDate(0, 0, randomInt(365)*-1)
+				publishedAt := time.Now().AddDate(0, 0, randomInt(365)*-1)
 
 				unit := &flentities.Unit{
 					PublishedAt:   &publishedAt,
@@ -211,6 +210,7 @@ func createAccount() error {
 					prices = append(prices, nights*(randomInt(variation)+130-(idx*variation/2)))
 				}
 				pricesCount := randomInt(7) + 1
+				unit.Prices = []*flentities.Price{}
 				for j := 0; j < pricesCount; j++ {
 					pr := &flentities.Price{
 						Unit:      unit,
@@ -219,6 +219,30 @@ func createAccount() error {
 					}
 
 					if err := r.Save(pr).Error; err != nil {
+						return err
+					}
+
+					unit.Prices = append(unit.Prices, pr)
+				}
+
+				bookingsCount := randomInt(5)
+				for j := 0; j < bookingsCount; j++ {
+					checkIn := flentities.Date{Time: time.Now().AddDate(0, 0, randomInt(365)-180)}
+					user := &flentities.User{}
+					if err := r.Order("random()").Limit(1).Find(user).Error; err != nil {
+						return err
+					}
+
+					boo := &flentities.Booking{
+						User:     user,
+						Unit:     unit,
+						CheckIn:  checkIn,
+						CheckOut: flentities.Date{Time: checkIn.AddDate(0, 0, 1+randomInt(120))},
+					}
+
+					boo.Calculate()
+
+					if err := r.Save(boo).Error; err != nil {
 						return err
 					}
 				}
