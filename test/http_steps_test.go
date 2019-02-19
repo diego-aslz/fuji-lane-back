@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"reflect"
+	"regexp"
 	"strings"
 
 	"github.com/DATA-DOG/godog"
@@ -43,7 +44,7 @@ func assertResponseStatusAndEmptyList(status string) error {
 	return nil
 }
 
-func assertResponseStatusAndBody(status string, table *gherkin.DataTable) error {
+func assertResponseStatusAndJSONTable(status string, table *gherkin.DataTable) error {
 	if err := assertResponseStatus(status); err != nil {
 		return err
 	}
@@ -75,8 +76,7 @@ func assertResponseStatusAndJSON(status string, rawJSON *gherkin.DocString) erro
 	}
 
 	var expectedBody interface{}
-	err := json.Unmarshal([]byte(rawJSON.Content), &expectedBody)
-	if err != nil {
+	if err := json.Unmarshal([]byte(rawJSON.Content), &expectedBody); err != nil {
 		return err
 	}
 
@@ -87,6 +87,37 @@ func assertResponseStatusAndJSON(status string, rawJSON *gherkin.DocString) erro
 
 	if diff := deep.Equal(expectedBody, actualBody); diff != nil {
 		return errors.New(strings.Join(diff, "\n"))
+	}
+
+	return nil
+}
+
+func assertResponseStatusAndXML(status string, rawXML *gherkin.DocString) error {
+	if err := assertResponseStatus(status); err != nil {
+		return err
+	}
+
+	// var expectedBody interface{}
+	// if err := xml.Unmarshal([]byte(rawXML.Content), &expectedBody); err != nil {
+	// 	return err
+	// }
+
+	// var actualBody interface{}
+	// if err := xml.Unmarshal([]byte(response.Body.String()), &actualBody); err != nil {
+	// 	return fmt.Errorf("Unable to unmarshal %s: %s", response.Body.String(), err.Error())
+	// }
+
+	// fmt.Println(rawXML.Content)
+	// fmt.Println(expectedBody)
+
+	// if diff := deep.Equal(expectedBody, actualBody); diff != nil {
+	// 	return errors.New(strings.Join(diff, "\n"))
+	// }
+
+	body := strings.TrimSpace(response.Body.String())
+	expectedBody := strings.TrimSpace(string(regexp.MustCompile("\\n\\s*").ReplaceAll([]byte(rawXML.Content), []byte(""))))
+	if expectedBody != body {
+		return fmt.Errorf("Expected body:\n%s\nBut got:\n%s", expectedBody, body)
 	}
 
 	return nil
@@ -291,8 +322,9 @@ func assertResponseHeaders(table *gherkin.DataTable) error {
 func HTTPContext(s *godog.Suite) {
 	s.Step(`^I should receive an? "([^"]*)" response with no body$`, assertResponseStatusAndNoBody)
 	s.Step(`^I should receive an? "([^"]*)" response with an empty list$`, assertResponseStatusAndEmptyList)
-	s.Step(`^I should receive an? "([^"]*)" response with the following body:$`, assertResponseStatusAndBody)
+	s.Step(`^I should receive an? "([^"]*)" response with the following body:$`, assertResponseStatusAndJSONTable)
 	s.Step(`^I should receive an? "([^"]*)" response with the following JSON:$`, assertResponseStatusAndJSON)
+	s.Step(`^I should receive an? "([^"]*)" response with the following XML:$`, assertResponseStatusAndXML)
 	s.Step(`^I should receive an? "([^"]*)" response with the following errors:$`, assertResponseStatusAndErrors)
 	s.Step(`^I should receive an? "([^"]*)" response$`, assertResponseStatus)
 	s.Step(`^I should receive the following headers:$`, assertResponseHeaders)

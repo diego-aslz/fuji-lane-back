@@ -113,4 +113,5 @@ func PropertyContext(s *godog.Suite) {
 	s.Step(`^I get details for property "([^"]*)"$`, performGETPropertyStep(flweb.PropertyPath))
 	s.Step(`^I get listing details for "([^"]*)"$`, performGETPropertyStep(flweb.ListingPath))
 	s.Step(`^I list my properties$`, performGETStep(flweb.PropertiesPath))
+	s.Step(`^I get properties sitemap$`, performGETStep(flweb.PropertiesSitemapPath))
 }

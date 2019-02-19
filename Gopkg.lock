@@ -205,6 +205,18 @@
   version = "v3.4.1"
 
 [[projects]]
+  name = "github.com/snabb/diagio"
+  packages = ["."]
+  revision = "547b35a58516ce5722819d6c29702e428b2d40e1"
+  version = "v1.0.0"
+
+[[projects]]
+  name = "github.com/snabb/sitemap"
+  packages = ["."]
+  revision = "ac70ad656cd7f36cc5623306806a3583707c9a56"
+  version = "v1.0.0"
+
+[[projects]]
   name = "github.com/ugorji/go"
   packages = ["codec"]
   revision = "b4c50a2b199d93b13dc15e78929cfb23bfdf21ab"
@@ -249,6 +261,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "a12e9eb02f1e4d50ecd100d7e019919d38302ebdd59d08aa87fe8d11293c9d5f"
+  inputs-digest = "0a66fbebb6965d8b016a92e94c643f9482a664b071f7c2cd0488423fb648dc91"
   solver-name = "gps-cdcl"
   solver-version = 1

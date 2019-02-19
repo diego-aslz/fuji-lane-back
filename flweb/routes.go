@@ -50,6 +50,8 @@ const (
 	PropertiesPath = "/properties"
 	// PropertiesPublishPath to publish a property
 	PropertiesPublishPath = "/properties/:id/publish"
+	// PropertiesSitemapPath to access properties
+	PropertiesSitemapPath = "/properties_sitemap.xml"
 	// PropertyPath to access a specific property
 	PropertyPath = "/properties/:id"
 	// SearchPath to search for listings
@@ -118,6 +120,7 @@ func (a *Application) routeProperties(e *gin.Engine) {
 	a.route(e.POST, PropertiesPath, flactions.NewPropertiesCreate, withRepository, loadSession, requireUser, requireAccount)
 	a.route(e.PUT, PropertyPath, flactions.NewPropertiesUpdate, withRepository, loadSession, requireUser, requireAccount, parseBody)
 	a.route(e.PUT, PropertiesPublishPath, flactions.NewPropertiesPublish, withRepository, loadSession, requireUser, requireAccount)
+	a.route(e.GET, PropertiesSitemapPath, flactions.NewPropertiesSitemap, withRepository)
 }
 
 type ginMethod func(string, ...gin.HandlerFunc) gin.IRoutes

@@ -46,6 +46,11 @@ func (c *Context) Respond(status int, body interface{}) {
 	c.JSON(status, body)
 }
 
+// RespondXML responds with the given status and raw text
+func (c *Context) RespondXML(status int, body interface{}) {
+	c.XML(status, body)
+}
+
 // RespondNotFound returns a default Not Found error with Not Found status code
 func (c *Context) RespondNotFound() {
 	c.RespondError(http.StatusNotFound, errors.New("Not Found"))

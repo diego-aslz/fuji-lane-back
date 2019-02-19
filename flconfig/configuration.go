@@ -22,6 +22,7 @@ type SMTP struct {
 
 // Configuration contains global system configuration details
 type Configuration struct {
+	AppURL                   string
 	AWSRegion                string
 	AWSBucket                string
 	DatabaseLogs             bool
@@ -54,6 +55,7 @@ func LoadConfiguration() {
 	}
 
 	Config = &Configuration{
+		AppURL:                   os.Getenv("APP_URL"),
 		AWSRegion:                os.Getenv("AWS_REGION"),
 		AWSBucket:                os.Getenv("AWS_BUCKET"),
 		DatabaseLogs:             os.Getenv("DATABASE_LOGS") == "true",
