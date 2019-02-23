@@ -317,11 +317,11 @@ func forceConfiguration(table *gherkin.DataTable) error {
 		return err
 	}
 
-	if value, ok := config["MAX_IMAGE_SIZE_MB"]; ok {
-		if flconfig.Config.MaxImageSizeMB, err = strconv.Atoi(value); err != nil {
-			return err
-		}
+	for k, v := range config {
+		os.Setenv(k, v)
 	}
+
+	flconfig.LoadConfiguration()
 
 	return nil
 }

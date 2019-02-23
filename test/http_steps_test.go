@@ -92,30 +92,22 @@ func assertResponseStatusAndJSON(status string, rawJSON *gherkin.DocString) erro
 	return nil
 }
 
-func assertResponseStatusAndXML(status string, rawXML *gherkin.DocString) error {
+func assertResponseStatusAndXML(status string, xmlDoc *gherkin.DocString) error {
+	body := string(regexp.MustCompile("\\n\\s*").ReplaceAll([]byte(xmlDoc.Content), []byte("")))
+	return assertResponseStatusAndString(status, body)
+}
+
+func assertResponseStatusAndText(status string, textDoc *gherkin.DocString) error {
+	return assertResponseStatusAndString(status, textDoc.Content)
+}
+
+func assertResponseStatusAndString(status, expectedBody string) error {
 	if err := assertResponseStatus(status); err != nil {
 		return err
 	}
 
-	// var expectedBody interface{}
-	// if err := xml.Unmarshal([]byte(rawXML.Content), &expectedBody); err != nil {
-	// 	return err
-	// }
-
-	// var actualBody interface{}
-	// if err := xml.Unmarshal([]byte(response.Body.String()), &actualBody); err != nil {
-	// 	return fmt.Errorf("Unable to unmarshal %s: %s", response.Body.String(), err.Error())
-	// }
-
-	// fmt.Println(rawXML.Content)
-	// fmt.Println(expectedBody)
-
-	// if diff := deep.Equal(expectedBody, actualBody); diff != nil {
-	// 	return errors.New(strings.Join(diff, "\n"))
-	// }
-
 	body := strings.TrimSpace(response.Body.String())
-	expectedBody := strings.TrimSpace(string(regexp.MustCompile("\\n\\s*").ReplaceAll([]byte(rawXML.Content), []byte(""))))
+	expectedBody = strings.TrimSpace(expectedBody)
 	if expectedBody != body {
 		return fmt.Errorf("Expected body:\n%s\nBut got:\n%s", expectedBody, body)
 	}
@@ -328,4 +320,5 @@ func HTTPContext(s *godog.Suite) {
 	s.Step(`^I should receive an? "([^"]*)" response with the following errors:$`, assertResponseStatusAndErrors)
 	s.Step(`^I should receive an? "([^"]*)" response$`, assertResponseStatus)
 	s.Step(`^I should receive the following headers:$`, assertResponseHeaders)
+	s.Step(`^I should receive an "([^"]*)" response with the following text:$`, assertResponseStatusAndText)
 }

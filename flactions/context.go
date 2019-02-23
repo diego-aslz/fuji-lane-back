@@ -31,6 +31,7 @@ type Context interface {
 	// Respond sets the HTTP response status and body with the given parameters
 	Respond(status int, body interface{})
 	RespondXML(status int, body interface{})
+	RespondText(status int, body string)
 
 	// RespondNotFound returns a default Not Found error with Not Found status code
 	RespondNotFound()
