@@ -3,8 +3,8 @@ package flactions
 import (
 	"errors"
 	"net/http"
-	"time"
 
+	"github.com/nerde/fuji-lane-back/flentities"
 	"github.com/nerde/fuji-lane-back/flreports"
 )
 
@@ -27,15 +27,15 @@ func (a *Dashboard) Perform() {
 		return
 	}
 
-	since, err := time.Parse(time.RFC3339, rawSince)
+	since, err := flentities.ParseDate(rawSince)
 	if err != nil {
 		a.Diagnostics().AddError(err)
 		a.RespondError(http.StatusBadRequest, errors.New("Invalid 'since' parameter"))
 		return
 	}
 
-	var until time.Time
-	until, err = time.Parse(time.RFC3339, rawUntil)
+	var until flentities.Date
+	until, err = flentities.ParseDate(rawUntil)
 	if err != nil {
 		a.Diagnostics().AddError(err)
 		a.RespondError(http.StatusBadRequest, errors.New("Invalid 'until' parameter"))

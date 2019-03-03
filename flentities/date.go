@@ -26,6 +26,11 @@ func (d Date) NightsFrom(other Date) int {
 	return int(math.Ceil(d.Sub(other.Time).Hours() / 24))
 }
 
+// Tomorrow returns the next Date after this Date
+func (d Date) Tomorrow() Date {
+	return Date{d.Time.Add(24 * time.Hour)}
+}
+
 // MarshalJSON marshals this date to a String
 func (d Date) MarshalJSON() ([]byte, error) {
 	return json.Marshal(d.String())

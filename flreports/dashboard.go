@@ -1,8 +1,6 @@
 package flreports
 
 import (
-	"time"
-
 	"github.com/nerde/fuji-lane-back/flentities"
 )
 
@@ -20,12 +18,12 @@ type DashboardDaily struct {
 }
 
 type dateTotal struct {
-	Date  time.Time
+	Date  flentities.Date
 	Total int64
 }
 
 // NewDashboard returns a new DashboardReport with values for the given parameters
-func NewDashboard(r *flentities.Repository, accountID uint, since, until time.Time) (*Dashboard, error) {
+func NewDashboard(r *flentities.Repository, accountID uint, since, until flentities.Date) (*Dashboard, error) {
 	report := &Dashboard{
 		Totals: map[string]int64{
 			"searches":  0,
@@ -39,7 +37,7 @@ func NewDashboard(r *flentities.Repository, accountID uint, since, until time.Ti
 	bookingTotals := []dateTotal{}
 	err := r.Model(&flentities.Booking{}).Joins("JOIN units ON bookings.unit_id = units.id").
 		Joins("JOIN properties ON units.property_id = properties.id").Where("properties.account_id = ?", accountID).
-		Where("bookings.created_at >= ?", since).Where("bookings.created_at < ?", until).
+		Where("bookings.created_at >= ?", since).Where("bookings.created_at < ?", until.Tomorrow()).
 		Select("date(bookings.created_at) date, count(*) total").Group("date(bookings.created_at)").
 		Scan(&bookingTotals).Error
 
@@ -48,7 +46,7 @@ func NewDashboard(r *flentities.Repository, accountID uint, since, until time.Ti
 	}
 
 	s := since
-	for s.Before(until) {
+	for s.Before(until.Tomorrow().Time) {
 		formattedDate := s.Format(flentities.Layout)
 
 		total := dateTotal{}
@@ -66,7 +64,7 @@ func NewDashboard(r *flentities.Repository, accountID uint, since, until time.Ti
 
 		report.Totals["requests"] += total.Total
 
-		s = s.Add(24 * time.Hour)
+		s = s.Tomorrow()
 	}
 
 	return report, nil

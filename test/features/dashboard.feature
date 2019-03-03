@@ -26,11 +26,11 @@ Feature: Dashboard
       | antoni@gmail.com | Standard Apt | 2018-05-31T23:59:00Z | 2018-06-09 | 2018-06-11 | 2      |
       | antoni@gmail.com | Standard Apt | 2018-06-01T00:01:00Z | 2018-06-09 | 2018-06-11 | 2      |
       | antoni@gmail.com | Double Apt   | 2018-06-01T00:01:00Z | 2018-06-19 | 2018-06-21 | 2      |
-      | antoni@gmail.com | Standard Apt | 2018-06-06T23:59:00Z | 2018-06-09 | 2018-06-11 | 2      |
-      | antoni@gmail.com | Standard Apt | 2018-06-07T00:01:00Z | 2018-06-09 | 2018-06-11 | 2      |
+      | antoni@gmail.com | Standard Apt | 2018-06-07T23:59:00Z | 2018-06-09 | 2018-06-11 | 2      |
+      | antoni@gmail.com | Standard Apt | 2018-06-08T00:01:00Z | 2018-06-09 | 2018-06-11 | 2      |
     When I get dashboard details for:
-      | since | 2018-06-01T00:00:00Z |
-      | until | 2018-06-07T00:00:00Z |
+      | since | 2018-06-01 |
+      | until | 2018-06-07 |
     Then I should receive an "OK" response with the following JSON:
       """
       {
@@ -62,6 +62,10 @@ Feature: Dashboard
           "visitsCount": 0
         }, {
           "date": "2018-06-06",
+          "bookingsCount": 0,
+          "visitsCount": 0
+        }, {
+          "date": "2018-06-07",
           "bookingsCount": 1,
           "visitsCount": 0
         }]
