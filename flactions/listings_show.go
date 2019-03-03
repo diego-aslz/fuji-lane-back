@@ -57,11 +57,9 @@ func (a *ListingsShow) Perform() {
 
 	similarListings := []*flentities.Property{}
 	err = a.Repository().
-		Preload("Images", flentities.Image{Uploaded: true}, flentities.ImagesDefaultOrder,
-			func(db *gorm.DB) *gorm.DB { return db.Limit(1) }).
+		Preload("Images", flentities.Image{Uploaded: true}, flentities.ImagesDefaultOrder).
 		Preload("Units", func(db *gorm.DB) *gorm.DB {
-			return db.Not(publishedNull).Order("(SELECT cents FROM prices WHERE unit_id = units.id AND min_nights = 1)").
-				Limit(1)
+			return db.Not(publishedNull).Order("(SELECT cents FROM prices WHERE unit_id = units.id AND min_nights = 1)")
 		}).
 		Preload("Units.Prices").
 		Where(map[string]interface{}{"city_id": property.CityID}).
