@@ -20,34 +20,31 @@ Feature: Listings
       | 2  | Diego Apartments | ACME Uptown        | 2018-06-01T08:00:00Z | <p>Uptown Overview</p>   | 100      | 200       | Add 1                   | 3      | 2         | 3           |
       | 3  | Diego Apartments | No Published Units | 2018-06-01T08:00:00Z | <p>Overview</p>          | 100      | 200       | Add 1                   | 3      | 2         | 4           |
       | 4  | Diego Apartments | Different City     | 2018-06-01T08:00:00Z | <p>Overview</p>          | 100      | 200       | Add 1                   | 2      | 1         | 5           |
-      | 5  | Diego Apartments | Another Similar    | 2018-06-01T08:00:00Z | <p>Another</p>           | 100      | 200       | Add 1                   | 3      | 2         | 3           |
     And the following properties:
       | ID | Account          | Name          | Overview        | Latitude | Longitude | CityID | CountryID |
       | 10 | Diego Apartments | Not Published | <p>Overview</p> | 100      | 200       | 3      | 2         |
     And the following units:
-      | ID | Property        | Name         | Bedrooms | Bathrooms | SizeM2 | MaxOccupancy | Count | PublishedAt          |
-      | 11 | ACME Downtown   | Double Apt   | 2        | 2         | 62     | 6            | 10    | 2018-06-01T08:00:00Z |
-      | 10 | ACME Downtown   | Standard Apt | 1        | 1         | 52     | 3            | 15    | 2018-06-01T08:00:00Z |
-      | 12 | ACME Uptown     | Triple Apt   | 3        | 4         | 80     | 6            | 5     | 2018-06-01T08:00:00Z |
-      | 13 | Different City  | Penthouse    | 3        | 4         | 80     | 6            | 5     | 2018-06-01T08:00:00Z |
-      | 14 | Another Similar | Cozy Apt     | 3        | 4         | 80     | 6            | 5     | 2018-06-01T08:00:00Z |
+      | ID | Property       | Name         | Bedrooms | Bathrooms | SizeM2 | MaxOccupancy | Count | PublishedAt          |
+      | 11 | ACME Downtown  | Double Apt   | 2        | 2         | 62     | 6            | 10    | 2018-06-01T08:00:00Z |
+      | 10 | ACME Downtown  | Standard Apt | 1        | 1         | 52     | 3            | 15    | 2018-06-01T08:00:00Z |
+      | 12 | ACME Uptown    | Triple Apt   | 3        | 4         | 80     | 6            | 5     | 2018-06-01T08:00:00Z |
+      | 13 | Different City | Penthouse    | 3        | 4         | 80     | 6            | 5     | 2018-06-01T08:00:00Z |
     And the following prices:
       | Unit         | MinNights | Cents |
       | Double Apt   | 1         | 12000 |
       | Standard Apt | 1         | 10000 |
       | Triple Apt   | 1         | 20000 |
       | Penthouse    | 1         | 20000 |
-      | Cozy Apt     | 1         | 20000 |
     And the following units:
       | ID | Property           | Name                  |
       | 22 | ACME Downtown      | Unpublished Penthouse |
       | 23 | No Published Units | Unpublished           |
     And the following images:
-      | ID | Property        | Uploaded | Name         | URL                                   | Type       | Size    | Position |
-      | 1  | ACME Downtown   | true     | front.jpg    | https://s3.amazonaws.com/front.jpg    | image/jpeg | 1000000 | 1        |
-      | 2  | ACME Downtown   | false    | back.jpg     | https://s3.amazonaws.com/back.jpg     | image/jpeg | 1000000 | 2        |
-      | 3  | ACME Uptown     | true     | property.jpg | https://s3.amazonaws.com/property.jpg | image/jpeg | 1000000 | 1        |
-      | 4  | Another Similar | true     | property.jpg | https://s3.amazonaws.com/property.jpg | image/jpeg | 1000000 | 1        |
+      | ID | Property      | Uploaded | Name          | URL                                    | Type       | Size    | Position |
+      | 1  | ACME Downtown | true     | front.jpg     | https://s3.amazonaws.com/front.jpg     | image/jpeg | 1000000 | 1        |
+      | 2  | ACME Downtown | false    | back.jpg      | https://s3.amazonaws.com/back.jpg      | image/jpeg | 1000000 | 2        |
+      | 3  | ACME Uptown   | true     | property.jpg  | https://s3.amazonaws.com/property.jpg  | image/jpeg | 1000000 | 1        |
+      | 4  | ACME Uptown   | true     | reception.jpg | https://s3.amazonaws.com/reception.jpg | image/jpeg | 1000000 | 2        |
     And the following images:
       | ID | Unit         | Uploaded | Name      | URL                                | Type       | Size    | Position |
       | 10 | Standard Apt | true     | front.jpg | https://s3.amazonaws.com/front.jpg | image/jpeg | 1000000 | 1        |
@@ -96,30 +93,14 @@ Feature: Listings
           "images": [{
             "name": "property.jpg",
             "url": "https://s3.amazonaws.com/property.jpg"
+          }, {
+            "name": "reception.jpg",
+            "url": "https://s3.amazonaws.com/reception.jpg"
           }],
           "name": "ACME Uptown",
           "overview": "<p>Uptown Overview</p>",
           "sizeM2": 80,
           "slug": "acme-uptown"
-        }, {
-          "address1": "Add 1",
-          "address2": null,
-          "address3": null,
-          "prices": [{
-            "minNights": 1,
-            "cents": 20000
-          }],
-          "bathrooms": 4,
-          "bedrooms": 3,
-          "id": 5,
-          "images": [{
-            "name": "property.jpg",
-            "url": "https://s3.amazonaws.com/property.jpg"
-          }],
-          "name": "Another Similar",
-          "overview": "<p>Another</p>",
-          "sizeM2": 80,
-          "slug": "another-similar"
         }],
         "slug": "acme-downtown",
         "units": [{
