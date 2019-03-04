@@ -7,32 +7,33 @@ import (
 
 	"github.com/jinzhu/gorm"
 	"github.com/nerde/fuji-lane-back/flentities"
+	"github.com/nerde/fuji-lane-back/optional"
 )
 
 // PropertiesUpdateBody is the request body for creating a property image
 type PropertiesUpdateBody struct {
-	Name            *string  `json:"name"`
-	Address1        *string  `json:"address1"`
-	Address2        *string  `json:"address2"`
-	Address3        *string  `json:"address3"`
-	CityID          *uint    `json:"cityID"`
-	Latitude        *float32 `json:"latitude"`
-	Longitude       *float32 `json:"longitude"`
-	PostalCode      *string  `json:"postalCode"`
-	MinimumStay     *int     `json:"minimumStay"`
-	Deposit         *string  `json:"deposit"`
-	Cleaning        *string  `json:"cleaning"`
-	NearestAirport  *string  `json:"nearestAirport"`
-	NearestSubway   *string  `json:"nearestSubway"`
-	NearbyLocations *string  `json:"nearbyLocations"`
-	Overview        *string  `json:"overview"`
+	Name            optional.String  `json:"name"`
+	Address1        optional.String  `json:"address1"`
+	Address2        optional.String  `json:"address2"`
+	Address3        optional.String  `json:"address3"`
+	CityID          optional.Uint    `json:"cityID"`
+	Latitude        optional.Float32 `json:"latitude"`
+	Longitude       optional.Float32 `json:"longitude"`
+	PostalCode      optional.String  `json:"postalCode"`
+	MinimumStay     optional.Int     `json:"minimumStay"`
+	Deposit         optional.String  `json:"deposit"`
+	Cleaning        optional.String  `json:"cleaning"`
+	NearestAirport  optional.String  `json:"nearestAirport"`
+	NearestSubway   optional.String  `json:"nearestSubway"`
+	NearbyLocations optional.String  `json:"nearbyLocations"`
+	Overview        optional.String  `json:"overview"`
 	bodyWithAmenities
 }
 
 // Validate the request body
 func (b *PropertiesUpdateBody) Validate() []error {
 	return flentities.ValidateFields(
-		flentities.ValidateField("overview", b.Overview).HTML(),
+		flentities.ValidateField("overview", b.Overview.Value).HTML(),
 	)
 }
 
@@ -59,65 +60,11 @@ func (a *PropertiesUpdate) Perform() {
 		return
 	}
 
-	if a.Name != nil {
-		property.Name = a.Name
-	}
+	optional.Update(a.PropertiesUpdateBody, property)
 
-	if a.Address1 != nil {
-		property.Address1 = a.Address1
-	}
-
-	if a.Address2 != nil {
-		property.Address2 = a.Address2
-	}
-
-	if a.Address3 != nil {
-		property.Address3 = a.Address3
-	}
-
-	if a.PostalCode != nil {
-		property.PostalCode = a.PostalCode
-	}
-
-	if a.Latitude != nil {
-		property.Latitude = *a.Latitude
-	}
-
-	if a.Longitude != nil {
-		property.Longitude = *a.Longitude
-	}
-
-	if a.MinimumStay != nil {
-		property.MinimumStay = a.MinimumStay
-	}
-
-	if a.Deposit != nil {
-		property.Deposit = a.Deposit
-	}
-
-	if a.Cleaning != nil {
-		property.Cleaning = a.Cleaning
-	}
-
-	if a.NearestAirport != nil {
-		property.NearestAirport = a.NearestAirport
-	}
-
-	if a.NearestSubway != nil {
-		property.NearestSubway = a.NearestSubway
-	}
-
-	if a.NearbyLocations != nil {
-		property.NearbyLocations = a.NearbyLocations
-	}
-
-	if a.Overview != nil {
-		property.Overview = a.Overview
-	}
-
-	if a.CityID != nil {
+	if a.CityID.Set && a.CityID.Value != nil {
 		city := &flentities.City{}
-		city.ID = uint(*a.CityID)
+		city.ID = uint(*a.CityID.Value)
 		err := a.Repository().Find(city).Error
 
 		if gorm.IsRecordNotFoundError(err) {

@@ -13,6 +13,7 @@ import (
 
 	"github.com/DATA-DOG/godog"
 	"github.com/DATA-DOG/godog/gherkin"
+	"github.com/gin-gonic/gin"
 	"github.com/go-test/deep"
 )
 
@@ -191,6 +192,21 @@ func bodyFromObject(body interface{}) (io.Reader, error) {
 	}
 
 	return strings.NewReader(string(jsonBody)), nil
+}
+
+func slicePayload(src interface{}, fields []string) gin.H {
+	payload := gin.H{}
+
+	v := reflect.ValueOf(src)
+	if v.Kind() == reflect.Ptr {
+		v = v.Elem()
+	}
+
+	for _, f := range fields {
+		payload[f] = v.FieldByName(f).Interface()
+	}
+
+	return payload
 }
 
 func performGETWithParamsStep(path string) func(*gherkin.DataTable) error {

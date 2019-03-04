@@ -7,8 +7,10 @@ import (
 	"time"
 
 	"github.com/DATA-DOG/godog"
+	"github.com/DATA-DOG/godog/gherkin"
 	"github.com/nerde/fuji-lane-back/flconfig"
 	"github.com/nerde/fuji-lane-back/flentities"
+	"github.com/nerde/fuji-lane-back/optional"
 	"github.com/rdumont/assistdog"
 	"github.com/rdumont/assistdog/defaults"
 )
@@ -37,6 +39,27 @@ func setupAssistdog() {
 	assist.RegisterParser(refUint(1), uintPtrParser)
 	assist.RegisterParser(&time.Time{}, timePtrParser)
 	assist.RegisterParser(flentities.Date{}, dateParser)
+
+	assist.RegisterParser(optional.String{}, func(raw string) (interface{}, error) {
+		return optional.String{Value: &raw, Set: true}, nil
+	})
+
+	assist.RegisterParser(optional.Int{}, func(raw string) (interface{}, error) {
+		i, err := strconv.Atoi(raw)
+		return optional.Int{Value: &i, Set: true}, err
+	})
+
+	assist.RegisterParser(optional.Uint{}, func(raw string) (interface{}, error) {
+		i, err := strconv.Atoi(raw)
+		ui := uint(i)
+		return optional.Uint{Value: &ui, Set: true}, err
+	})
+
+	assist.RegisterParser(optional.Float32{}, func(raw string) (interface{}, error) {
+		i, err := strconv.ParseFloat(raw, 32)
+		f := float32(i)
+		return optional.Float32{Value: &f, Set: true}, err
+	})
 }
 
 func AssistdogContext(s *godog.Suite) {
@@ -269,4 +292,14 @@ func dateParser(raw string) (interface{}, error) {
 	}
 
 	return flentities.ParseDate(raw)
+}
+
+func tableColumn(table *gherkin.DataTable, idx int) []string {
+	column := []string{}
+
+	for _, row := range table.Rows {
+		column = append(column, row.Cells[idx].Value)
+	}
+
+	return column
 }

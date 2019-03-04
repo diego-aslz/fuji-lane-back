@@ -7,6 +7,7 @@ import (
 
 	"github.com/jinzhu/gorm"
 	"github.com/nerde/fuji-lane-back/flentities"
+	"github.com/nerde/fuji-lane-back/optional"
 )
 
 // UnitPriceBody is the payload for a single unit price
@@ -17,14 +18,14 @@ type UnitPriceBody struct {
 
 // UnitsUpdateBody is the representation of the payload for creating a Unit
 type UnitsUpdateBody struct {
-	Name             string          `json:"name"`
-	Overview         *string         `json:"overview"`
-	Bedrooms         int             `json:"bedrooms"`
-	Bathrooms        int             `json:"bathrooms"`
-	SizeM2           int             `json:"sizeM2"`
-	MaxOccupancy     *int            `json:"maxOccupancy"`
-	Count            int             `json:"count"`
-	FloorPlanImageID *uint           `json:"floorPlanImageID"`
+	Name             optional.String `json:"name"`
+	Overview         optional.String `json:"overview"`
+	Bedrooms         optional.Int    `json:"bedrooms"`
+	Bathrooms        optional.Int    `json:"bathrooms"`
+	SizeM2           optional.Int    `json:"sizeM2"`
+	MaxOccupancy     optional.Int    `json:"maxOccupancy"`
+	Count            optional.Int    `json:"count"`
+	FloorPlanImageID optional.Uint   `json:"floorPlanImageID"`
 	Prices           []UnitPriceBody `json:"prices"`
 	bodyWithAmenities
 }
@@ -32,7 +33,7 @@ type UnitsUpdateBody struct {
 // Validate the request body
 func (b *UnitsUpdateBody) Validate() []error {
 	return flentities.ValidateFields(
-		flentities.ValidateField("overview", b.Overview).HTML(),
+		flentities.ValidateField("overview", b.Overview.Value).HTML(),
 	)
 }
 
@@ -64,37 +65,11 @@ func (a *UnitsUpdate) Perform() {
 		return
 	}
 
-	if a.Name != "" {
-		unit.Name = a.Name
-	}
+	optional.Update(a.UnitsUpdateBody, unit)
 
-	if a.Overview != nil {
-		unit.Overview = a.Overview
-	}
-
-	if a.Bedrooms > 0 {
-		unit.Bedrooms = a.Bedrooms
-	}
-
-	if a.Bathrooms > 0 {
-		unit.Bathrooms = a.Bathrooms
-	}
-
-	if a.SizeM2 > 0 {
-		unit.SizeM2 = a.SizeM2
-	}
-
-	if a.Count > 0 {
-		unit.Count = a.Count
-	}
-
-	if a.MaxOccupancy != nil {
-		unit.MaxOccupancy = a.MaxOccupancy
-	}
-
-	if a.FloorPlanImageID != nil {
+	if a.FloorPlanImageID.Set && a.FloorPlanImageID.Value != nil {
 		image := &flentities.Image{}
-		image.ID = *a.FloorPlanImageID
+		image.ID = *a.FloorPlanImageID.Value
 
 		if err := a.Repository().Preload("Unit.Property").Find(image).Error; err != nil {
 			a.ServerError(err)
@@ -105,8 +80,6 @@ func (a *UnitsUpdate) Perform() {
 			a.RespondError(http.StatusUnprocessableEntity, errors.New("floor plan image does not exist"))
 			return
 		}
-
-		unit.FloorPlanImageID = a.FloorPlanImageID
 	}
 
 	a.Repository().Transaction(func(tx *flentities.Repository) {

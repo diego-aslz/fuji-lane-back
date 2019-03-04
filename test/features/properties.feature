@@ -151,10 +151,14 @@ Feature: Properties Management
     When I get details for property "ACME Downtown"
     Then I should receive a "NOT FOUND" response
 
-  Scenario: Updating my property
+  Scenario: Updating my property without changing amenities
     Given the following properties:
       | ID | Account          |
       | 1  | Diego Apartments |
+    And the following amenities:
+      | PropertyID | Type |
+      | 1          | gym  |
+      | 1          | pool |
     When I update the property "1" with the following details:
       | Name            | ACME Downtown                |
       | Address1        | Add. One                     |
@@ -175,6 +179,10 @@ Feature: Properties Management
     And I should have the following properties:
       | Account          | Name          | Slug          | Address1 | Address2 | Address3   | City  | PostalCode | Country | MinimumStay | Deposit | Cleaning | NearestAirport | NearestSubway | NearbyLocations | Overview                     | Latitude | Longitude |
       | Diego Apartments | ACME Downtown | acme-downtown | Add. One | Add. Two | Add. Three | Osaka | 223344     | Japan   | 3           | 150     | daily    | IGU            | Central Park  | Pharmacy        | <strong>Good place!</strong> | 34.69374 | 135.50218 |
+    And I should have the following amenities:
+      | Property      | Type |
+      | ACME Downtown | gym  |
+      | ACME Downtown | pool |
 
   Scenario: Updating my property with an used name
     Given the following accounts:

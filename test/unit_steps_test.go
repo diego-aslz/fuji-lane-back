@@ -8,6 +8,7 @@ import (
 
 	"github.com/DATA-DOG/godog"
 	"github.com/DATA-DOG/godog/gherkin"
+	"github.com/gin-gonic/gin"
 	"github.com/nerde/fuji-lane-back/flactions"
 	"github.com/nerde/fuji-lane-back/flentities"
 	"github.com/nerde/fuji-lane-back/flweb"
@@ -80,7 +81,7 @@ func requestUnitsUpdate(name string, table *gherkin.DataTable) error {
 	}
 
 	var bodyIO io.Reader
-	if bodyIO, err = bodyFromObject(b.UnitsUpdateBody); err != nil {
+	if bodyIO, err = bodyFromObject(slicePayload(b.UnitsUpdateBody, tableColumn(table, 0))); err != nil {
 		return err
 	}
 
@@ -152,8 +153,7 @@ func requestUnitsUpdateWithAmenities(name string, table *gherkin.DataTable) erro
 	}
 
 	amenities := b.([]*flactions.AmenityBody)
-	updateBody := &flactions.UnitsUpdateBody{}
-	updateBody.Amenities = amenities
+	updateBody := gin.H{"amenities": amenities}
 	body, err := bodyFromObject(updateBody)
 
 	return perform("PUT", strings.Replace(flweb.UnitPath, ":id", fmt.Sprint(unit.ID), 1), body)

@@ -7,17 +7,18 @@ import (
 
 	"github.com/jinzhu/gorm"
 	"github.com/nerde/fuji-lane-back/flentities"
+	"github.com/nerde/fuji-lane-back/optional"
 )
 
 // UnitsCreateBody is the representation of the payload for creating a Unit
 type UnitsCreateBody struct {
-	PropertyID   uint   `json:"propertyID"`
-	Name         string `json:"name"`
-	Overview     string `json:"overview"`
-	Bedrooms     int    `json:"bedrooms"`
-	SizeM2       int    `json:"sizeM2"`
-	MaxOccupancy int    `json:"maxOccupancy"`
-	Count        int    `json:"count"`
+	PropertyID   uint         `json:"propertyID"`
+	Name         string       `json:"name"`
+	Overview     string       `json:"overview"`
+	Bedrooms     int          `json:"bedrooms"`
+	SizeM2       int          `json:"sizeM2"`
+	MaxOccupancy optional.Int `json:"maxOccupancy"`
+	Count        int          `json:"count"`
 }
 
 // Validate the request body
@@ -55,13 +56,14 @@ func (a *UnitsCreate) Perform() {
 	}
 
 	unit := &flentities.Unit{
-		Property:     property,
-		Name:         a.Name,
-		Bedrooms:     a.Bedrooms,
-		SizeM2:       a.SizeM2,
-		MaxOccupancy: &a.MaxOccupancy,
-		Count:        a.Count,
+		Property: property,
+		Name:     a.Name,
+		Bedrooms: a.Bedrooms,
+		SizeM2:   a.SizeM2,
+		Count:    a.Count,
 	}
+
+	a.MaxOccupancy.Update(&unit.MaxOccupancy, true)
 
 	if a.Overview != "" {
 		unit.Overview = &a.Overview

@@ -6,6 +6,7 @@ import (
 
 	"github.com/DATA-DOG/godog"
 	"github.com/DATA-DOG/godog/gherkin"
+	"github.com/gin-gonic/gin"
 	"github.com/nerde/fuji-lane-back/flactions"
 	"github.com/nerde/fuji-lane-back/flentities"
 	"github.com/nerde/fuji-lane-back/flweb"
@@ -28,7 +29,7 @@ func requestPropertiesUpdate(id string, table *gherkin.DataTable) error {
 		return err
 	}
 
-	body, err := bodyFromObject(b)
+	body, err := bodyFromObject(slicePayload(b, tableColumn(table, 0)))
 
 	return perform("PUT", strings.Replace(flweb.PropertyPath, ":id", id, 1), body)
 }
@@ -40,8 +41,7 @@ func requestPropertiesUpdateWithAmenities(id string, table *gherkin.DataTable) e
 	}
 
 	amenities := b.([]*flactions.AmenityBody)
-	updateBody := &flactions.PropertiesUpdateBody{}
-	updateBody.Amenities = amenities
+	updateBody := gin.H{"amenities": amenities}
 	body, err := bodyFromObject(updateBody)
 
 	return perform("PUT", strings.Replace(flweb.PropertyPath, ":id", id, 1), body)
