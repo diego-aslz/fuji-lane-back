@@ -92,7 +92,7 @@ func (a *Application) routeAuthentication(e *gin.Engine) {
 	a.route(e.POST, AccountsPath, flactions.NewAccountsCreate, withRepository, loadSession, requireUser, parseBody)
 	a.route(e.PUT, ProfilePath, flactions.NewProfileUpdate, withRepository, loadSession, requireUser, parseBody)
 
-	a.route(e.GET, RenewSessionPath, flactions.NewRenewSession, withRepository, loadSession, requireUser)
+	a.route(e.GET, RenewSessionPath, flactions.NewSessionsRenew, withRepository, loadSession, requireUser)
 	a.route(e.POST, FacebookSignInPath, a.facebookSignIn, withRepository, parseBody)
 	a.route(e.POST, SignInPath, flactions.NewSignIn, withRepository, parseBody)
 	a.route(e.POST, SignUpPath, flactions.NewSignUp, withRepository, parseBody)
