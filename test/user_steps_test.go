@@ -52,4 +52,5 @@ func UserContext(s *godog.Suite) {
 	s.Step(`^I should have the following users:$`, assertDatabaseRecordsStep(&[]*flentities.User{}, userToTableRow))
 	s.Step(`^I should have no users$`, assertNoDatabaseRecordsStep(&flentities.User{}))
 	s.Step(`^I get my user details$`, performGETStep(flweb.UsersMePath))
+	s.Step(`^I mark my bookings as read$`, performStep("PUT", flweb.UsersReadBookingsPath))
 }

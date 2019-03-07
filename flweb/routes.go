@@ -65,6 +65,8 @@ const (
 
 	// UsersMePath to get my own user details
 	UsersMePath = "/users_me"
+	// UsersReadBookingsPath to mark bookings as read
+	UsersReadBookingsPath = "/users_read_bookings"
 )
 
 // AddRoutes to a Gin Engine
@@ -86,6 +88,7 @@ func (a *Application) AddRoutes(e *gin.Engine) {
 	a.route(e.GET, SearchPath, flactions.NewSearch, withRepository)
 
 	a.route(e.GET, UsersMePath, flactions.NewUsersMe, withRepository, loadSession, requireUser)
+	a.route(e.PUT, UsersReadBookingsPath, flactions.NewUsersReadBookings, withRepository, loadSession, requireUser)
 
 	a.routeAuthentication(e)
 	a.routeImages(e)

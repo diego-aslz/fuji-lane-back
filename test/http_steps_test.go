@@ -236,8 +236,12 @@ func performGETStepWithPage(path string) func(string) error {
 }
 
 func performGETStep(path string) func() error {
+	return performStep("GET", path)
+}
+
+func performStep(method, path string) func() error {
 	return func() error {
-		return perform("GET", path, nil)
+		return perform(method, path, nil)
 	}
 }
 
