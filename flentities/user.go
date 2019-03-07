@@ -11,14 +11,15 @@ import (
 
 // User of the system
 type User struct {
-	gorm.Model        `json:"-"`
-	AccountID         *uint      `json:"-"`
-	Account           *Account   `json:"-"`
-	Name              *string    `json:"name"`
-	Email             string     `json:"email"`
-	FacebookID        *string    `json:"-"`
-	EncryptedPassword *string    `json:"-"`
-	LastSignedIn      *time.Time `json:"-"`
+	gorm.Model          `json:"-"`
+	AccountID           *uint      `json:"-"`
+	Account             *Account   `json:"-"`
+	Name                *string    `json:"name"`
+	Email               string     `json:"email"`
+	FacebookID          *string    `json:"-"`
+	EncryptedPassword   *string    `json:"-"`
+	LastSignedIn        *time.Time `json:"-"`
+	UnreadBookingsCount int        `json:"unreadBookingsCount"`
 }
 
 // SetPassword calculates the encrypted hash and fills in EncryptedPassword

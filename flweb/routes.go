@@ -62,6 +62,9 @@ const (
 	UnitsPath = "/units"
 	// UnitsPublishPath to publish a unit
 	UnitsPublishPath = "/units/:id/publish"
+
+	// UsersMePath to get my own user details
+	UsersMePath = "/users_me"
 )
 
 // AddRoutes to a Gin Engine
@@ -81,6 +84,8 @@ func (a *Application) AddRoutes(e *gin.Engine) {
 		requireAccount)
 
 	a.route(e.GET, SearchPath, flactions.NewSearch, withRepository)
+
+	a.route(e.GET, UsersMePath, flactions.NewUsersMe, withRepository, loadSession, requireUser)
 
 	a.routeAuthentication(e)
 	a.routeImages(e)

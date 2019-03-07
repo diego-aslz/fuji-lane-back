@@ -6,6 +6,7 @@ import (
 	"github.com/DATA-DOG/godog"
 	"github.com/jinzhu/gorm"
 	"github.com/nerde/fuji-lane-back/flentities"
+	"github.com/nerde/fuji-lane-back/flweb"
 )
 
 type userRow struct {
@@ -50,4 +51,5 @@ func UserContext(s *godog.Suite) {
 	s.Step(`^the following users:$`, createFromTableStep(new(userRow), tableRowToUser))
 	s.Step(`^I should have the following users:$`, assertDatabaseRecordsStep(&[]*flentities.User{}, userToTableRow))
 	s.Step(`^I should have no users$`, assertNoDatabaseRecordsStep(&flentities.User{}))
+	s.Step(`^I get my user details$`, performGETStep(flweb.UsersMePath))
 }

@@ -53,8 +53,9 @@ Feature: Session
         "renewAfter": "2018-06-05T08:00:00Z",
         "user": {
           "picture": "https://graph.facebook.com/12345/picture?width=64&height=64",
-          "name":"Diego Aguir Selzlein",
-          "email":"diego@selzlein.com"
+          "name": "Diego Aguir Selzlein",
+          "email": "diego@selzlein.com",
+          "unreadBookingsCount": 0
         },
         "account": {
           "name": "Diego Apartments",

@@ -403,7 +403,8 @@ CREATE TABLE users (
     name character varying,
     facebook_id character varying,
     encrypted_password character varying,
-    last_signed_in timestamp without time zone
+    last_signed_in timestamp without time zone,
+    unread_bookings_count integer DEFAULT 0 NOT NULL
 );
 
 
@@ -913,7 +914,7 @@ SET search_path = public, pg_catalog;
 --
 
 COPY schema_migrations (version, dirty) FROM stdin;
-10	f
+11	f
 \.
 
 
