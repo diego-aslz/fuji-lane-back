@@ -93,13 +93,14 @@ func (a *BookingsCreate) Perform() {
 
 	mail, err := flemail.BookingCreated(booking, owner)
 	if err != nil {
-		a.ServerError(err)
-		return
-	}
-
-	if mail != nil {
-		a.Mailer.Send(mail)
-		a.Diagnostics().Add("email_sent", "true")
+		a.Diagnostics().AddErrorAs("email_error", err)
+	} else {
+		if mail != nil {
+			a.Mailer.Send(mail)
+			a.Diagnostics().Add("email_sent", "true")
+		} else {
+			a.Diagnostics().Add("email_sent", "false")
+		}
 	}
 
 	a.Respond(http.StatusCreated, booking)
