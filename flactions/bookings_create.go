@@ -103,6 +103,16 @@ func (a *BookingsCreate) Perform() {
 		}
 	}
 
+	err = a.Repository().
+		Table("users").
+		Where("account_id = ?", unit.Property.AccountID).
+		UpdateColumn("unread_bookings_count", gorm.Expr("unread_bookings_count + ?", 1)).
+		Error
+
+	if err != nil {
+		a.Diagnostics().AddErrorAs("unread_bookings_count_update_error", err)
+	}
+
 	a.Respond(http.StatusCreated, booking)
 }
 

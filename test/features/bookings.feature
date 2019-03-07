@@ -5,9 +5,9 @@ Feature: Bookings
       | Name             |
       | Diego Apartments |
     And the following users:
-      | Email                | Account          |
-      | diego@selzlein.com   |                  |
-      | djeison@selzlein.com | Diego Apartments |
+      | Email                | Account          | UnreadBookingsCount |
+      | diego@selzlein.com   |                  | 0                   |
+      | djeison@selzlein.com | Diego Apartments | 5                   |
     And the following properties:
       | Account          | Name          |
       | Diego Apartments | ACME Downtown |
@@ -105,6 +105,10 @@ Feature: Bookings
         <p>Respond to this email to get in touch with them.</p>
       </div>
       """
+    And I should have the following users:
+      | Email                | Account          | UnreadBookingsCount |
+      | diego@selzlein.com   |                  | 0                   |
+      | djeison@selzlein.com | Diego Apartments | 6                   |
 
   Scenario: Booking a Unit with invalid information
     Given it is currently "01 Jun 18 08:00"
