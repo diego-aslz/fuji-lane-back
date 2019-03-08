@@ -23,8 +23,8 @@ type Validatable interface {
 }
 
 // ValidateFields concatenates the errors resulting from validating several fields
-func ValidateFields(field FieldValidation, fields ...FieldValidation) []error {
-	errs := field.Errors
+func ValidateFields(fields ...FieldValidation) []error {
+	errs := []error{}
 
 	for _, f := range fields {
 		errs = append(errs, f.Errors...)
@@ -50,7 +50,10 @@ func (v FieldValidation) Required() FieldValidation {
 	valid := true
 	switch val := v.Value.(type) {
 	case string:
-		valid = len(val) != 0
+		valid = val != ""
+		break
+	case *string:
+		valid = val != nil && *val != ""
 		break
 	case uint:
 		valid = val != 0
@@ -74,12 +77,19 @@ func (v FieldValidation) Required() FieldValidation {
 
 // Email adds an error if the value is not a valid email
 func (v FieldValidation) Email() FieldValidation {
+	validate := func(input string) {
+		emailReg := regexp.MustCompile(emailRegexString)
+		if !emailReg.Match([]byte(input)) {
+			v.Errors = append(v.Errors, fmt.Errorf("Invalid email: %s", input))
+		}
+	}
+
 	switch val := v.Value.(type) {
 	case string:
-		emailReg := regexp.MustCompile(emailRegexString)
-		if !emailReg.Match([]byte(val)) {
-			v.Errors = append(v.Errors, fmt.Errorf("Invalid email: %s", val))
-		}
+		validate(val)
+		break
+	case *string:
+		validate(*val)
 		break
 	default:
 		v.Errors = append(v.Errors, v.unsupportedTypeError("Email"))

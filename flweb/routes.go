@@ -62,11 +62,6 @@ const (
 	UnitsPath = "/units"
 	// UnitsPublishPath to publish a unit
 	UnitsPublishPath = "/units/:id/publish"
-
-	// UsersMePath to get my own user details
-	UsersMePath = "/users_me"
-	// UsersReadBookingsPath to mark bookings as read
-	UsersReadBookingsPath = "/users_read_bookings"
 )
 
 // AddRoutes to a Gin Engine
@@ -87,9 +82,6 @@ func (a *Application) AddRoutes(e *gin.Engine) {
 
 	a.route(e.GET, SearchPath, flactions.NewSearch, withRepository)
 
-	a.route(e.GET, UsersMePath, flactions.NewUsersMe, withRepository, loadSession, requireUser)
-	a.route(e.PUT, UsersReadBookingsPath, flactions.NewUsersReadBookings, withRepository, loadSession, requireUser)
-
 	a.routeAuthentication(e)
 	a.routeImages(e)
 	a.routeProperties(e)
@@ -98,6 +90,7 @@ func (a *Application) AddRoutes(e *gin.Engine) {
 
 func (a *Application) routeAuthentication(e *gin.Engine) {
 	a.route(e.POST, AccountsPath, flactions.NewAccountsCreate, withRepository, loadSession, requireUser, parseBody)
+	a.route(e.GET, ProfilePath, flactions.NewProfileShow, withRepository, loadSession, requireUser)
 	a.route(e.PUT, ProfilePath, flactions.NewProfileUpdate, withRepository, loadSession, requireUser, parseBody)
 
 	a.route(e.GET, RenewSessionPath, flactions.NewSessionsRenew, withRepository, loadSession, requireUser)

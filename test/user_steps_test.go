@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/DATA-DOG/godog"
+	"github.com/DATA-DOG/godog/gherkin"
 	"github.com/jinzhu/gorm"
 	"github.com/nerde/fuji-lane-back/flentities"
 	"github.com/nerde/fuji-lane-back/flweb"
@@ -47,10 +48,31 @@ func userToTableRow(r *flentities.Repository, u interface{}) (interface{}, error
 	return row, nil
 }
 
+type profileUpdateBody struct {
+	Name                     *string `json:"name,omitempty"`
+	Email                    *string `json:"email,omitempty"`
+	Password                 *string `json:"password,omitempty"`
+	ResetUnreadBookingsCount bool    `json:"resetUnreadBookingsCount"`
+}
+
+func requestProfileUpdate(table *gherkin.DataTable) error {
+	uub, err := assist.CreateInstance(new(profileUpdateBody), table)
+	if err != nil {
+		return err
+	}
+
+	body, err := bodyFromObject(uub)
+	if err != nil {
+		return err
+	}
+
+	return perform("PUT", flweb.ProfilePath, body)
+}
+
 func UserContext(s *godog.Suite) {
 	s.Step(`^the following users:$`, createFromTableStep(new(userRow), tableRowToUser))
 	s.Step(`^I should have the following users:$`, assertDatabaseRecordsStep(&[]*flentities.User{}, userToTableRow))
 	s.Step(`^I should have no users$`, assertNoDatabaseRecordsStep(&flentities.User{}))
-	s.Step(`^I get my user details$`, performGETStep(flweb.UsersMePath))
-	s.Step(`^I mark my bookings as read$`, performStep("PUT", flweb.UsersReadBookingsPath))
+	s.Step(`^I update my user details with:$`, requestProfileUpdate)
+	s.Step(`^I get my profile details$`, performGETStep(flweb.ProfilePath))
 }

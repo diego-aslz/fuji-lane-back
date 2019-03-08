@@ -37,20 +37,6 @@ func requestAccountsCreate(table *gherkin.DataTable) error {
 	return performPOST(flweb.AccountsPath, body)
 }
 
-func requestProfileUpdate(table *gherkin.DataTable) error {
-	uub, err := assist.CreateInstance(new(flactions.ProfileUpdateBody), table)
-	if err != nil {
-		return err
-	}
-
-	body, err := bodyFromObject(uub)
-	if err != nil {
-		return err
-	}
-
-	return perform("PUT", flweb.ProfilePath, body)
-}
-
 func tableRowToAccount(r *flentities.Repository, a interface{}) (interface{}, error) {
 	row := a.(*accountRow)
 
@@ -75,5 +61,4 @@ func AccountContext(s *godog.Suite) {
 	s.Step(`^I create the following account:$`, requestAccountsCreate)
 	s.Step(`^I should have the following accounts:$`, assertDatabaseRecordsStep(&[]*flentities.Account{},
 		accountToTableRow))
-	s.Step(`^I update my user details with:$`, requestProfileUpdate)
 }

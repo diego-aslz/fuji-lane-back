@@ -4,22 +4,29 @@ import (
 	"errors"
 	"net/http"
 
+	"github.com/nerde/fuji-lane-back/optional"
+
 	"github.com/nerde/fuji-lane-back/fldiagnostics"
 	"github.com/nerde/fuji-lane-back/flentities"
 )
 
 // ProfileUpdateBody is the expected payload for UsersUpdate
 type ProfileUpdateBody struct {
-	Name     string `json:"name"`
-	Email    string `json:"email"`
-	Password string `json:"password"`
+	Name                     optional.String `json:"name"`
+	Email                    optional.String `json:"email"`
+	Password                 string          `json:"password"`
+	ResetUnreadBookingsCount bool            `json:"resetUnreadBookingsCount"`
 }
 
 // Validate the request body
 func (b *ProfileUpdateBody) Validate() []error {
-	return flentities.ValidateFields(
-		flentities.ValidateField("email", b.Email).Required().Email(),
-	)
+	validations := []flentities.FieldValidation{}
+
+	if b.Email.Set {
+		validations = append(validations, flentities.ValidateField("email", b.Email.Value).Required().Email())
+	}
+
+	return flentities.ValidateFields(validations...)
 }
 
 // FilterSensitiveInformation hides password
@@ -38,18 +45,18 @@ type ProfileUpdate struct {
 func (a *ProfileUpdate) Perform() {
 	user := a.CurrentUser()
 
-	if !user.ValidatePassword(a.Password) {
-		a.RespondError(http.StatusUnauthorized, errors.New("Password is incorrect"))
-		return
+	if a.Name.Set || a.Email.Set {
+		if !user.ValidatePassword(a.Password) {
+			a.RespondError(http.StatusUnauthorized, errors.New("Password is incorrect"))
+			return
+		}
+
+		optional.Update(a.ProfileUpdateBody, user)
 	}
 
-	if a.Name == "" {
-		user.Name = nil
-	} else {
-		user.Name = &a.Name
+	if a.ResetUnreadBookingsCount {
+		user.UnreadBookingsCount = 0
 	}
-
-	user.Email = a.Email
 
 	if err := a.Repository().Save(user).Error; err != nil {
 		a.ServerError(err)
