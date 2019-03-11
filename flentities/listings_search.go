@@ -65,32 +65,18 @@ func (f *ListingsSearchFilters) pricesJoin() (string, []interface{}) {
 	return join, args
 }
 
-func (f *ListingsSearchFilters) unitAmenitiesJoin(db *gorm.DB) *gorm.DB {
-	for _, aType := range f.Amenities {
-		found := false
-		for _, a := range UnitAmenityTypes {
-			if a.Code == aType {
-				found = true
-				break
-			}
-		}
-
-		if !found {
-			continue
-		}
-
-		alias := regexp.MustCompile("\\W").ReplaceAllString(aType, "_") + "_amenities"
-		join := "INNER JOIN amenities " + alias + " ON units.id = " + alias + ".unit_id AND " + alias + ".type = ?"
-		db = db.Joins(join, aType)
-	}
-
-	return db
+func (f *ListingsSearchFilters) addUnitAmenityConditions(db *gorm.DB) *gorm.DB {
+	return addAmenityConditions(db, f.Amenities, UnitAmenityTypes, "units", "unit_id")
 }
 
-func (f *ListingsSearchFilters) propertyAmenitiesJoin(db *gorm.DB) *gorm.DB {
-	for _, aType := range f.PropertyAmenities {
+func (f *ListingsSearchFilters) addPropertyAmenityConditions(db *gorm.DB) *gorm.DB {
+	return addAmenityConditions(db, f.PropertyAmenities, PropertyAmenityTypes, "properties", "property_id")
+}
+
+func addAmenityConditions(db *gorm.DB, amenities []string, types []*AmenityType, joinTable, fk string) *gorm.DB {
+	for _, aType := range amenities {
 		found := false
-		for _, a := range PropertyAmenityTypes {
+		for _, a := range types {
 			if a.Code == aType {
 				found = true
 				break
@@ -102,7 +88,8 @@ func (f *ListingsSearchFilters) propertyAmenitiesJoin(db *gorm.DB) *gorm.DB {
 		}
 
 		alias := regexp.MustCompile("\\W").ReplaceAllString(aType, "_") + "_amenities"
-		join := "INNER JOIN amenities " + alias + " ON properties.id = " + alias + ".property_id AND " + alias + ".type = ?"
+		join := "INNER JOIN amenities " + alias + " ON " + joinTable + ".id = " + alias + "." + fk
+		join += " AND " + alias + ".type = ?"
 		db = db.Joins(join, aType)
 	}
 
@@ -127,10 +114,10 @@ func (s ListingsSearch) Search() (*ListingsSearchResult, error) {
 		unitConditions = unitConditions.Where("bathrooms >= ?", s.MinBathrooms)
 	}
 
-	unitConditions = s.unitAmenitiesJoin(unitConditions)
+	unitConditions = s.addUnitAmenityConditions(unitConditions)
 
 	unitConditions = unitConditions.Joins("INNER JOIN properties ON units.property_id = properties.id")
-	unitConditions = s.propertyAmenitiesJoin(unitConditions)
+	unitConditions = s.addPropertyAmenityConditions(unitConditions)
 
 	joinedUnits := unitConditions.
 		Where("properties.city_id = ?", s.CityID).
