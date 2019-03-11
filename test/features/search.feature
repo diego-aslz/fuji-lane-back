@@ -343,8 +343,8 @@ Feature: Searching for Units
       | Penthouse  | desk       |
       | Penthouse  | bathrobes  |
     When I search for units with the following filters:
-      | cityID    | 2              |
-      | amenities | desk,bathrobes |
+      | cityID        | 2              |
+      | unitAmenities | desk,bathrobes |
     Then I should receive an "OK" response with the following search results:
       | PropertyName     | Name      |
       | Awesome Property | Penthouse |

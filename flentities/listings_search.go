@@ -19,7 +19,7 @@ type ListingsSearchFilters struct {
 	CheckOut          *Date
 	MinPriceCents     int
 	MaxPriceCents     int
-	Amenities         []string
+	UnitAmenities     []string
 	PropertyAmenities []string
 	nights            int
 }
@@ -66,7 +66,7 @@ func (f *ListingsSearchFilters) pricesJoin() (string, []interface{}) {
 }
 
 func (f *ListingsSearchFilters) addUnitAmenityConditions(db *gorm.DB) *gorm.DB {
-	return addAmenityConditions(db, f.Amenities, UnitAmenityTypes, "units", "unit_id")
+	return addAmenityConditions(db, f.UnitAmenities, UnitAmenityTypes, "units", "unit_id")
 }
 
 func (f *ListingsSearchFilters) addPropertyAmenityConditions(db *gorm.DB) *gorm.DB {
