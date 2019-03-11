@@ -10,17 +10,18 @@ import (
 
 // ListingsSearchFilters are the filters to apply to a search
 type ListingsSearchFilters struct {
-	CityID        uint
-	MinBedrooms   int
-	MinBathrooms  int
-	Page          int
-	PerPage       int
-	CheckIn       *Date
-	CheckOut      *Date
-	MinPriceCents int
-	MaxPriceCents int
-	Amenities     []string
-	nights        int
+	CityID            uint
+	MinBedrooms       int
+	MinBathrooms      int
+	Page              int
+	PerPage           int
+	CheckIn           *Date
+	CheckOut          *Date
+	MinPriceCents     int
+	MaxPriceCents     int
+	Amenities         []string
+	PropertyAmenities []string
+	nights            int
 }
 
 // Nights returns how many nights is this query for
@@ -86,6 +87,28 @@ func (f *ListingsSearchFilters) unitAmenitiesJoin(db *gorm.DB) *gorm.DB {
 	return db
 }
 
+func (f *ListingsSearchFilters) propertyAmenitiesJoin(db *gorm.DB) *gorm.DB {
+	for _, aType := range f.PropertyAmenities {
+		found := false
+		for _, a := range PropertyAmenityTypes {
+			if a.Code == aType {
+				found = true
+				break
+			}
+		}
+
+		if !found {
+			continue
+		}
+
+		alias := regexp.MustCompile("\\W").ReplaceAllString(aType, "_") + "_amenities"
+		join := "INNER JOIN amenities " + alias + " ON properties.id = " + alias + ".property_id AND " + alias + ".type = ?"
+		db = db.Joins(join, aType)
+	}
+
+	return db
+}
+
 // ListingsSearch for searching for listings
 type ListingsSearch struct {
 	*Repository
@@ -106,8 +129,10 @@ func (s ListingsSearch) Search() (*ListingsSearchResult, error) {
 
 	unitConditions = s.unitAmenitiesJoin(unitConditions)
 
+	unitConditions = unitConditions.Joins("INNER JOIN properties ON units.property_id = properties.id")
+	unitConditions = s.propertyAmenitiesJoin(unitConditions)
+
 	joinedUnits := unitConditions.
-		Joins("INNER JOIN properties ON units.property_id = properties.id").
 		Where("properties.city_id = ?", s.CityID).
 		Where("properties.published_at IS NOT NULL")
 

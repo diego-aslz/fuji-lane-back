@@ -34,6 +34,7 @@ func (a *Search) Perform() {
 	a.withDateFilter("checkIn", func(d flentities.Date) { filters.CheckIn = &d })
 	a.withDateFilter("checkOut", func(d flentities.Date) { filters.CheckOut = &d })
 	a.withFilter("amenities", func(amenities string) { filters.Amenities = strings.Split(amenities, ",") })
+	a.withFilter("propertyAmenities", func(amenities string) { filters.PropertyAmenities = strings.Split(amenities, ",") })
 
 	a.Diagnostics().AddJSON("filters", filters)
 
