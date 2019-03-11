@@ -48,5 +48,6 @@ func NewApplication() (*Application, error) {
 		RandSource:     fujilane.NewRandomSource(),
 		S3Service:      s3,
 		Sendgrid:       flservices.NewSendgridAPI(),
+		Mailer:         flservices.NewSMTPMailer(),
 	}, nil
 }
