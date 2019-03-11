@@ -31,7 +31,7 @@ func withDiagnostics(c *gin.Context) {
 		Add("duration", end.Sub(start).String()).
 		Add("ip", c.ClientIP()).
 		Add("method", c.Request.Method).
-		Add("path", c.Request.URL.Path).
+		AddQuoted("url", c.Request.URL.String()).
 		Concat(contextDiagnostics)
 
 	log.Println(diagnostics)
