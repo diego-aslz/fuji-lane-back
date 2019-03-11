@@ -1,6 +1,7 @@
 package flentities
 
 import (
+	"regexp"
 	"sort"
 	"sync"
 
@@ -18,6 +19,7 @@ type ListingsSearchFilters struct {
 	CheckOut      *Date
 	MinPriceCents int
 	MaxPriceCents int
+	Amenities     []string
 	nights        int
 }
 
@@ -62,6 +64,28 @@ func (f *ListingsSearchFilters) pricesJoin() (string, []interface{}) {
 	return join, args
 }
 
+func (f *ListingsSearchFilters) unitAmenitiesJoin(db *gorm.DB) *gorm.DB {
+	for _, aType := range f.Amenities {
+		found := false
+		for _, a := range UnitAmenityTypes {
+			if a.Code == aType {
+				found = true
+				break
+			}
+		}
+
+		if !found {
+			continue
+		}
+
+		alias := regexp.MustCompile("\\W").ReplaceAllString(aType, "_") + "_amenities"
+		join := "INNER JOIN amenities " + alias + " ON units.id = " + alias + ".unit_id AND " + alias + ".type = ?"
+		db = db.Joins(join, aType)
+	}
+
+	return db
+}
+
 // ListingsSearch for searching for listings
 type ListingsSearch struct {
 	*Repository
@@ -79,6 +103,8 @@ func (s ListingsSearch) Search() (*ListingsSearchResult, error) {
 	if s.MinBathrooms > 0 {
 		unitConditions = unitConditions.Where("bathrooms >= ?", s.MinBathrooms)
 	}
+
+	unitConditions = s.unitAmenitiesJoin(unitConditions)
 
 	joinedUnits := unitConditions.
 		Joins("INNER JOIN properties ON units.property_id = properties.id").
@@ -108,25 +134,52 @@ func (s ListingsSearch) Search() (*ListingsSearchResult, error) {
 	}
 
 	propertyConditions := s.
-		Where("id IN (?)", joinedUnits.Model(&Unit{}).Select("property_id").QueryExpr()).
+		Where("id IN (?)", joinedUnits.Model(&Unit{}).Select("units.property_id").QueryExpr()).
+		Preload("Images", Image{Uploaded: true}, ImagesDefaultOrder).
+		Preload("Amenities")
+
+	propertyConditions = Repository{propertyConditions}.Paginate(s.Page, s.PerPage)
+
+	var err error
+	if err = propertyConditions.Find(&result.Properties).Error; err != nil {
+		wg.Wait()
+		return result, err
+	}
+
+	units := []*Unit{}
+	propertyIDs := []uint{}
+	for _, p := range result.Properties {
+		propertyIDs = append(propertyIDs, p.ID)
+	}
+
+	err = unitConditions.
+		Select("DISTINCT units.*").
+		Where("units.property_id IN (?)", propertyIDs).
 		Preload("Images", Image{Uploaded: true}, ImagesDefaultOrder).
 		Preload("Amenities").
-		Preload("Units", func(_ *gorm.DB) *gorm.DB { return unitConditions.Select("DISTINCT units.*") }).
-		Preload("Units.Images", Image{Uploaded: true}, ImagesDefaultOrder).
-		Preload("Units.Amenities").
-		Preload("Units.Prices", func(db *gorm.DB) *gorm.DB {
+		Preload("Prices", func(db *gorm.DB) *gorm.DB {
 			if s.hasDates() {
 				db = db.Where("min_nights <= ?", s.Nights())
 			}
 
 			return db.Order("min_nights")
-		})
+		}).
+		Find(&units).
+		Error
 
-	propertyConditions = Repository{propertyConditions}.Paginate(s.Page, s.PerPage)
-
-	err := propertyConditions.Find(&result.Properties).Error
+	if err != nil {
+		wg.Wait()
+		return result, err
+	}
 
 	for _, p := range result.Properties {
+		p.Units = []*Unit{}
+		for _, u := range units {
+			if u.PropertyID == p.ID {
+				p.Units = append(p.Units, u)
+			}
+		}
+
 		sort.Slice(p.Units, func(i, j int) bool {
 			li := len(p.Units[i].Prices)
 			lj := len(p.Units[j].Prices)
@@ -149,7 +202,7 @@ func (s ListingsSearch) addMetadata(unitConditions *gorm.DB, result *ListingsSea
 		"SELECT unit_id, MAX(min_nights) min_nights FROM prices WHERE min_nights <= ? GROUP BY unit_id" +
 		") best_price ON best_price.unit_id = units.id"
 
-	selects := "COUNT(distinct property_id)"
+	selects := "COUNT(distinct units.property_id)"
 	selects += ", COALESCE(ROUND(MIN(" + PerNightPriceSQL + ")), 0)"
 	selects += ", COALESCE(ROUND(MAX(" + PerNightPriceSQL + ")), 0)"
 	selects += ", COALESCE(ROUND(AVG(" + PerNightPriceSQL + ")), 0)"

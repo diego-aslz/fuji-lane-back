@@ -326,3 +326,25 @@ Feature: Searching for Units
       | PropertyName     | Name         |
       | Awesome Property | Double Apt   |
       | Nice Property    | Standard Apt |
+
+  Scenario: Searching for units by amenities
+    Given the following units:
+      | ID | Property         | Name       | Bedrooms | Bathrooms | SizeM2 | MaxOccupancy | Count | PublishedAt          |
+      | 11 | Awesome Property | Double Apt | 2        | 2         | 62     | 6            | 10    | 2018-06-01T08:00:00Z |
+      | 12 | Awesome Property | Penthouse  | 2        | 2         | 62     | 6            | 10    | 2018-06-01T08:00:00Z |
+    And the following prices:
+      | Unit       | MinNights | Cents |
+      | Double Apt | 1         | 12000 |
+      | Penthouse  | 1         | 20000 |
+    And the following amenities:
+      | Unit       | Type       |
+      | Double Apt | dishwasher |
+      | Double Apt | desk       |
+      | Penthouse  | desk       |
+      | Penthouse  | bathrobes  |
+    When I search for units with the following filters:
+      | cityID    | 2              |
+      | amenities | desk,bathrobes |
+    Then I should receive an "OK" response with the following search results:
+      | PropertyName     | Name      |
+      | Awesome Property | Penthouse |

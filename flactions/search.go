@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/nerde/fuji-lane-back/flentities"
 	"github.com/nerde/fuji-lane-back/flviews"
@@ -32,6 +33,7 @@ func (a *Search) Perform() {
 	a.withIntFilter("maxPriceCents", func(i int) { filters.MaxPriceCents = i })
 	a.withDateFilter("checkIn", func(d flentities.Date) { filters.CheckIn = &d })
 	a.withDateFilter("checkOut", func(d flentities.Date) { filters.CheckOut = &d })
+	a.withFilter("amenities", func(amenities string) { filters.Amenities = strings.Split(amenities, ",") })
 
 	a.Diagnostics().AddJSON("filters", filters)
 
