@@ -1,8 +1,8 @@
 package flentities
 
 import (
-	"regexp"
 	"sort"
+	"strconv"
 	"sync"
 
 	"github.com/jinzhu/gorm"
@@ -74,7 +74,7 @@ func (f *ListingsSearchFilters) addPropertyAmenityConditions(db *gorm.DB) *gorm.
 }
 
 func addAmenityConditions(db *gorm.DB, amenities []string, types []*AmenityType, joinTable, fk string) *gorm.DB {
-	for _, aType := range amenities {
+	for i, aType := range amenities {
 		found := false
 		for _, a := range types {
 			if a.Code == aType {
@@ -87,7 +87,7 @@ func addAmenityConditions(db *gorm.DB, amenities []string, types []*AmenityType,
 			continue
 		}
 
-		alias := regexp.MustCompile("\\W").ReplaceAllString(aType, "_") + "_amenities"
+		alias := joinTable + "_amenities_" + strconv.Itoa(i)
 		join := "INNER JOIN amenities " + alias + " ON " + joinTable + ".id = " + alias + "." + fk
 		join += " AND " + alias + ".type = ?"
 		db = db.Joins(join, aType)
