@@ -40,7 +40,8 @@ func (o String) Update(dst interface{}, zeroMeansNil bool) {
 		break
 	case **string:
 		if zeroMeansNil && o.Value != nil && *o.Value == "" {
-			v = nil
+			var str *string
+			v = str
 		} else {
 			v = o.Value
 		}

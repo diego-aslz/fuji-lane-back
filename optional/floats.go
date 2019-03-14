@@ -40,7 +40,8 @@ func (o Float32) Update(dst interface{}, zeroMeansNil bool) {
 		break
 	case **float32:
 		if zeroMeansNil && o.Value != nil && *o.Value == 0 {
-			v = nil
+			var fl *float32
+			v = fl
 		} else {
 			v = o.Value
 		}

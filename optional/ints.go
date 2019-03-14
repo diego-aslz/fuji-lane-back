@@ -40,7 +40,8 @@ func (o Int) Update(dst interface{}, zeroMeansNil bool) {
 		break
 	case **int:
 		if zeroMeansNil && o.Value != nil && *o.Value == 0 {
-			v = nil
+			var it *int
+			v = it
 		} else {
 			v = o.Value
 		}
@@ -86,7 +87,8 @@ func (o Uint) Update(dst interface{}, zeroMeansNil bool) {
 		break
 	case **uint:
 		if zeroMeansNil && o.Value != nil && *o.Value == 0 {
-			v = nil
+			var it *uint
+			v = it
 		} else {
 			v = o.Value
 		}
