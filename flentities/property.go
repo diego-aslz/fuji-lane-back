@@ -75,6 +75,5 @@ func (p *Property) CanBePublished() []error {
 }
 
 func (p *Property) isMissingAddress() bool {
-	return fujilane.IsBlankStr(p.Address1) || fujilane.IsBlankStr(p.PostalCode) || fujilane.IsBlankUint(p.CityID) ||
-		p.Latitude == 0 || p.Longitude == 0
+	return fujilane.IsBlankStr(p.Address1) || fujilane.IsBlankUint(p.CityID) || p.Latitude == 0 || p.Longitude == 0
 }
