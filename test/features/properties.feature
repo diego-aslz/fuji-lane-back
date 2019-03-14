@@ -312,6 +312,16 @@ Feature: Properties Management
       | ID | Account          | PublishedAt | EverPublished |
       | 1  | Diego Apartments |             | false         |
 
+  Scenario: Unpublishing my property
+    Given the following properties:
+      | ID | Account          | Name          | PublishedAt          |
+      | 1  | Diego Apartments | ACME Downtown | 2018-06-05T08:00:00Z |
+    When I unpublish property "1"
+    Then I should receive an "OK" response
+    And I should have the following properties:
+      | ID | Account          | Name          | PublishedAt |
+      | 1  | Diego Apartments | ACME Downtown |             |
+
   Scenario: Listing my properties
     Given the following accounts:
       | Name              |
