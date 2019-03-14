@@ -366,3 +366,13 @@ Feature: Units Management
     And I should have the following units:
       | ID | Name | PublishedAt | EverPublished |
       | 2  |      |             | false         |
+
+  Scenario: Unpublishing my unit
+    Given the following units:
+      | ID | Property      | Name         | PublishedAt          |
+      | 2  | ACME Downtown | Standard Apt | 2018-06-05T08:00:00Z |
+    When I unpublish unit "2"
+    Then I should receive an "OK" response
+    And I should have the following units:
+      | ID | Property      | Name         | PublishedAt |
+      | 2  | ACME Downtown | Standard Apt |             |

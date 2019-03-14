@@ -64,6 +64,8 @@ const (
 	UnitsPath = "/units"
 	// UnitsPublishPath to publish a unit
 	UnitsPublishPath = "/units/:id/publish"
+	// UnitsUnpublishPath to unpublish a unit
+	UnitsUnpublishPath = "/units/:id/unpublish"
 )
 
 // AddRoutes to a Gin Engine
@@ -113,6 +115,7 @@ func (a *Application) routeUnits(e *gin.Engine) {
 	a.route(e.POST, UnitsPath, flactions.NewUnitsCreate, withRepository, loadSession, requireUser, parseBody)
 	a.route(e.PUT, UnitPath, flactions.NewUnitsUpdate, withRepository, loadSession, requireUser, parseBody)
 	a.route(e.PUT, UnitsPublishPath, flactions.NewUnitsPublish, withRepository, loadSession, requireUser, requireAccount)
+	a.route(e.PUT, UnitsUnpublishPath, flactions.NewUnitsUnpublish, withRepository, loadSession, requireUser, requireAccount)
 }
 
 func (a *Application) routeProperties(e *gin.Engine) {
