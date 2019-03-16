@@ -1,15 +1,24 @@
 Feature: User Profile
 
-  Scenario: Getting my own profile details
-    Given the following users:
-      | Email              | Name                 | UnreadBookingsCount |
-      | diego@selzlein.com | Diego Aguir Selzlein | 15                  |
+  Scenario Outline: Getting my own profile details
+    Given the following accounts:
+      | Name             | BookingsCount |
+      | Diego Apartments | 18            |
+    And the following users:
+      | Account   | Email              | Name                 | UnreadBookingsCount |
+      | <account> | diego@selzlein.com | Diego Aguir Selzlein | 15                  |
     And I am authenticated with "diego@selzlein.com"
     When I get my profile details
     Then I should receive an "OK" response with the following body:
-      | name                | Diego Aguir Selzlein |
-      | email               | diego@selzlein.com   |
-      | unreadBookingsCount | 15                   |
+      | name                       | Diego Aguir Selzlein         |
+      | email                      | diego@selzlein.com           |
+      | accountUnreadBookingsCount | <accountUnreadBookingsCount> |
+      | accountBookingsCount       | <accountBookingsCount>       |
+
+    Examples:
+      | account          | accountUnreadBookingsCount | accountBookingsCount |
+      | Diego Apartments | 15                         | 18                   |
+      |                  |                            |                      |
 
   Scenario: Updating my Profile
     Given the following users:

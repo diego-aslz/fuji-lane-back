@@ -8,11 +8,11 @@ import (
 
 	"github.com/DATA-DOG/godog"
 	"github.com/DATA-DOG/godog/gherkin"
+	"github.com/nerde/assistdog"
+	"github.com/nerde/assistdog/defaults"
 	"github.com/nerde/fuji-lane-back/flconfig"
 	"github.com/nerde/fuji-lane-back/flentities"
 	"github.com/nerde/fuji-lane-back/optional"
-	"github.com/rdumont/assistdog"
-	"github.com/rdumont/assistdog/defaults"
 )
 
 func setupAssistdog() {
@@ -29,13 +29,15 @@ func setupAssistdog() {
 	assist.RegisterComparer(refStr("a"), strPtrComparer)
 	assist.RegisterComparer(refInt(1), intPtrComparer)
 	assist.RegisterComparer(float32(1.0), floatComparer)
+	assist.RegisterComparer(float64(1.0), floatComparer)
 	assist.RegisterComparer(refUint(1), uintPtrComparer)
+	assist.RegisterComparer(nil, nilComparer)
 	assist.RegisterParser(uint(0), uintParser)
 	assist.RegisterParser(true, boolParser)
 	assist.RegisterParser(refStr("a"), strPtrParser)
 	assist.RegisterParser(refInt(1), intPtrParser)
-	assist.RegisterParser(refFloat(1), floatPtrParser)
-	assist.RegisterParser(float32(1.0), floatParser)
+	assist.RegisterParser(refFloat(1), float32PtrParser)
+	assist.RegisterParser(float32(1.0), float32Parser)
 	assist.RegisterParser(refUint(1), uintPtrParser)
 	assist.RegisterParser(&time.Time{}, timePtrParser)
 	assist.RegisterParser(flentities.Date{}, dateParser)
@@ -155,6 +157,14 @@ func strPtrComparer(raw string, rawActual interface{}) error {
 	return fmt.Errorf("Expected %s, but got %s", raw, actual)
 }
 
+func nilComparer(raw string, rawActual interface{}) error {
+	if raw == "" {
+		return nil
+	}
+
+	return fmt.Errorf("Expected <nil>, but got %s", rawActual)
+}
+
 func intPtrComparer(raw string, rawActual interface{}) error {
 	actual := strconv.Itoa(derefInt(rawActual.(*int)))
 	if raw == actual {
@@ -165,19 +175,26 @@ func intPtrComparer(raw string, rawActual interface{}) error {
 }
 
 func floatComparer(raw string, rawActual interface{}) error {
-	expected, err := floatPtrParser(raw)
+	expected, err := float64Parser(raw)
 	if err != nil {
 		return err
 	}
 
-	f := expected.(*float32)
-	ac := rawActual.(float32)
+	ex := expected.(float64)
+	failed := false
 
-	if *f == ac {
-		return nil
+	switch ac := rawActual.(type) {
+	case float32:
+		failed = float32(ex) != ac
+	case float64:
+		failed = ex != ac
 	}
 
-	return fmt.Errorf("Expected %s, but got %f", raw, ac)
+	if failed {
+		return fmt.Errorf("Expected %s, but got %f", raw, rawActual)
+	}
+
+	return nil
 }
 
 func uintPtrComparer(raw string, rawActual interface{}) error {
@@ -232,8 +249,8 @@ func intPtrParser(raw string) (interface{}, error) {
 	return &i, nil
 }
 
-func floatPtrParser(raw string) (interface{}, error) {
-	f, err := floatParser(raw)
+func float32PtrParser(raw string) (interface{}, error) {
+	f, err := float32Parser(raw)
 
 	if err != nil {
 		return nil, err
@@ -244,7 +261,7 @@ func floatPtrParser(raw string) (interface{}, error) {
 	return &fl, err
 }
 
-func floatParser(raw string) (interface{}, error) {
+func float32Parser(raw string) (interface{}, error) {
 	if raw == "" {
 		return nil, nil
 	}
@@ -255,6 +272,33 @@ func floatParser(raw string) (interface{}, error) {
 	}
 
 	f := float32(i)
+
+	return f, nil
+}
+
+func float64PtrParser(raw string) (interface{}, error) {
+	f, err := float64Parser(raw)
+
+	if err != nil {
+		return nil, err
+	}
+
+	fl := f.(float64)
+
+	return &fl, err
+}
+
+func float64Parser(raw string) (interface{}, error) {
+	if raw == "" {
+		return nil, nil
+	}
+
+	i, err := strconv.ParseFloat(raw, 64)
+	if err != nil {
+		return nil, err
+	}
+
+	f := float64(i)
 
 	return f, nil
 }

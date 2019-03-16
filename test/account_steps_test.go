@@ -49,7 +49,7 @@ func accountToTableRow(r *flentities.Repository, a interface{}) (interface{}, er
 	acc.Country = &flentities.Country{}
 	err := r.Model(acc).Association("Country").Find(acc.Country).Error
 
-	if err != nil && !gorm.IsRecordNotFoundError(err) {
+	if err != nil && gorm.IsRecordNotFoundError(err) {
 		err = nil
 	}
 

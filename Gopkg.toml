@@ -13,7 +13,7 @@
 
 [[constraint]]
   branch = "master"
-  name = "github.com/rdumont/assistdog"
+  name = "github.com/nerde/assistdog"
 
 [[constraint]]
   name = "github.com/jinzhu/gorm"

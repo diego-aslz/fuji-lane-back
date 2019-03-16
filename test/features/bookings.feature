@@ -109,6 +109,9 @@ Feature: Bookings
       | Email                | Account          | UnreadBookingsCount |
       | diego@selzlein.com   |                  | 0                   |
       | djeison@selzlein.com | Diego Apartments | 6                   |
+    And I should have the following accounts:
+      | Name             | BookingsCount |
+      | Diego Apartments | 1             |
 
   Scenario: Booking a Unit with invalid information
     Given it is currently "01 Jun 18 08:00"

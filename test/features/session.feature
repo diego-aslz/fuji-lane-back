@@ -60,7 +60,8 @@ Feature: Session
         "account": {
           "name": "Diego Apartments",
           "phone": "555 555",
-          "countryID": 1
+          "countryID": 1,
+          "bookingsCount": 0
         }
       }
       """

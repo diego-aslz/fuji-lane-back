@@ -50,25 +50,12 @@ func assertResponseStatusAndJSONTable(status string, table *gherkin.DataTable) e
 		return err
 	}
 
-	expectedBody, err := assist.ParseMap(table)
-	if err != nil {
-		return err
-	}
-
 	actualBody := map[string]interface{}{}
 	if err := json.Unmarshal([]byte(response.Body.String()), &actualBody); err != nil {
 		return fmt.Errorf("Unable to unmarshal %s: %s", response.Body.String(), err.Error())
 	}
 
-	for k, v := range expectedBody {
-		expected := fmt.Sprint(actualBody[k])
-		if expected == v {
-			continue
-		}
-		return fmt.Errorf("Expected %s to be %s, got %s", k, v, expected)
-	}
-
-	return nil
+	return assist.CompareToMap(actualBody, table)
 }
 
 func assertResponseStatusAndJSON(status string, rawJSON *gherkin.DocString) error {

@@ -7,10 +7,10 @@ import (
 	"github.com/DATA-DOG/godog"
 	"github.com/DATA-DOG/godog/gherkin"
 	"github.com/gin-gonic/gin"
+	"github.com/nerde/assistdog"
 	"github.com/nerde/fuji-lane-back/flconfig"
 	"github.com/nerde/fuji-lane-back/flservices"
 	"github.com/nerde/fuji-lane-back/flweb"
-	"github.com/rdumont/assistdog"
 )
 
 var application *flweb.Application

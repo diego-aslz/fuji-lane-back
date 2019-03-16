@@ -182,12 +182,12 @@
 
 [[projects]]
   branch = "master"
-  name = "github.com/rdumont/assistdog"
+  name = "github.com/nerde/assistdog"
   packages = [
     ".",
     "defaults"
   ]
-  revision = "c91d7a54538c6d66d976d4e71ad31b8661eddea3"
+  revision = "db91148117f20627ac12b7691d7aacf21cfcae00"
 
 [[projects]]
   name = "github.com/sendgrid/rest"
@@ -261,6 +261,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "0a66fbebb6965d8b016a92e94c643f9482a664b071f7c2cd0488423fb648dc91"
+  inputs-digest = "877a437ae552e05ba30be70d2192fe5499e75e47cbeefc4e518f7d951b3fb7f2"
   solver-name = "gps-cdcl"
   solver-version = 1

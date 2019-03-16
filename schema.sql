@@ -46,7 +46,8 @@ CREATE TABLE accounts (
     status smallint NOT NULL,
     name character varying NOT NULL,
     phone character varying,
-    country_id integer
+    country_id integer,
+    bookings_count integer DEFAULT 0 NOT NULL
 );
 
 
@@ -914,7 +915,7 @@ SET search_path = public, pg_catalog;
 --
 
 COPY schema_migrations (version, dirty) FROM stdin;
-11	f
+12	f
 \.
 
 

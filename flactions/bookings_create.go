@@ -86,34 +86,51 @@ func (a *BookingsCreate) Perform() {
 
 	booking.Calculate()
 
-	if err := a.Repository().Save(booking).Error; err != nil {
-		a.ServerError(err)
-		return
-	}
-
-	mail, err := flemail.BookingCreated(booking, owner)
-	if err != nil {
-		a.Diagnostics().AddErrorAs("email_error", err)
-	} else {
-		if mail != nil {
-			a.Mailer.Send(mail)
-			a.Diagnostics().Add("email_sent", "true")
-		} else {
-			a.Diagnostics().Add("email_sent", "false")
+	a.Repository().Transaction(func(tx *flentities.Repository) {
+		if err := a.Repository().Save(booking).Error; err != nil {
+			a.ServerError(err)
+			tx.Rollback()
+			return
 		}
-	}
 
-	err = a.Repository().
-		Table("users").
-		Where("account_id = ?", unit.Property.AccountID).
-		UpdateColumn("unread_bookings_count", gorm.Expr("unread_bookings_count + ?", 1)).
-		Error
+		mail, err := flemail.BookingCreated(booking, owner)
+		if err != nil {
+			a.Diagnostics().AddErrorAs("email_error", err)
+		} else {
+			if mail != nil {
+				a.Mailer.Send(mail)
+				a.Diagnostics().Add("email_sent", "true")
+			} else {
+				a.Diagnostics().Add("email_sent", "false")
+			}
+		}
 
-	if err != nil {
-		a.Diagnostics().AddErrorAs("unread_bookings_count_update_error", err)
-	}
+		err = a.Repository().
+			Table("users").
+			Where("account_id = ?", unit.Property.AccountID).
+			UpdateColumn("unread_bookings_count", gorm.Expr("unread_bookings_count + ?", 1)).
+			Error
 
-	a.Respond(http.StatusCreated, booking)
+		if err != nil {
+			a.ServerError(err)
+			tx.Rollback()
+			return
+		}
+
+		err = a.Repository().
+			Table("accounts").
+			Where("id = ?", unit.Property.AccountID).
+			UpdateColumn("bookings_count", gorm.Expr("bookings_count + ?", 1)).
+			Error
+
+		if err != nil {
+			a.ServerError(err)
+			tx.Rollback()
+			return
+		}
+
+		a.Respond(http.StatusCreated, booking)
+	})
 }
 
 func (a *BookingsCreate) invalidUnit() {
