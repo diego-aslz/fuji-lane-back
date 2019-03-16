@@ -11,22 +11,6 @@ import (
 
 // CurrentAccount returns the account for the currently authenticated user
 func (c *Context) CurrentAccount() *flentities.Account {
-	if c.currentAccount != nil {
-		return c.currentAccount
-	}
-
-	user := c.CurrentUser()
-	if user == nil || user.AccountID == nil {
-		return nil
-	}
-
-	c.currentAccount = &flentities.Account{}
-	if err := c.Repository().First(c.currentAccount, *user.AccountID).Error; err != nil {
-		c.Diagnostics().Add("current_account_load_error",
-			fmt.Sprintf("Unable to load Account %d: %s", *user.AccountID, err.Error()))
-		c.currentAccount = nil
-	}
-
 	return c.currentAccount
 }
 
@@ -94,6 +78,39 @@ func loadSession(next contextFunc) contextFunc {
 
 		next(c)
 	}
+}
+
+func loadAccount(next contextFunc) contextFunc {
+	return func(c *Context) {
+		if c.currentUser != nil && c.currentUser.AccountID != nil {
+			acc := &flentities.Account{}
+			if err := c.Repository().First(acc, *c.currentUser.AccountID).Error; err != nil {
+				c.ServerError(err)
+				return
+			}
+
+			c.currentAccount = acc
+
+			if c.session != nil {
+				c.session.Account = acc
+			}
+		}
+
+		next(c)
+	}
+}
+
+func requireAccount(next contextFunc) contextFunc {
+	return loadAccount(func(c *Context) {
+		account := c.CurrentAccount()
+
+		if account == nil {
+			c.RespondError(http.StatusPreconditionRequired, errors.New("You need a company account to perform this action"))
+			return
+		}
+
+		next(c)
+	})
 }
 
 func requireUser(next contextFunc) contextFunc {

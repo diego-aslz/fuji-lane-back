@@ -43,7 +43,7 @@ type UnitsCreate struct {
 func (a *UnitsCreate) Perform() {
 	property := &flentities.Property{}
 
-	conditions := map[string]interface{}{"id": a.PropertyID, "account_id": a.CurrentAccount().ID}
+	conditions := map[string]interface{}{"id": a.PropertyID, "account_id": a.CurrentUser().AccountID}
 	err := a.Repository().Find(property, conditions).Error
 	if gorm.IsRecordNotFoundError(err) {
 		a.Diagnostics().AddQuoted("reason", "Could not find property")

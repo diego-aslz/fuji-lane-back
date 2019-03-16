@@ -59,7 +59,12 @@ func (a *UnitsUpdate) Perform() {
 		return
 	}
 
-	if unit.Property.AccountID != a.CurrentAccount().ID {
+	var accID uint
+	if a.CurrentUser().AccountID != nil {
+		accID = *a.CurrentUser().AccountID
+	}
+
+	if unit.Property.AccountID != accID {
 		a.Diagnostics().AddQuoted("reason", "Unit belongs to another account")
 		a.RespondNotFound()
 		return
@@ -76,7 +81,7 @@ func (a *UnitsUpdate) Perform() {
 			return
 		}
 
-		if image.Unit == nil || image.Unit.Property.AccountID != a.CurrentAccount().ID {
+		if image.Unit == nil || image.Unit.Property.AccountID != accID {
 			a.RespondError(http.StatusUnprocessableEntity, errors.New("floor plan image does not exist"))
 			return
 		}
