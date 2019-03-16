@@ -1,7 +1,6 @@
 package flentities
 
 import (
-	"encoding/json"
 	"fmt"
 	"time"
 
@@ -48,19 +47,4 @@ func (u *User) Picture() *string {
 	}
 
 	return nil
-}
-
-type userAlias User
-
-type userUI struct {
-	Picture *string `json:"picture"`
-	*userAlias
-}
-
-// MarshalJSON returns JSON bytes for a User
-func (u *User) MarshalJSON() ([]byte, error) {
-	return json.Marshal(userUI{
-		Picture:   u.Picture(),
-		userAlias: (*userAlias)(u),
-	})
 }

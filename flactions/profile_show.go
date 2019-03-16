@@ -4,7 +4,6 @@ import (
 	"net/http"
 
 	"github.com/nerde/fuji-lane-back/flentities"
-
 	"github.com/nerde/fuji-lane-back/flviews"
 )
 

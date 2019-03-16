@@ -55,7 +55,8 @@ Feature: Session
           "picture": "https://graph.facebook.com/12345/picture?width=64&height=64",
           "name": "Diego Aguir Selzlein",
           "email": "diego@selzlein.com",
-          "unreadBookingsCount": 0
+          "accountUnreadBookingsCount": 0,
+          "accountBookingsCount": 0
         },
         "account": {
           "name": "Diego Apartments",

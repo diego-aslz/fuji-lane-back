@@ -9,13 +9,15 @@ type profile struct {
 	Email                      string  `json:"email"`
 	AccountUnreadBookingsCount *int    `json:"accountUnreadBookingsCount"`
 	AccountBookingsCount       *int    `json:"accountBookingsCount"`
+	Picture                    *string `json:"picture"`
 }
 
 // NewProfile returns a structure representing an user's profile
 func NewProfile(u *flentities.User) interface{} {
 	pr := profile{
-		Name:  u.Name,
-		Email: u.Email,
+		Name:    u.Name,
+		Email:   u.Email,
+		Picture: u.Picture(),
 	}
 
 	if u.Account != nil {

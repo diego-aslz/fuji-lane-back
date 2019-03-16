@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/nerde/fuji-lane-back/flentities"
+	"github.com/nerde/fuji-lane-back/flviews"
 )
 
 type sessionAction struct {
@@ -26,5 +27,5 @@ func (a sessionAction) createSessionWithStatus(user *flentities.User, status int
 		return
 	}
 
-	a.Respond(status, s)
+	a.Respond(status, flviews.NewSession(s))
 }
