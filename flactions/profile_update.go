@@ -52,15 +52,17 @@ func (a *ProfileUpdate) Perform() {
 		}
 
 		optional.Update(a.ProfileUpdateBody, user)
-	}
 
-	if a.ResetUnreadBookingsCount {
+		if err := a.Repository().Save(user).Error; err != nil {
+			a.ServerError(err)
+			return
+		}
+	} else if a.ResetUnreadBookingsCount {
 		user.UnreadBookingsCount = 0
-	}
-
-	if err := a.Repository().Save(user).Error; err != nil {
-		a.ServerError(err)
-		return
+		if err := a.Repository().Model(user).Updates(map[string]interface{}{"UnreadBookingsCount": 0}).Error; err != nil {
+			a.ServerError(err)
+			return
+		}
 	}
 
 	a.createSession(user)
