@@ -62,3 +62,7 @@
 [[constraint]]
   name = "github.com/snabb/sitemap"
   version = "1.0.0"
+
+[[constraint]]
+  name = "github.com/getsentry/raven-go"
+  version = "0.2.0"

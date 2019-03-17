@@ -73,6 +73,8 @@ func loadSession(next contextFunc) contextFunc {
 					accID = fmt.Sprint(*user.AccountID)
 				}
 				c.Diagnostics().Add("account_id", accID)
+
+				c.Set("user", user)
 			}
 		}
 

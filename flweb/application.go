@@ -29,7 +29,7 @@ func (a *Application) Start() {
 func (a *Application) CreateRouter() *gin.Engine {
 	r := gin.New()
 	r.Use(withDiagnostics)
-	r.Use(gin.Recovery())
+	r.Use(recovery)
 	a.AddRoutes(r)
 
 	return r

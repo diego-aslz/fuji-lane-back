@@ -83,6 +83,7 @@ func (c *Context) errorsBody(errs []error) map[string]interface{} {
 
 // ServerError adds the error to Diagnostics and responds with 500 status and a generic error message
 func (c *Context) ServerError(err error) {
+	NotifyError(err, c.Context)
 	c.Diagnostics().AddError(err)
 	c.RespondError(http.StatusInternalServerError, errors.New("Sorry, something went wrong"))
 }

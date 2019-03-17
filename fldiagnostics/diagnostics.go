@@ -69,3 +69,14 @@ func (d Diagnostics) String() string {
 
 	return result
 }
+
+// ToMap returns a map representation of this diagnostics
+func (d Diagnostics) ToMap() map[string]string {
+	res := map[string]string{}
+
+	for i, key := range d.keys {
+		res[key] = d.values[i]
+	}
+
+	return res
+}

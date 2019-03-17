@@ -6,6 +6,7 @@ import (
 	"os"
 	"strconv"
 
+	raven "github.com/getsentry/raven-go"
 	"github.com/nerde/fuji-lane-back/fujilane"
 	yaml "gopkg.in/yaml.v2"
 )
@@ -96,6 +97,10 @@ func getIntVar(name string) int {
 // LoadEnv loads environment variables from the YAML configuration file for the current stage. If not present, it
 // does nothing
 func LoadEnv(stage string) error {
+	raven.SetDSN(os.Getenv("SENTRY_DSN"))
+	raven.SetRelease(os.Getenv("HEROKU_RELEASE_VERSION"))
+	raven.SetEnvironment(os.Getenv("SENTRY_ENVIRONMENT"))
+
 	configFile := fujilane.Root() + "/flconfig/" + stage + ".yml"
 
 	bytes, err := ioutil.ReadFile(configFile)

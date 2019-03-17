@@ -50,6 +50,12 @@
   version = "v1.15.45"
 
 [[projects]]
+  name = "github.com/certifi/gocertifi"
+  packages = ["."]
+  revision = "deb3ae2ef2610fde3330947281941c562861188b"
+  version = "2018.01.18"
+
+[[projects]]
   name = "github.com/corpix/uarand"
   packages = ["."]
   revision = "37c9140f52f6bf4998ff7617c456d554d6a2dc2f"
@@ -66,6 +72,12 @@
   packages = ["."]
   revision = "9f541cc9db5d55bce703bd99987c9d5cb8eea45e"
   version = "v1.0.0"
+
+[[projects]]
+  name = "github.com/getsentry/raven-go"
+  packages = ["."]
+  revision = "f04e7487e9a6b9d9837d52743fb5f40576c56411"
+  version = "v0.2.0"
 
 [[projects]]
   branch = "master"
@@ -190,6 +202,12 @@
   revision = "db91148117f20627ac12b7691d7aacf21cfcae00"
 
 [[projects]]
+  name = "github.com/pkg/errors"
+  packages = ["."]
+  revision = "ba968bfe8b2f7e042a574c888954fccecfa385b4"
+  version = "v0.8.1"
+
+[[projects]]
   name = "github.com/sendgrid/rest"
   packages = ["."]
   revision = "306b9bef57dc36f3435ccfcc08fe6ae2c6920344"
@@ -261,6 +279,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "877a437ae552e05ba30be70d2192fe5499e75e47cbeefc4e518f7d951b3fb7f2"
+  inputs-digest = "ee2bdcc92fc2799467431b13c2053d83d5ce738538a2ebcaa3e1df99f42f876c"
   solver-name = "gps-cdcl"
   solver-version = 1
