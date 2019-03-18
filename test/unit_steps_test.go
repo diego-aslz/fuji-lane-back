@@ -111,12 +111,7 @@ func unitToTableRow(r *flentities.Repository, a interface{}) (interface{}, error
 		return nil, err
 	}
 
-	row := &unitRow{Unit: *unit}
-	if unit.Property.Name != nil {
-		row.Property = *unit.Property.Name
-	}
-
-	return row, nil
+	return &unitRow{Unit: *unit, Property: unit.Property.Name}, nil
 }
 
 func updateUnit(name string, table *gherkin.DataTable) error {

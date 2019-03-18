@@ -42,10 +42,7 @@ func amenityToTableRow(r *flentities.Repository, a interface{}) (interface{}, er
 		return nil, err
 	}
 
-	row := &amenityRow{Amenity: *amenity, Unit: amenity.Unit.Name}
-	if amenity.Property.Name != nil {
-		row.Property = *amenity.Property.Name
-	}
+	row := &amenityRow{Amenity: *amenity, Unit: amenity.Unit.Name, Property: amenity.Property.Name}
 
 	return row, nil
 }

@@ -53,12 +53,7 @@ func (bc bookingCreated) User() string {
 }
 
 func (bc bookingCreated) Unit() string {
-	propertyName := ""
-	if bc.Booking.Unit.Property.Name != nil {
-		propertyName = *bc.Booking.Unit.Property.Name
-	}
-
-	return propertyName + " > " + bc.Booking.Unit.Name
+	return bc.Booking.Unit.Property.Name + " > " + bc.Booking.Unit.Name
 }
 
 func (bc bookingCreated) PerNightPrice() string {

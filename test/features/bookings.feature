@@ -8,9 +8,15 @@ Feature: Bookings
       | Email                | Account          | UnreadBookingsCount |
       | diego@selzlein.com   |                  | 0                   |
       | djeison@selzlein.com | Diego Apartments | 5                   |
+    And the following countries:
+      | ID | Name  |
+      | 2  | Japan |
+    And the following cities:
+      | ID | Country | Name  |
+      | 3  | Japan   | Osaka |
     And the following properties:
-      | Account          | Name          |
-      | Diego Apartments | ACME Downtown |
+      | ID | Account          | Name          | Country | City  |
+      | 19 | Diego Apartments | ACME Downtown | Japan   | Osaka |
     And the following units:
       | Property      | Name         | Bedrooms | SizeM2 | MaxOccupancy | Count | PublishedAt          |
       | ACME Downtown | Standard Apt | 1        | 32     | 3            | 15    | 2018-06-09T15:00:00Z |

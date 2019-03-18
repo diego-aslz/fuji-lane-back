@@ -4,9 +4,15 @@ Feature: Units Management
     Given the following accounts:
       | Name             |
       | Diego Apartments |
+    And the following countries:
+      | ID | Name  |
+      | 2  | Japan |
+    And the following cities:
+      | ID | Country | Name  |
+      | 3  | Japan   | Osaka |
     And the following properties:
-      | ID | Account          | Name          |
-      | 1  | Diego Apartments | ACME Downtown |
+      | ID | Account          | Name          | Country | City  |
+      | 1  | Diego Apartments | ACME Downtown | Japan   | Osaka |
     And the following users:
       | Account          | Email              | Name                 |
       | Diego Apartments | diego@selzlein.com | Diego Aguir Selzlein |
@@ -58,8 +64,8 @@ Feature: Units Management
       | Name  |
       | Other |
     And the following properties:
-      | ID | Account | Name        |
-      | 2  | Other   | ACME Uptown |
+      | ID | Account | Name        | Country | City  |
+      | 2  | Other   | ACME Uptown | Japan   | Osaka |
     When I add the following unit:
       | Property     | ACME Uptown  |
       | Name         | Standard Apt |
@@ -145,8 +151,8 @@ Feature: Units Management
       | Name  |
       | Other |
     And the following properties:
-      | ID | Account | Name        |
-      | 2  | Other   | ACME Uptown |
+      | ID | Account | Name        | Country | City  |
+      | 2  | Other   | ACME Uptown | Japan   | Osaka |
     And the following units:
       | Property    | Name         | Bedrooms | SizeM2 | MaxOccupancy | Count |
       | ACME Uptown | Standard Apt | 1        | 52     | 3            | 15    |
@@ -166,8 +172,8 @@ Feature: Units Management
       | Name  |
       | Other |
     And the following properties:
-      | ID | Account | Name            |
-      | 2  | Other   | ACME Apartments |
+      | ID | Account | Name            | Country | City  |
+      | 2  | Other   | ACME Apartments | Japan   | Osaka |
     And the following units:
       | Property        | Name               | Bedrooms | SizeM2 | MaxOccupancy | Count |
       | ACME Downtown   | Standard Apt       | 1        | 52     | 3            | 15    |
@@ -316,8 +322,8 @@ Feature: Units Management
       | Name            |
       | John Apartments |
     And the following properties:
-      | ID | Account         | Name        |
-      | 2  | John Apartments | ACME Uptown |
+      | ID | Account         | Name        | Country | City  |
+      | 2  | John Apartments | ACME Uptown | Japan   | Osaka |
     And the following units:
       | ID | Property    | Name         | Bedrooms | SizeM2 | MaxOccupancy | Count |
       | 2  | ACME Uptown | Standard Apt | 1        | 52     | 3            | 15    |

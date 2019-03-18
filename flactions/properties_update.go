@@ -10,7 +10,7 @@ import (
 	"github.com/nerde/fuji-lane-back/optional"
 )
 
-// PropertiesUpdateBody is the request body for creating a property image
+// PropertiesUpdateBody is the request body for updating a property image
 type PropertiesUpdateBody struct {
 	Name            optional.String  `json:"name"`
 	Address1        optional.String  `json:"address1"`
@@ -76,8 +76,8 @@ func (a *PropertiesUpdate) Perform() {
 			return
 		}
 
-		property.CityID = &city.ID
-		property.CountryID = &city.CountryID
+		property.CityID = city.ID
+		property.CountryID = city.CountryID
 	}
 
 	a.Repository().Transaction(func(tx *flentities.Repository) {

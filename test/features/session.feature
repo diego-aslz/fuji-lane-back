@@ -1,7 +1,8 @@
 Feature: Session
 
   Scenario: Accessing a protected resource without an authentication token
-    When I add a new property
+    When I create the following property:
+      | Name | ACME Downtown |
     Then I should receive an "UNAUTHORIZED" response
     And I should have no properties
 
@@ -11,7 +12,8 @@ Feature: Session
       | IssuedAt   | 2018-06-01T08:00:00Z |
       | RenewAfter | 2018-06-05T08:00:00Z |
       | ExpiresAt  | 2018-06-08T08:00:00Z |
-    When I add a new property
+    When I create the following property:
+      | Name | ACME Downtown |
     Then I should receive an "UNAUTHORIZED" response with the following errors:
       | You need to sign in |
     And I should have no properties
@@ -25,7 +27,8 @@ Feature: Session
       | IssuedAt   | 2018-05-21T08:00:00Z |
       | RenewAfter | 2018-05-25T08:00:00Z |
       | ExpiresAt  | 2018-05-28T08:00:00Z |
-    When I add a new property
+    When I create the following property:
+      | Name | ACME Downtown |
     Then I should receive an "UNAUTHORIZED" response with the following errors:
       | Your session expired |
     And I should have no properties

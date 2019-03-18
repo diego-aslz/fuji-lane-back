@@ -19,8 +19,14 @@ type propertyRow struct {
 	Country string
 }
 
-func requestPropertiesCreate() error {
-	return performPOST(flweb.PropertiesPath, nil)
+func requestPropertiesCreate(table *gherkin.DataTable) error {
+	b, err := assist.CreateInstance(new(flactions.PropertiesCreateBody), table)
+
+	if err != nil {
+		return err
+	}
+
+	return performPOST(flweb.PropertiesPath, b)
 }
 
 func requestPropertiesUpdate(id string, table *gherkin.DataTable) error {
@@ -109,7 +115,7 @@ func propertyToTableRow(r *flentities.Repository, p interface{}) (interface{}, e
 }
 
 func PropertyContext(s *godog.Suite) {
-	s.Step(`^I add a new property$`, requestPropertiesCreate)
+	s.Step(`^I create the following property:$`, requestPropertiesCreate)
 	s.Step(`^I update the property "([^"]*)" with the following details:$`, requestPropertiesUpdate)
 	s.Step(`^I update the property "([^"]*)" with the following amenities:$`, requestPropertiesUpdateWithAmenities)
 	s.Step(`^I publish property "([^"]*)"$`, requestPropertiesPublish)

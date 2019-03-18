@@ -15,19 +15,37 @@ Feature: Properties Management
       | 3  | Japan   | Osaka |
     And I am authenticated with "diego@selzlein.com"
 
-  Scenario: Adding a new property
-    When I add a new property
+  Scenario: Creating a new property
+    When I create the following property:
+      | Name       | ACME Downtown                |
+      | Overview   | <strong>Good place!</strong> |
+      | Address1   | Add. One                     |
+      | Address2   | Add. Two                     |
+      | Address3   | Add. Three                   |
+      | CityID     | 3                            |
+      | PostalCode | 223344                       |
+      | Latitude   | 34.69374                     |
+      | Longitude  | 135.50218                    |
     Then I should receive a "CREATED" response
     And I should have the following properties:
-      | Account          |
-      | Diego Apartments |
+      | Account          | Name          | Slug          | Address1 | Address2 | Address3   | City  | PostalCode | Country | Overview                     | Latitude | Longitude |
+      | Diego Apartments | ACME Downtown | acme-downtown | Add. One | Add. Two | Add. Three | Osaka | 223344     | Japan   | <strong>Good place!</strong> | 34.69374 | 135.50218 |
+
+  Scenario: Creating a new property with invalid data
+    When I create the following property:
+      | Overview | <strong>Good place!</strong> |
+    Then I should receive a "UNPROCESSABLE ENTITY" response with the following errors:
+      | name is required    |
+      | address is required |
+      | city is required    |
 
   Scenario: Adding a new property without having an Account
     Given the following users:
       | Email                | Name             |
       | djeison@selzlein.com | Djeison Selzlein |
     And I am authenticated with "djeison@selzlein.com"
-    When I add a new property
+    When I create the following property:
+      | Name | ACME Downtown |
     Then I should receive a "PRECONDITION REQUIRED" response with the following errors:
       | You need a company account to perform this action |
     And I should have no properties
@@ -153,8 +171,8 @@ Feature: Properties Management
 
   Scenario: Updating my property without changing amenities
     Given the following properties:
-      | ID | Account          |
-      | 1  | Diego Apartments |
+      | ID | Account          | Country | City  |
+      | 1  | Diego Apartments | Japan   | Osaka |
     And the following amenities:
       | PropertyID | Type |
       | 1          | gym  |
@@ -189,11 +207,11 @@ Feature: Properties Management
       | Name             |
       | Other Apartments |
     And the following properties:
-      | ID | Account          |
-      | 1  | Diego Apartments |
+      | ID | Account          | Country | City  |
+      | 1  | Diego Apartments | Japan   | Osaka |
     And the following properties:
-      | ID | Account          | Name |
-      | 2  | Other Apartments | ACME |
+      | ID | Account          | Name | Country | City  |
+      | 2  | Other Apartments | ACME | Japan   | Osaka |
     When I update the property "1" with the following details:
       | Name | ACME |
     Then I should receive an "UNPROCESSABLE ENTITY" response with the following errors:
@@ -204,11 +222,11 @@ Feature: Properties Management
       | Name             |
       | Other Apartments |
     And the following properties:
-      | ID | Account          |
-      | 1  | Diego Apartments |
+      | ID | Account          | Country | City  |
+      | 1  | Diego Apartments | Japan   | Osaka |
     And the following properties:
-      | ID | Account          | Name      |
-      | 2  | Other Apartments | ACME Down |
+      | ID | Account          | Name      | Country | City  |
+      | 2  | Other Apartments | ACME Down | Japan   | Osaka |
     When I update the property "1" with the following details:
       | Name | ACME  Down |
     Then I should receive an "UNPROCESSABLE ENTITY" response with the following errors:
@@ -216,8 +234,8 @@ Feature: Properties Management
 
   Scenario: Updating my property with invalid Overview
     Given the following properties:
-      | ID | Account          |
-      | 1  | Diego Apartments |
+      | ID | Account          | Country | City  |
+      | 1  | Diego Apartments | Japan   | Osaka |
     When I update the property "1" with the following details:
       | Overview | <strong>Big windows!</strong><script></script> |
     Then I should receive an "UNPROCESSABLE ENTITY" response with the following errors:
@@ -228,8 +246,8 @@ Feature: Properties Management
       | Name             |
       | Other Apartments |
     And the following properties:
-      | ID | Account          |
-      | 1  | Other Apartments |
+      | ID | Account          | Country | City  |
+      | 1  | Other Apartments | Japan   | Osaka |
     When I update the property "1" with the following details:
       | Name | ACME Downtown |
     Then I should receive a "NOT FOUND" response
@@ -239,8 +257,8 @@ Feature: Properties Management
 
   Scenario: Updating property amenities
     Given the following properties:
-      | ID | Account          | Name          |
-      | 1  | Diego Apartments | ACME Downtown |
+      | ID | Account          | Name          | Country | City  |
+      | 1  | Diego Apartments | ACME Downtown | Japan   | Osaka |
     And the following amenities:
       | Property      | Type |
       | ACME Downtown | gym  |
@@ -265,8 +283,8 @@ Feature: Properties Management
 
   Scenario: Updating property with invalid or duplicated amenities
     Given the following properties:
-      | ID | Account          | Name          |
-      | 1  | Diego Apartments | ACME Downtown |
+      | ID | Account          | Name          | Country | City  |
+      | 1  | Diego Apartments | ACME Downtown | Japan   | Osaka |
     When I update the property "1" with the following amenities:
       | Type    | Name    |
       | invalid | Invalid |
@@ -280,8 +298,8 @@ Feature: Properties Management
 
   Scenario: Publishing my property
     Given the following properties:
-      | ID | Account          | Name          | Address1 | Address2 | Address3   | CityID | PostalCode | MinimumStay | Deposit | Cleaning | NearestAirport | NearestSubway | NearbyLocations | Overview   | Latitude | Longitude | EverPublished |
-      | 1  | Diego Apartments | ACME Downtown | Add. One | Add. Two | Add. Three | 3      | 223344     | 3           | 150     | daily    | IGU            | Central Park  | Pharmacy        | Nice place | 34.69374 | 135.50218 | false         |
+      | ID | Account          | Name          | Address1 | Address2 | Address3   | Country | City  | PostalCode | MinimumStay | Deposit | Cleaning | NearestAirport | NearestSubway | NearbyLocations | Overview   | Latitude | Longitude | EverPublished |
+      | 1  | Diego Apartments | ACME Downtown | Add. One | Add. Two | Add. Three | Japan   | Osaka | 223344     | 3           | 150     | daily    | IGU            | Central Park  | Pharmacy        | Nice place | 34.69374 | 135.50218 | false         |
     And the following images:
       | ID | Property      | Uploaded | Name      | URL                                | Type       | Size    | Position |
       | 1  | ACME Downtown | true     | front.jpg | https://s3.amazonaws.com/front.jpg | image/jpeg | 1000000 | 1        |
@@ -297,8 +315,8 @@ Feature: Properties Management
 
   Scenario: Publishing a property with missing information
     Given the following properties:
-      | ID | Account          | EverPublished |
-      | 1  | Diego Apartments | false         |
+      | ID | Account          | EverPublished | Country | City  |
+      | 1  | Diego Apartments | false         | Japan   | Osaka |
     And the following images:
       | ID | PropertyID | Uploaded | Name      | URL                                | Type       | Size    | Position |
       | 1  | 1          | false    | front.jpg | https://s3.amazonaws.com/front.jpg | image/jpeg | 1000000 | 2        |
@@ -314,8 +332,8 @@ Feature: Properties Management
 
   Scenario: Unpublishing my property
     Given the following properties:
-      | ID | Account          | Name          | PublishedAt          |
-      | 1  | Diego Apartments | ACME Downtown | 2018-06-05T08:00:00Z |
+      | ID | Account          | Name          | PublishedAt          | Country | City  |
+      | 1  | Diego Apartments | ACME Downtown | 2018-06-05T08:00:00Z | Japan   | Osaka |
     When I unpublish property "1"
     Then I should receive an "OK" response
     And I should have the following properties:
@@ -327,10 +345,10 @@ Feature: Properties Management
       | Name              |
       | Antoni Apartments |
     And the following properties:
-      | ID | Account           | Name          | Address1                | Address2 | CityID | PostalCode | PublishedAt          | UpdatedAt            | EverPublished |
-      | 1  | Diego Apartments  | ACME Downtown | 88 Tai Tam Reservoir Rd | Tai Tam  | 3      | 111        | 2018-06-05T08:00:00Z | 2018-06-05T08:00:00Z | false         |
-      | 2  | Diego Apartments  | ACME Uptown   | 90 Tai Tam Reservoir Rd | Tai Tam  | 3      | 222        | 2018-06-05T08:00:00Z | 2018-06-05T08:00:00Z | true          |
-      | 3  | Antoni Apartments | ACME          | Add. One                | Add. Two | 3      | 333        | 2018-06-05T08:00:00Z | 2018-06-05T08:00:00Z | false         |
+      | ID | Account           | Name          | Address1                | Address2 | Country | City  | PostalCode | PublishedAt          | UpdatedAt            | EverPublished |
+      | 1  | Diego Apartments  | ACME Downtown | 88 Tai Tam Reservoir Rd | Tai Tam  | Japan   | Osaka | 111        | 2018-06-05T08:00:00Z | 2018-06-05T08:00:00Z | false         |
+      | 2  | Diego Apartments  | ACME Uptown   | 90 Tai Tam Reservoir Rd | Tai Tam  | Japan   | Osaka | 222        | 2018-06-05T08:00:00Z | 2018-06-05T08:00:00Z | true          |
+      | 3  | Antoni Apartments | ACME          | Add. One                | Add. Two | Japan   | Osaka | 333        | 2018-06-05T08:00:00Z | 2018-06-05T08:00:00Z | false         |
     And the following images:
       | ID | Property      | Uploaded | Name      | URL                                | Type       | Size    | Position |
       | 1  | ACME Downtown | true     | front.jpg | https://s3.amazonaws.com/front.jpg | image/jpeg | 1000000 | 2        |
@@ -360,7 +378,7 @@ Feature: Properties Management
         "address3": null,
         "postalCode": "111",
         "cityID": 3,
-        "countryID": null,
+        "countryID": 2,
         "latitude": 0,
         "longitude": 0,
         "images": [{
@@ -447,7 +465,7 @@ Feature: Properties Management
         "address3": null,
         "postalCode": "222",
         "cityID": 3,
-        "countryID": null,
+        "countryID": 2,
         "latitude": 0,
         "longitude": 0,
         "images": [],

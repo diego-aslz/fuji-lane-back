@@ -5,10 +5,16 @@ Feature: Dashboard
       | Name             |
       | Diego Apartments |
       | Alex Apartments  |
+    And the following countries:
+      | ID | Name  |
+      | 2  | Japan |
+    And the following cities:
+      | ID | Country | Name  |
+      | 3  | Japan   | Osaka |
     And the following properties:
-      | Account          | Name          |
-      | Diego Apartments | ACME Downtown |
-      | Alex Apartments  | ACME Uptown   |
+      | Account          | Name          | Country | City  |
+      | Diego Apartments | ACME Downtown | Japan   | Osaka |
+      | Alex Apartments  | ACME Uptown   | Japan   | Osaka |
     And the following units:
       | Property      | Name         | Bedrooms | SizeM2 | MaxOccupancy | Count |
       | ACME Downtown | Standard Apt | 1        | 32     | 3            | 15    |

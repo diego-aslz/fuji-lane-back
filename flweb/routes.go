@@ -123,7 +123,7 @@ func (a *Application) routeProperties(e *gin.Engine) {
 
 	a.route(e.GET, PropertyPath, flactions.NewPropertiesShow, withRepository, loadSession, requireUser, requireAccount)
 	a.route(e.GET, PropertiesPath, flactions.NewPropertiesList, withRepository, loadSession, requireUser, requireAccount)
-	a.route(e.POST, PropertiesPath, flactions.NewPropertiesCreate, withRepository, loadSession, requireUser, requireAccount)
+	a.route(e.POST, PropertiesPath, flactions.NewPropertiesCreate, withRepository, loadSession, requireUser, requireAccount, parseBody)
 	a.route(e.PUT, PropertyPath, flactions.NewPropertiesUpdate, withRepository, loadSession, requireUser, requireAccount, parseBody)
 	a.route(e.PUT, PropertiesPublishPath, flactions.NewPropertiesPublish, withRepository, loadSession, requireUser, requireAccount)
 	a.route(e.PUT, PropertiesUnpublishPath, flactions.NewPropertiesUnpublish, withRepository, loadSession, requireUser, requireAccount)

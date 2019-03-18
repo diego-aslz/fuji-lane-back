@@ -9,15 +9,24 @@ Feature: Images Management
     And the following users:
       | Account          | Email              | Name                 |
       | Diego Apartments | diego@selzlein.com | Diego Aguir Selzlein |
+    And the following countries:
+      | ID | Name  |
+      | 2  | Japan |
+    And the following cities:
+      | ID | Country | Name  |
+      | 3  | Japan   | Osaka |
+    And the following properties:
+      | ID | Account          | Name            | Country | City  |
+      | 19 | Diego Apartments | ACME Skyscraper | Japan   | Osaka |
+    And I am authenticated with "diego@selzlein.com"
 
   Scenario Outline: Adding an image
     Given the following properties:
-      | ID   | Account          | Name            |
-      | <ID> | Diego Apartments | ACME Skyscraper |
+      | ID   | Account          | Name              | Country | City  |
+      | <ID> | Diego Apartments | ACME Skyscraper 2 | Japan   | Osaka |
     And the following units:
-      | ID   | Property        | Name         |
-      | <ID> | ACME Skyscraper | Standard Apt |
-    And I am authenticated with "diego@selzlein.com"
+      | ID   | Property          | Name         |
+      | <ID> | ACME Skyscraper 2 | Standard Apt |
     When I request an URL to upload the following image:
       | Name     | build/ing.jpg |
       | Size     | 15000000      |
@@ -32,15 +41,11 @@ Feature: Images Management
       | <Name>   | building.jpg | https://fujilane-test.s3.amazonaws.com/public/<Collection>/<ID>/images/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa | false    | image/jpeg | 15000000 | 3        | public/<Collection>/<ID>/images/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa |
 
     Examples:
-      | Target   | Name            | Collection | ID |
-      | Property | ACME Skyscraper | properties | 20 |
-      | Unit     | Standard Apt    | units      | 25 |
+      | Target   | Name              | Collection | ID |
+      | Property | ACME Skyscraper 2 | properties | 20 |
+      | Unit     | Standard Apt      | units      | 25 |
 
   Scenario: Validating file size
-    Given the following properties:
-      | ID | Account          | Name            |
-      | 20 | Diego Apartments | ACME Skyscraper |
-    And I am authenticated with "diego@selzlein.com"
     When I request an URL to upload the following image:
       | Name     |                 |
       | Size     | 25000000        |
@@ -53,15 +58,9 @@ Feature: Images Management
       | Invalid type: needs to be JPEG, PNG or GIF |
 
   Scenario: Obtaining a signed URL to upload a property image without having an account
-    Given the following accounts:
-      | Name                |
-      | Somebody Apartments |
-    And the following users:
+    Given the following users:
       | Email               | Name  |
       | noaccount@gmail.com | Diego |
-    And the following properties:
-      | Account             | Name            |
-      | Somebody Apartments | ACME Skyscraper |
     And I am authenticated with "noaccount@gmail.com"
     When I request an URL to upload the following image:
       | Name     | building.jpg    |
@@ -77,12 +76,11 @@ Feature: Images Management
       | Name                |
       | Somebody Apartments |
     And the following properties:
-      | Account             | Name            |
-      | Somebody Apartments | ACME Skyscraper |
+      | Account             | Name             | Country | City  |
+      | Somebody Apartments | Other Skyscraper | Japan   | Osaka |
     And the following units:
-      | Property        | Name         |
-      | ACME Skyscraper | Standard Apt |
-    And I am authenticated with "diego@selzlein.com"
+      | Property         | Name         |
+      | Other Skyscraper | Standard Apt |
     When I request an URL to upload the following image:
       | Name     | building.jpg |
       | Size     | 15000000     |
@@ -93,21 +91,17 @@ Feature: Images Management
       | Could not find <Target> |
 
     Examples:
-      | Target   | Name            |
-      | Property | ACME Skyscraper |
-      | Unit     | Standard Apt    |
+      | Target   | Name             |
+      | Property | Other Skyscraper |
+      | Unit     | Standard Apt     |
 
   Scenario: Marking a unit image as uploaded
-    Given the following properties:
-      | Account          | Name            |
-      | Diego Apartments | ACME Skyscraper |
-    And the following units:
+    Given the following units:
       | Property        | Name         |
       | ACME Skyscraper | Standard Apt |
     And the following images:
       | Unit         | Name         | URL                                                                                               | Uploaded |
       | Standard Apt | building.jpg | https://fujilane-test.s3.amazonaws.com/public/properties/20/images/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa | false    |
-    And I am authenticated with "diego@selzlein.com"
     When I mark image "building.jpg" as uploaded
     Then I should receive an "OK" response
     And I should have the following images:
@@ -115,13 +109,9 @@ Feature: Images Management
       | building.jpg | true     |
 
   Scenario: Marking a unit image as uploaded
-    Given the following properties:
-      | Account          | Name            |
-      | Diego Apartments | ACME Skyscraper |
-    And the following images:
+    Given the following images:
       | Property        | Name         | URL                                                                                               | Uploaded |
       | ACME Skyscraper | building.jpg | https://fujilane-test.s3.amazonaws.com/public/properties/20/images/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa | false    |
-    And I am authenticated with "diego@selzlein.com"
     When I mark image "building.jpg" as uploaded
     Then I should receive an "OK" response
     And I should have the following images:
@@ -129,37 +119,26 @@ Feature: Images Management
       | building.jpg | true     |
 
   Scenario: Removing a property image
-    Given the following properties:
-      | Account          | Name            |
-      | Diego Apartments | ACME Skyscraper |
-    And the following images:
+    Given the following images:
       | Property        | Name         | URL                                                                                               |
       | ACME Skyscraper | building.jpg | https://fujilane-test.s3.amazonaws.com/public/properties/20/images/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa |
-    And I am authenticated with "diego@selzlein.com"
     When I remove the image "building.jpg"
     Then I should receive an "OK" response
     And I should have no images
 
   Scenario: Removing an unit image
-    Given the following properties:
-      | Account          | Name            |
-      | Diego Apartments | ACME Skyscraper |
-    And the following units:
+    Given the following units:
       | Property        | Name         |
       | ACME Skyscraper | Standard Apt |
     And the following images:
       | Unit         | Name         | URL                                                                                               |
       | Standard Apt | building.jpg | https://fujilane-test.s3.amazonaws.com/public/properties/20/images/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa |
-    And I am authenticated with "diego@selzlein.com"
     When I remove the image "building.jpg"
     Then I should receive an "OK" response
     And I should have no images
 
   Scenario: Removing a floor plan image
-    Given the following properties:
-      | Account          | Name            |
-      | Diego Apartments | ACME Skyscraper |
-    And the following units:
+    Given the following units:
       | Property        | Name         |
       | ACME Skyscraper | Standard Apt |
       | ACME Skyscraper | Double Apt   |
@@ -171,7 +150,6 @@ Feature: Images Management
       | FloorPlanImageID | 3 |
     And unit "Double Apt" has:
       | FloorPlanImageID | 4 |
-    And I am authenticated with "diego@selzlein.com"
     When I remove the image "building3.jpg"
     Then I should receive an "OK" response
     And I should have the following images:
@@ -187,12 +165,11 @@ Feature: Images Management
       | Name      |
       | Other Acc |
     And the following properties:
-      | Account   | Name            |
-      | Other Acc | ACME Skyscraper |
+      | Account   | Name             | Country | City  |
+      | Other Acc | Other Skyscraper | Japan   | Osaka |
     And the following images:
-      | Property        | Name         | URL                                                                                               |
-      | ACME Skyscraper | building.jpg | https://fujilane-test.s3.amazonaws.com/public/properties/20/images/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa |
-    And I am authenticated with "diego@selzlein.com"
+      | Property         | Name         | URL                                                                                               |
+      | Other Skyscraper | building.jpg | https://fujilane-test.s3.amazonaws.com/public/properties/20/images/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa |
     When I remove the image "building.jpg"
     Then I should receive a "NOT FOUND" response
     And I should have the following images:
@@ -200,14 +177,10 @@ Feature: Images Management
       | building.jpg |
 
   Scenario: Sorting my images
-    Given the following properties:
-      | ID | Account          | Name            |
-      | 5  | Diego Apartments | ACME Skyscraper |
-    And the following images:
+    Given the following images:
       | ID | Position | Property        | Name      | URL                                                                    |
       | 5  | 1        | ACME Skyscraper | front.jpg | https://fujilane-test.s3.amazonaws.com/public/properties/20/images/aaa |
       | 10 | 2        | ACME Skyscraper | back.jpg  | https://fujilane-test.s3.amazonaws.com/public/properties/20/images/bbb |
-    And I am authenticated with "diego@selzlein.com"
     When I sort images to be like:
       | back.jpg  |
       | front.jpg |
@@ -221,13 +194,12 @@ Feature: Images Management
       | Name      |
       | Other Acc |
     And the following properties:
-      | Account   | Name            |
-      | Other Acc | ACME Skyscraper |
+      | Account   | Name             | Country | City  |
+      | Other Acc | Other Skyscraper | Japan   | Osaka |
     And the following images:
-      | ID | Position | Property        | Name      | URL                                                                    |
-      | 5  | 1        | ACME Skyscraper | front.jpg | https://fujilane-test.s3.amazonaws.com/public/properties/20/images/aaa |
-      | 10 | 2        | ACME Skyscraper | back.jpg  | https://fujilane-test.s3.amazonaws.com/public/properties/20/images/bbb |
-    And I am authenticated with "diego@selzlein.com"
+      | ID | Position | Property         | Name      | URL                                                                    |
+      | 5  | 1        | Other Skyscraper | front.jpg | https://fujilane-test.s3.amazonaws.com/public/properties/20/images/aaa |
+      | 10 | 2        | Other Skyscraper | back.jpg  | https://fujilane-test.s3.amazonaws.com/public/properties/20/images/bbb |
     When I sort images to be like:
       | back.jpg  |
       | front.jpg |

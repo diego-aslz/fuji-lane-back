@@ -3,8 +3,6 @@ package flentities
 import (
 	"errors"
 	"time"
-
-	"github.com/nerde/fuji-lane-back/fujilane"
 )
 
 // Property contains address and can have multiple units that can be booked
@@ -13,19 +11,19 @@ type Property struct {
 	CreatedAt       time.Time  `json:"-"`
 	UpdatedAt       time.Time  `json:"updatedAt"`
 	DeletedAt       *time.Time `json:"-"`
-	Name            *string    `json:"name"`
+	Name            string     `json:"name"`
 	Slug            *string    `json:"slug"`
 	PublishedAt     *time.Time `json:"publishedAt"`
 	EverPublished   bool       `json:"everPublished"`
 	AccountID       uint       `json:"-"`
 	Account         *Account   `json:"-"`
-	Address1        *string    `json:"address1"`
+	Address1        string     `json:"address1"`
 	Address2        *string    `json:"address2"`
 	Address3        *string    `json:"address3"`
 	PostalCode      *string    `json:"postalCode"`
-	CityID          *uint      `json:"cityID"`
+	CityID          uint       `json:"cityID"`
 	City            *City      `json:"-"`
-	CountryID       *uint      `json:"countryID"`
+	CountryID       uint       `json:"countryID"`
 	Country         *Country   `json:"-"`
 	Latitude        float32    `json:"latitude"`
 	Longitude       float32    `json:"longitude"`
@@ -43,8 +41,8 @@ type Property struct {
 
 // BeforeSave to update the slug
 func (p *Property) BeforeSave() error {
-	if p.Name != nil && *p.Name != "" {
-		slug := generateSlug(*p.Name)
+	if p.Name != "" {
+		slug := generateSlug(p.Name)
 		p.Slug = &slug
 	}
 
@@ -55,7 +53,7 @@ func (p *Property) BeforeSave() error {
 func (p *Property) CanBePublished() []error {
 	errs := []error{}
 
-	if fujilane.IsBlankStr(p.Name) {
+	if p.Name == "" {
 		errs = append(errs, errors.New("Name is required"))
 	}
 
@@ -75,5 +73,5 @@ func (p *Property) CanBePublished() []error {
 }
 
 func (p *Property) isMissingAddress() bool {
-	return fujilane.IsBlankStr(p.Address1) || fujilane.IsBlankUint(p.CityID) || p.Latitude == 0 || p.Longitude == 0
+	return p.Address1 == "" || p.CityID == 0 || p.Latitude == 0 || p.Longitude == 0
 }

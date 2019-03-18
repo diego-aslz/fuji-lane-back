@@ -32,9 +32,7 @@ func imageToTableRow(r *flentities.Repository, i interface{}) (interface{}, erro
 		return nil, err
 	}
 
-	if image.Property.Name != nil {
-		row.Property = *image.Property.Name
-	}
+	row.Property = image.Property.Name
 
 	image.Unit = &flentities.Unit{}
 	err = r.Model(i).Association("Unit").Find(image.Unit).Error

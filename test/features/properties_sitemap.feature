@@ -1,15 +1,23 @@
 Feature: Properties Sitemap
 
+  Background:
+    And the following countries:
+      | ID | Name  |
+      | 2  | Japan |
+    And the following cities:
+      | ID | Country | Name  |
+      | 3  | Japan   | Osaka |
+
   Scenario: Exporting properties sitemap
     Given the following accounts:
       | Name             |
       | Diego Apartments |
     And the following properties:
-      | ID | Account          | Name          | PublishedAt          | UpdatedAt            |
-      | 1  | Diego Apartments | ACME Downtown | 2018-06-05T08:00:00Z | 2018-06-05T08:00:00Z |
+      | ID | Account          | Name          | PublishedAt          | UpdatedAt            | Country | City  |
+      | 1  | Diego Apartments | ACME Downtown | 2018-06-05T08:00:00Z | 2018-06-05T08:00:00Z | Japan   | Osaka |
     And the following properties:
-      | ID | Account          | Name        | UpdatedAt            |
-      | 2  | Diego Apartments | Unpublished | 2018-06-05T08:00:00Z |
+      | ID | Account          | Name        | UpdatedAt            | Country | City  |
+      | 2  | Diego Apartments | Unpublished | 2018-06-05T08:00:00Z | Japan   | Osaka |
     And the following units:
       | ID | Property      | Name         | PublishedAt          | UpdatedAt            |
       | 11 | ACME Downtown | Standard Apt | 2018-06-05T08:00:00Z | 2018-06-05T08:00:00Z |
