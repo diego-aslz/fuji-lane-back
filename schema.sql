@@ -297,7 +297,6 @@ CREATE TABLE properties (
     deleted_at timestamp without time zone,
     account_id bigint NOT NULL,
     published_at timestamp without time zone,
-    ever_published boolean DEFAULT false NOT NULL,
     name character varying,
     slug character varying,
     address1 character varying,
@@ -314,7 +313,8 @@ CREATE TABLE properties (
     nearest_airport character varying,
     nearest_subway character varying,
     nearby_locations character varying,
-    overview character varying
+    overview character varying,
+    first_published_at timestamp without time zone
 );
 
 
@@ -358,7 +358,6 @@ CREATE TABLE units (
     deleted_at timestamp without time zone,
     property_id bigint NOT NULL,
     published_at timestamp without time zone,
-    ever_published boolean DEFAULT false NOT NULL,
     name character varying NOT NULL,
     slug character varying NOT NULL,
     bedrooms integer NOT NULL,
@@ -367,7 +366,8 @@ CREATE TABLE units (
     max_occupancy integer,
     count integer NOT NULL,
     overview text,
-    floor_plan_image_id bigint
+    floor_plan_image_id bigint,
+    first_published_at timestamp without time zone
 );
 
 
@@ -915,7 +915,7 @@ SET search_path = public, pg_catalog;
 --
 
 COPY schema_migrations (version, dirty) FROM stdin;
-12	f
+13	f
 \.
 
 

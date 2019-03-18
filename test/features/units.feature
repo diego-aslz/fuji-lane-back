@@ -250,7 +250,7 @@ Feature: Units Management
       {
         "id": 2,
         "publishedAt": null,
-        "everPublished": false,
+        "firstPublishedAt": null,
         "propertyID": 1,
         "name": "Standard Apt",
         "slug": "standard-apt",
@@ -330,10 +330,10 @@ Feature: Units Management
     When I get details for unit "Standard Apt"
     Then I should receive a "NOT FOUND" response
 
-  Scenario: Publishing my unit
+  Scenario Outline: Publishing my unit
     Given the following units:
-      | ID | Property      | Name         | Bedrooms | SizeM2 | MaxOccupancy | Count | EverPublished |
-      | 2  | ACME Downtown | Standard Apt | 1        | 52     | 3            | 15    | false         |
+      | ID | Property      | Name         | Bedrooms | SizeM2 | MaxOccupancy | Count | FirstPublishedAt         |
+      | 2  | ACME Downtown | Standard Apt | 1        | 52     | 3            | 15    | <FirstPublishedAtBefore> |
     And the following prices:
       | Unit         | MinNights | Cents |
       | Standard Apt | 1         | 11000 |
@@ -347,8 +347,13 @@ Feature: Units Management
     When I publish unit "2"
     Then I should receive an "OK" response
     And I should have the following units:
-      | ID | Name         | PublishedAt          | EverPublished |
-      | 2  | Standard Apt | 2018-06-05T08:00:00Z | true          |
+      | ID | Name         | PublishedAt          | FirstPublishedAt        |
+      | 2  | Standard Apt | 2018-06-05T08:00:00Z | <FirstPublishedAtAfter> |
+
+    Examples:
+      | FirstPublishedAtBefore | FirstPublishedAtAfter |
+      |                        | 2018-06-05T08:00:00Z  |
+      | 2015-06-05T08:00:00Z   | 2015-06-05T08:00:00Z  |
 
   Scenario: Publishing an unit with missing information
     Given the following units:
@@ -370,15 +375,15 @@ Feature: Units Management
       | At least one image is required   |
       | Please provide a base unit price |
     And I should have the following units:
-      | ID | Name | PublishedAt | EverPublished |
-      | 2  |      |             | false         |
+      | ID | Name | PublishedAt | FirstPublishedAt |
+      | 2  |      |             |                  |
 
   Scenario: Unpublishing my unit
     Given the following units:
-      | ID | Property      | Name         | PublishedAt          |
-      | 2  | ACME Downtown | Standard Apt | 2018-06-05T08:00:00Z |
+      | ID | Property      | Name         | PublishedAt          | FirstPublishedAt     |
+      | 2  | ACME Downtown | Standard Apt | 2018-06-05T08:00:00Z | 2018-06-05T08:00:00Z |
     When I unpublish unit "2"
     Then I should receive an "OK" response
     And I should have the following units:
-      | ID | Property      | Name         | PublishedAt |
-      | 2  | ACME Downtown | Standard Apt |             |
+      | ID | Property      | Name         | PublishedAt | FirstPublishedAt     |
+      | 2  | ACME Downtown | Standard Apt |             | 2018-06-05T08:00:00Z |

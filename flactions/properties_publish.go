@@ -48,7 +48,11 @@ func (a *PropertiesPublish) Perform() {
 		return
 	}
 
-	updates := map[string]interface{}{"PublishedAt": a.Now(), "EverPublished": true}
+	updates := map[string]interface{}{"PublishedAt": a.Now()}
+	if property.FirstPublishedAt == nil {
+		updates["FirstPublishedAt"] = a.Now()
+	}
+
 	if err = a.Repository().Model(property).Updates(updates).Error; err != nil {
 		a.ServerError(err)
 		return

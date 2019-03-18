@@ -118,23 +118,23 @@ func createAccount() error {
 			publishedAt := time.Now()
 			publishedAt = publishedAt.AddDate(0, 0, randomInt(365)*-1)
 			prop := &flentities.Property{
-				Name:            str(fmt.Sprintf("%s %d", fake.FullName(), randomInt(999))),
-				PublishedAt:     &publishedAt,
-				EverPublished:   true,
-				AccountID:       acc.ID,
-				Address1:        str(fake.StreetAddress()),
-				Address2:        str(fake.StreetAddress()),
-				Address3:        str(fake.StreetAddress()),
-				PostalCode:      str(fake.Zip()),
-				CityID:          ui(city.ID),
-				CountryID:       ui(city.CountryID),
-				Latitude:        city.Latitude + ((float32(randomInt(400)) - 200.0) / 1000.0),
-				Longitude:       city.Longitude + ((float32(randomInt(400)) - 200.0) / 1000.0),
-				MinimumStay:     in(randomInt(4) + 1),
-				NearestAirport:  str(fake.MaleFullName()),
-				NearestSubway:   str(fake.Street()),
-				NearbyLocations: str(fake.MaleFullName()),
-				Overview:        str(randomOverview()),
+				Name:             fmt.Sprintf("%s %d", fake.FullName(), randomInt(999)),
+				PublishedAt:      &publishedAt,
+				FirstPublishedAt: &publishedAt,
+				AccountID:        acc.ID,
+				Address1:         fake.StreetAddress(),
+				Address2:         str(fake.StreetAddress()),
+				Address3:         str(fake.StreetAddress()),
+				PostalCode:       str(fake.Zip()),
+				CityID:           city.ID,
+				CountryID:        city.CountryID,
+				Latitude:         city.Latitude + ((float32(randomInt(400)) - 200.0) / 1000.0),
+				Longitude:        city.Longitude + ((float32(randomInt(400)) - 200.0) / 1000.0),
+				MinimumStay:      in(randomInt(4) + 1),
+				NearestAirport:   str(fake.MaleFullName()),
+				NearestSubway:    str(fake.Street()),
+				NearbyLocations:  str(fake.MaleFullName()),
+				Overview:         str(randomOverview()),
 			}
 
 			if err := r.Save(prop).Error; err != nil {
@@ -166,16 +166,16 @@ func createAccount() error {
 				publishedAt := time.Now().AddDate(0, 0, randomInt(365)*-1)
 
 				unit := &flentities.Unit{
-					PublishedAt:   &publishedAt,
-					EverPublished: true,
-					Property:      prop,
-					Name:          fake.FullName(),
-					Overview:      str(randomOverview()),
-					Bedrooms:      randomInt(8),
-					Bathrooms:     randomInt(10),
-					SizeM2:        randomInt(100) + 20,
-					MaxOccupancy:  in(randomInt(12) + 2),
-					Count:         randomInt(50) + 5,
+					PublishedAt:      &publishedAt,
+					FirstPublishedAt: &publishedAt,
+					Property:         prop,
+					Name:             fake.FullName(),
+					Overview:         str(randomOverview()),
+					Bedrooms:         randomInt(8),
+					Bathrooms:        randomInt(10),
+					SizeM2:           randomInt(100) + 20,
+					MaxOccupancy:     in(randomInt(12) + 2),
+					Count:            randomInt(50) + 5,
 				}
 
 				if err := r.Save(unit).Error; err != nil {

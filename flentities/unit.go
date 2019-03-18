@@ -15,7 +15,7 @@ type Unit struct {
 	UpdatedAt        time.Time  `json:"-"`
 	DeletedAt        *time.Time `json:"-"`
 	PublishedAt      *time.Time `json:"publishedAt"`
-	EverPublished    bool       `json:"everPublished"`
+	FirstPublishedAt *time.Time `json:"firstPublishedAt"`
 	PropertyID       uint       `json:"propertyID"`
 	Property         *Property  `json:"-"`
 	Name             string     `json:"name"`

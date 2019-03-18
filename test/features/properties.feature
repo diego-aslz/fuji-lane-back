@@ -84,7 +84,7 @@ Feature: Properties Management
         "id": 1,
         "updatedAt": "2018-06-05T08:00:00Z",
         "publishedAt": null,
-        "everPublished": false,
+        "firstPublishedAt": null,
         "name": "ACME Downtown",
         "slug": "acme-downtown",
         "address1": "Add. One",
@@ -129,7 +129,7 @@ Feature: Properties Management
         "units": [{
           "id": 11,
           "publishedAt": null,
-          "everPublished": false,
+          "firstPublishedAt": null,
           "propertyID": 1,
           "name": "Standard Apt",
           "slug": "standard-apt",
@@ -207,10 +207,8 @@ Feature: Properties Management
       | Name             |
       | Other Apartments |
     And the following properties:
-      | ID | Account          | Country | City  |
-      | 1  | Diego Apartments | Japan   | Osaka |
-    And the following properties:
       | ID | Account          | Name | Country | City  |
+      | 1  | Diego Apartments |      | Japan   | Osaka |
       | 2  | Other Apartments | ACME | Japan   | Osaka |
     When I update the property "1" with the following details:
       | Name | ACME |
@@ -222,10 +220,8 @@ Feature: Properties Management
       | Name             |
       | Other Apartments |
     And the following properties:
-      | ID | Account          | Country | City  |
-      | 1  | Diego Apartments | Japan   | Osaka |
-    And the following properties:
       | ID | Account          | Name      | Country | City  |
+      | 1  | Diego Apartments |           | Japan   | Osaka |
       | 2  | Other Apartments | ACME Down | Japan   | Osaka |
     When I update the property "1" with the following details:
       | Name | ACME  Down |
@@ -296,10 +292,10 @@ Feature: Properties Management
       | Property      | Type   | Name   |
       | ACME Downtown | custom | Casino |
 
-  Scenario: Publishing my property
+  Scenario Outline: Publishing my property
     Given the following properties:
-      | ID | Account          | Name          | Address1 | Address2 | Address3   | Country | City  | PostalCode | MinimumStay | Deposit | Cleaning | NearestAirport | NearestSubway | NearbyLocations | Overview   | Latitude | Longitude | EverPublished |
-      | 1  | Diego Apartments | ACME Downtown | Add. One | Add. Two | Add. Three | Japan   | Osaka | 223344     | 3           | 150     | daily    | IGU            | Central Park  | Pharmacy        | Nice place | 34.69374 | 135.50218 | false         |
+      | ID | Account          | Name          | Address1 | Address2 | Address3   | Country | City  | PostalCode | MinimumStay | Deposit | Cleaning | NearestAirport | NearestSubway | NearbyLocations | Overview   | Latitude | Longitude | FirstPublishedAt         |
+      | 1  | Diego Apartments | ACME Downtown | Add. One | Add. Two | Add. Three | Japan   | Osaka | 223344     | 3           | 150     | daily    | IGU            | Central Park  | Pharmacy        | Nice place | 34.69374 | 135.50218 | <FirstPublishedAtBefore> |
     And the following images:
       | ID | Property      | Uploaded | Name      | URL                                | Type       | Size    | Position |
       | 1  | ACME Downtown | true     | front.jpg | https://s3.amazonaws.com/front.jpg | image/jpeg | 1000000 | 1        |
@@ -310,13 +306,18 @@ Feature: Properties Management
     When I publish property "1"
     Then I should receive an "OK" response
     And I should have the following properties:
-      | ID | Account          | Name          | PublishedAt          | EverPublished |
-      | 1  | Diego Apartments | ACME Downtown | 2018-06-05T08:00:00Z | true          |
+      | ID | Account          | Name          | PublishedAt          | FirstPublishedAt        |
+      | 1  | Diego Apartments | ACME Downtown | 2018-06-05T08:00:00Z | <FirstPublishedAtAfter> |
+
+    Examples:
+      | FirstPublishedAtBefore | FirstPublishedAtAfter |
+      |                        | 2018-06-05T08:00:00Z  |
+      | 2015-06-05T08:00:00Z   | 2015-06-05T08:00:00Z  |
 
   Scenario: Publishing a property with missing information
     Given the following properties:
-      | ID | Account          | EverPublished | Country | City  |
-      | 1  | Diego Apartments | false         | Japan   | Osaka |
+      | ID | Account          | Country | City  |
+      | 1  | Diego Apartments | Japan   | Osaka |
     And the following images:
       | ID | PropertyID | Uploaded | Name      | URL                                | Type       | Size    | Position |
       | 1  | 1          | false    | front.jpg | https://s3.amazonaws.com/front.jpg | image/jpeg | 1000000 | 2        |
@@ -327,8 +328,8 @@ Feature: Properties Management
       | At least one amenity is required |
       | At least one image is required   |
     And I should have the following properties:
-      | ID | Account          | PublishedAt | EverPublished |
-      | 1  | Diego Apartments |             | false         |
+      | ID | Account          | PublishedAt | FirstPublishedAt |
+      | 1  | Diego Apartments |             |                  |
 
   Scenario: Unpublishing my property
     Given the following properties:
@@ -345,18 +346,18 @@ Feature: Properties Management
       | Name              |
       | Antoni Apartments |
     And the following properties:
-      | ID | Account           | Name          | Address1                | Address2 | Country | City  | PostalCode | PublishedAt          | UpdatedAt            | EverPublished |
-      | 1  | Diego Apartments  | ACME Downtown | 88 Tai Tam Reservoir Rd | Tai Tam  | Japan   | Osaka | 111        | 2018-06-05T08:00:00Z | 2018-06-05T08:00:00Z | false         |
-      | 2  | Diego Apartments  | ACME Uptown   | 90 Tai Tam Reservoir Rd | Tai Tam  | Japan   | Osaka | 222        | 2018-06-05T08:00:00Z | 2018-06-05T08:00:00Z | true          |
-      | 3  | Antoni Apartments | ACME          | Add. One                | Add. Two | Japan   | Osaka | 333        | 2018-06-05T08:00:00Z | 2018-06-05T08:00:00Z | false         |
+      | ID | Account           | Name          | Address1                | Address2 | Country | City  | PostalCode | PublishedAt          | FirstPublishedAt     | UpdatedAt            |
+      | 1  | Diego Apartments  | ACME Downtown | 88 Tai Tam Reservoir Rd | Tai Tam  | Japan   | Osaka | 111        | 2018-06-05T08:00:00Z | 2018-06-05T08:00:00Z | 2018-06-05T08:00:00Z |
+      | 2  | Diego Apartments  | ACME Uptown   | 90 Tai Tam Reservoir Rd | Tai Tam  | Japan   | Osaka | 222        | 2018-06-05T08:00:00Z | 2018-06-05T08:00:00Z | 2018-06-05T08:00:00Z |
+      | 3  | Antoni Apartments | ACME          | Add. One                | Add. Two | Japan   | Osaka | 333        | 2018-06-05T08:00:00Z |                      | 2018-06-05T08:00:00Z |
     And the following images:
       | ID | Property      | Uploaded | Name      | URL                                | Type       | Size    | Position |
       | 1  | ACME Downtown | true     | front.jpg | https://s3.amazonaws.com/front.jpg | image/jpeg | 1000000 | 2        |
       | 2  | ACME Downtown | true     | back.jpg  | https://s3.amazonaws.com/back.jpg  | image/jpeg | 1000000 | 1        |
     And the following units:
-      | ID | Property      | Name           | EverPublished |
-      | 2  | ACME Downtown | Standard Apt   | false         |
-      | 3  | ACME Downtown | Double-bed Apt | true          |
+      | ID | Property      | Name           | FirstPublishedAt     |
+      | 2  | ACME Downtown | Standard Apt   |                      |
+      | 3  | ACME Downtown | Double-bed Apt | 2018-06-05T08:00:00Z |
     And the following prices:
       | Unit           | MinNights | Cents |
       | Standard Apt   | 1         | 11000 |
@@ -372,7 +373,7 @@ Feature: Properties Management
         "slug": "acme-downtown",
         "updatedAt": "2018-06-05T08:00:00Z",
         "publishedAt": "2018-06-05T08:00:00Z",
-        "everPublished": false,
+        "firstPublishedAt": "2018-06-05T08:00:00Z",
         "address1": "88 Tai Tam Reservoir Rd",
         "address2": "Tai Tam",
         "address3": null,
@@ -409,7 +410,7 @@ Feature: Properties Management
         "units": [{
           "id": 2,
           "publishedAt": null,
-          "everPublished": false,
+          "firstPublishedAt": null,
           "propertyID": 1,
           "name": "Standard Apt",
           "slug": "standard-apt",
@@ -432,7 +433,7 @@ Feature: Properties Management
         }, {
           "id": 3,
           "publishedAt": null,
-          "everPublished": true,
+          "firstPublishedAt": "2018-06-05T08:00:00Z",
           "propertyID": 1,
           "name": "Double-bed Apt",
           "slug": "double-bed-apt",
@@ -457,7 +458,7 @@ Feature: Properties Management
         "id": 2,
         "updatedAt": "2018-06-05T08:00:00Z",
         "publishedAt": "2018-06-05T08:00:00Z",
-        "everPublished": true,
+        "firstPublishedAt": "2018-06-05T08:00:00Z",
         "name": "ACME Uptown",
         "slug": "acme-uptown",
         "address1": "90 Tai Tam Reservoir Rd",

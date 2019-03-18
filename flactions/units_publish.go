@@ -45,7 +45,11 @@ func (a *UnitsPublish) Perform() {
 		return
 	}
 
-	updates := map[string]interface{}{"PublishedAt": a.Now(), "EverPublished": true}
+	updates := map[string]interface{}{"PublishedAt": a.Now()}
+	if unit.FirstPublishedAt == nil {
+		updates["FirstPublishedAt"] = a.Now()
+	}
+
 	if err = a.Repository().Model(unit).Updates(updates).Error; err != nil {
 		a.ServerError(err)
 		return

@@ -289,28 +289,28 @@ func float64PtrParser(raw string) (interface{}, error) {
 }
 
 func float64Parser(raw string) (interface{}, error) {
+	var f float64
 	if raw == "" {
-		return nil, nil
+		return f, nil
 	}
 
-	i, err := strconv.ParseFloat(raw, 64)
+	f, err := strconv.ParseFloat(raw, 64)
 	if err != nil {
-		return nil, err
+		return f, err
 	}
-
-	f := float64(i)
 
 	return f, nil
 }
 
 func uintPtrParser(raw string) (interface{}, error) {
+	var u *uint
 	if raw == "" {
-		return nil, nil
+		return u, nil
 	}
 
 	i, err := strconv.Atoi(raw)
 	if err != nil {
-		return nil, err
+		return u, err
 	}
 
 	ui := uint(i)
@@ -318,13 +318,14 @@ func uintPtrParser(raw string) (interface{}, error) {
 }
 
 func timePtrParser(raw string) (interface{}, error) {
+	var t *time.Time
 	if raw == "" {
-		return nil, nil
+		return t, nil
 	}
 
 	i, err := time.Parse(fullTimeFormat, raw)
 	if err != nil {
-		return nil, err
+		return t, err
 	}
 
 	return &i, nil
