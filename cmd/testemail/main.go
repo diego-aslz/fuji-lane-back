@@ -10,7 +10,6 @@ import (
 func main() {
 	flconfig.LoadConfiguration()
 
-	pName := "Awesome Property"
 	uName := "Requestor"
 	checkIn, _ := flentities.ParseDate("2019-02-01")
 	checkOut, _ := flentities.ParseDate("2019-02-08")
@@ -21,7 +20,7 @@ func main() {
 		},
 		Unit: &flentities.Unit{
 			Name:     "Standard Apartment",
-			Property: &flentities.Property{Name: &pName},
+			Property: &flentities.Property{Name: "Awesome Property"},
 		},
 		CheckIn:       checkIn,
 		CheckOut:      checkOut,
