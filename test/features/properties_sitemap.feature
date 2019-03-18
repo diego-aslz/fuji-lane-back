@@ -15,9 +15,7 @@ Feature: Properties Sitemap
     And the following properties:
       | ID | Account          | Name          | PublishedAt          | UpdatedAt            | Country | City  |
       | 1  | Diego Apartments | ACME Downtown | 2018-06-05T08:00:00Z | 2018-06-05T08:00:00Z | Japan   | Osaka |
-    And the following properties:
-      | ID | Account          | Name        | UpdatedAt            | Country | City  |
-      | 2  | Diego Apartments | Unpublished | 2018-06-05T08:00:00Z | Japan   | Osaka |
+      | 2  | Diego Apartments | Unpublished   |                      | 2018-06-05T08:00:00Z | Japan   | Osaka |
     And the following units:
       | ID | Property      | Name         | PublishedAt          | UpdatedAt            |
       | 11 | ACME Downtown | Standard Apt | 2018-06-05T08:00:00Z | 2018-06-05T08:00:00Z |

@@ -237,16 +237,17 @@ func strPtrParser(raw string) (interface{}, error) {
 }
 
 func intPtrParser(raw string) (interface{}, error) {
+	var i *int
 	if raw == "" {
-		return nil, nil
+		return i, nil
 	}
 
-	i, err := strconv.Atoi(raw)
+	in, err := strconv.Atoi(raw)
 	if err != nil {
-		return nil, err
+		return i, err
 	}
 
-	return &i, nil
+	return &in, nil
 }
 
 func float32PtrParser(raw string) (interface{}, error) {

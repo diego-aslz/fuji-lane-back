@@ -16,9 +16,7 @@ Feature: Searching for Units
       | 1  | Diego Apartments | Awesome Property      | 2018-06-01T08:00:00Z | <p>Property Overview</p> | 100      | 200       | 88 Tai Tam Reservoir Rd | 2      | 1         | 2           |
       | 2  | Diego Apartments | Nice Property         | 2018-06-01T08:00:00Z | <p>Uptown Overview</p>   | 100      | 200       | Add 1                   | 2      | 1         | 3           |
       | 5  | Diego Apartments | Other City's Property | 2018-06-01T08:00:00Z | <p>Uptown Overview</p>   | 100      | 200       | Add 1                   | 3      | 1         | 3           |
-    And the following properties:
-      | ID | Account          | Name           | Overview                 | Latitude | Longitude | Address1                | CityID | CountryID | MinimumStay |
-      | 3  | Diego Apartments | Draft Property | <p>Property Overview</p> | 100      | 200       | 88 Tai Tam Reservoir Rd | 2      | 1         | 1           |
+      | 3  | Diego Apartments | Draft Property        |                      | <p>Property Overview</p> | 100      | 200       | 88 Tai Tam Reservoir Rd | 2      | 1         | 1           |
 
   Scenario: Searching for units in a city
     Given the following units:
@@ -32,19 +30,15 @@ Feature: Searching for Units
       | Standard Apt | 1         | 10000 |
       | Triple Apt   | 1         | 20000 |
     And the following images:
-      | ID | Property         | Uploaded | Name      | URL                                | Type       | Size    | Position |
-      | 1  | Awesome Property | true     | front.jpg | https://s3.amazonaws.com/front.jpg | image/jpeg | 1000000 | 1        |
-      | 2  | Awesome Property | false    | back.jpg  | https://s3.amazonaws.com/back.jpg  | image/jpeg | 1000000 | 1        |
-    And the following images:
-      | ID | Unit         | Uploaded | Name      | URL                                | Type       | Size    | Position |
-      | 10 | Standard Apt | true     | front.jpg | https://s3.amazonaws.com/front.jpg | image/jpeg | 1000000 | 1        |
-      | 11 | Standard Apt | false    | back.jpg  | https://s3.amazonaws.com/back.jpg  | image/jpeg | 1000000 | 2        |
+      | ID | Property         | Unit         | Uploaded | Name      | URL                                | Type       | Size    | Position |
+      | 1  | Awesome Property |              | true     | front.jpg | https://s3.amazonaws.com/front.jpg | image/jpeg | 1000000 | 1        |
+      | 2  | Awesome Property |              | false    | back.jpg  | https://s3.amazonaws.com/back.jpg  | image/jpeg | 1000000 | 1        |
+      | 10 |                  | Standard Apt | true     | front.jpg | https://s3.amazonaws.com/front.jpg | image/jpeg | 1000000 | 1        |
+      | 11 |                  | Standard Apt | false    | back.jpg  | https://s3.amazonaws.com/back.jpg  | image/jpeg | 1000000 | 2        |
     And the following amenities:
-      | Property         | Type |
-      | Awesome Property | gym  |
-    And the following amenities:
-      | Unit         | Type      |
-      | Standard Apt | bathrobes |
+      | Property         | Unit         | Type      |
+      | Awesome Property |              | gym       |
+      |                  | Standard Apt | bathrobes |
     When I search for units with the following filters:
       | cityID | 2 |
     Then I should receive an "OK" response with the following JSON:
@@ -111,13 +105,11 @@ Feature: Searching for Units
 
   Scenario: Ignoring unpublished units or properties
     Given the following units:
-      | ID | Property         | Name       | Bedrooms | Bathrooms | SizeM2 | MaxOccupancy | Count | PublishedAt          |
-      | 11 | Awesome Property | Double Apt | 2        | 2         | 62     | 6            | 10    | 2018-06-01T08:00:00Z |
-      | 13 | Draft Property   | Penthouse  | 2        | 2         | 62     | 6            | 10    | 2018-06-01T08:00:00Z |
-    And the following units:
-      | ID | Property         | Name         | Bedrooms | Bathrooms | SizeM2 | MaxOccupancy | Count |
-      | 10 | Awesome Property | Standard Apt | 1        | 1         | 52     | 3            | 15    |
-      | 12 | Nice Property    | Triple Apt   | 3        | 4         | 80     | 6            | 5     |
+      | ID | Property         | Name         | Bedrooms | Bathrooms | SizeM2 | MaxOccupancy | Count | PublishedAt          |
+      | 11 | Awesome Property | Double Apt   | 2        | 2         | 62     | 6            | 10    | 2018-06-01T08:00:00Z |
+      | 13 | Draft Property   | Penthouse    | 2        | 2         | 62     | 6            | 10    | 2018-06-01T08:00:00Z |
+      | 10 | Awesome Property | Standard Apt | 1        | 1         | 52     | 3            | 15    |                      |
+      | 12 | Nice Property    | Triple Apt   | 3        | 4         | 80     | 6            | 5     |                      |
     And the following prices:
       | Unit         | MinNights | Cents |
       | Standard Apt | 1         | 10000 |
