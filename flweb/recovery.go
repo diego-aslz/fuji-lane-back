@@ -50,6 +50,7 @@ func NotifyError(err error, c *gin.Context) {
 		if diagnostics, ok := c.Get("diagnostics"); ok {
 			if diagnostics, ok := diagnostics.(*fldiagnostics.Diagnostics); ok {
 				tags = diagnostics.ToMap()
+				diagnostics.AddError(err)
 			}
 		}
 	}

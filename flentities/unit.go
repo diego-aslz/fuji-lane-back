@@ -24,6 +24,7 @@ type Unit struct {
 	Bedrooms         int        `json:"bedrooms"`
 	Bathrooms        int        `json:"bathrooms"`
 	SizeM2           int        `json:"sizeM2"`
+	SizeFT2          int        `json:"sizeFT2" gorm:"column:size_ft2"`
 	MaxOccupancy     *int       `json:"maxOccupancy"`
 	Count            int        `json:"count"`
 	FloorPlanImageID *uint      `json:"-"`
@@ -55,7 +56,11 @@ func (u *Unit) CanBePublished() []error {
 	}
 
 	if u.SizeM2 == 0 {
-		errs = append(errs, errors.New("Size is required"))
+		errs = append(errs, errors.New("Size in m² is required"))
+	}
+
+	if u.SizeFT2 == 0 {
+		errs = append(errs, errors.New("Size in ft² is required"))
 	}
 
 	if u.Count == 0 {

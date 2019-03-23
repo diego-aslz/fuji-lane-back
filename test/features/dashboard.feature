@@ -16,9 +16,9 @@ Feature: Dashboard
       | Diego Apartments | ACME Downtown | Japan   | Osaka |
       | Alex Apartments  | ACME Uptown   | Japan   | Osaka |
     And the following units:
-      | Property      | Name         | Bedrooms | SizeM2 | MaxOccupancy | Count |
-      | ACME Downtown | Standard Apt | 1        | 32     | 3            | 15    |
-      | ACME Uptown   | Double Apt   | 2        | 52     | 6            | 10    |
+      | Property      | Name         | Bedrooms | SizeM2 | SizeFT2 | MaxOccupancy | Count |
+      | ACME Downtown | Standard Apt | 1        | 32     | 344     | 3            | 15    |
+      | ACME Uptown   | Double Apt   | 2        | 52     | 560     | 6            | 10    |
     And the following users:
       | Account          | Email                | Name                 |
       | Diego Apartments | diego@selzlein.com   | Diego Aguir Selzlein |

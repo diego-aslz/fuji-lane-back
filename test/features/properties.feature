@@ -68,8 +68,8 @@ Feature: Properties Management
       | ID | Property      | Type |
       | 1  | ACME Downtown | gym  |
     And the following units:
-      | ID | Property      | Name         | Bedrooms | SizeM2 | MaxOccupancy | Count |
-      | 11 | ACME Downtown | Standard Apt | 1        | 52     | 3            | 15    |
+      | ID | Property      | Name         | Bedrooms | SizeM2 | SizeFT2 | MaxOccupancy | Count |
+      | 11 | ACME Downtown | Standard Apt | 1        | 52     | 560     | 3            | 15    |
     And the following images:
       | ID | Unit         | Uploaded | Name      | URL                                | Type       | Size    | Position |
       | 5  | Standard Apt | true     | front.jpg | https://s3.amazonaws.com/front.jpg | image/jpeg | 1000000 | 2        |
@@ -136,6 +136,7 @@ Feature: Properties Management
           "bedrooms": 1,
           "bathrooms": 0,
           "sizeM2": 52,
+          "sizeFT2": 560,
           "maxOccupancy": 3,
           "count": 15,
           "prices": [],
@@ -417,6 +418,7 @@ Feature: Properties Management
           "bedrooms": 0,
           "bathrooms": 0,
           "sizeM2": 0,
+          "sizeFT2": 0,
           "maxOccupancy": null,
           "count": 0,
           "prices": [{
@@ -440,6 +442,7 @@ Feature: Properties Management
           "bedrooms": 0,
           "bathrooms": 0,
           "sizeM2": 0,
+          "sizeFT2": 0,
           "maxOccupancy": null,
           "count": 0,
           "prices": [{

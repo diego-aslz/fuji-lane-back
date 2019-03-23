@@ -18,8 +18,8 @@ Feature: Bookings
       | ID | Account          | Name          | Country | City  |
       | 19 | Diego Apartments | ACME Downtown | Japan   | Osaka |
     And the following units:
-      | Property      | Name         | Bedrooms | SizeM2 | MaxOccupancy | Count | PublishedAt          |
-      | ACME Downtown | Standard Apt | 1        | 32     | 3            | 15    | 2018-06-09T15:00:00Z |
+      | Property      | Name         | Bedrooms | SizeM2 | SizeFT2 | MaxOccupancy | Count | PublishedAt          |
+      | ACME Downtown | Standard Apt | 1        | 32     | 344     | 3            | 15    | 2018-06-09T15:00:00Z |
     And the following prices:
       | Unit         | MinNights | Cents |
       | Standard Apt | 1         | 11000 |
@@ -134,8 +134,8 @@ Feature: Bookings
   Scenario: Trying to Book a Unit that's not published
     Given it is currently "01 Jun 18 08:00"
     And the following units:
-      | Property      | Name       | Bedrooms | SizeM2 | MaxOccupancy | Count |
-      | ACME Downtown | Double Apt | 1        | 32     | 3            | 15    |
+      | Property      | Name       | Bedrooms | SizeM2 | SizeFT2 | MaxOccupancy | Count |
+      | ACME Downtown | Double Apt | 1        | 32     | 344     | 3            | 15    |
     And the following prices:
       | Unit       | MinNights | Cents |
       | Double Apt | 1         | 11000 |
@@ -150,9 +150,9 @@ Feature: Bookings
 
   Scenario Outline: Calculating Booking Prices
     Given the following units:
-      | Property      | Name            | Bedrooms | SizeM2 | MaxOccupancy | Count | PublishedAt          |
-      | ACME Downtown | Specific Prices | 1        | 32     | 3            | 15    | 2018-06-09T15:00:00Z |
-      | ACME Downtown | Single Price    | 1        | 32     | 3            | 15    | 2018-06-09T15:00:00Z |
+      | Property      | Name            | Bedrooms | SizeM2 | SizeFT2 | MaxOccupancy | Count | PublishedAt          |
+      | ACME Downtown | Specific Prices | 1        | 32     | 344     | 3            | 15    | 2018-06-09T15:00:00Z |
+      | ACME Downtown | Single Price    | 1        | 32     | 344     | 3            | 15    | 2018-06-09T15:00:00Z |
     And the following prices:
       | Unit            | MinNights | Cents   |
       | Specific Prices | 1         | 13000   |

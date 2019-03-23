@@ -38,6 +38,7 @@ func listingUnits(units []*flentities.Unit) []map[string]interface{} {
 			"bedrooms":     u.Bedrooms,
 			"bathrooms":    u.Bathrooms,
 			"sizeM2":       u.SizeM2,
+			"sizeFT2":      u.SizeFT2,
 			"maxOccupancy": u.MaxOccupancy,
 			"overview":     u.Overview,
 			"amenities":    listingAmenities(u.Amenities),
@@ -97,6 +98,7 @@ func listingSimilarListings(similarListings []*flentities.Property) []map[string
 			"bedrooms":  l.Units[0].Bedrooms,
 			"bathrooms": l.Units[0].Bathrooms,
 			"sizeM2":    l.Units[0].SizeM2,
+			"sizeFT2":   l.Units[0].SizeFT2,
 			"prices":    l.Units[0].Prices,
 		})
 	}

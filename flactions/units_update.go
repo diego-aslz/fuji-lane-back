@@ -23,6 +23,7 @@ type UnitsUpdateBody struct {
 	Bedrooms         optional.Int    `json:"bedrooms"`
 	Bathrooms        optional.Int    `json:"bathrooms"`
 	SizeM2           optional.Int    `json:"sizeM2"`
+	SizeFT2          optional.Int    `json:"sizeFT2"`
 	MaxOccupancy     optional.Int    `json:"maxOccupancy"`
 	Count            optional.Int    `json:"count"`
 	FloorPlanImageID optional.Uint   `json:"floorPlanImageID"`

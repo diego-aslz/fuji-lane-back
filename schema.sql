@@ -367,7 +367,8 @@ CREATE TABLE units (
     count integer NOT NULL,
     overview text,
     floor_plan_image_id bigint,
-    first_published_at timestamp without time zone
+    first_published_at timestamp without time zone,
+    size_ft2 integer NOT NULL
 );
 
 
@@ -915,7 +916,7 @@ SET search_path = public, pg_catalog;
 --
 
 COPY schema_migrations (version, dirty) FROM stdin;
-13	f
+14	f
 \.
 
 

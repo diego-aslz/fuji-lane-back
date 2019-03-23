@@ -25,12 +25,13 @@ Feature: Units Management
       | Overview     | <strong>Big rooms!</strong> |
       | Bedrooms     | 1                           |
       | SizeM2       | 52                          |
+      | SizeFT2      | 560                         |
       | MaxOccupancy | 3                           |
       | Count        | 15                          |
     Then I should receive a "CREATED" response
     And I should have the following units:
-      | Property      | Name         | Slug         | Bedrooms | SizeM2 | MaxOccupancy | Count | Overview                    |
-      | ACME Downtown | Standard Apt | standard-apt | 1        | 52     | 3            | 15    | <strong>Big rooms!</strong> |
+      | Property      | Name         | Slug         | Bedrooms | SizeM2 | SizeFT2 | MaxOccupancy | Count | Overview                    |
+      | ACME Downtown | Standard Apt | standard-apt | 1        | 52     | 560     | 3            | 15    | <strong>Big rooms!</strong> |
 
   Scenario: Adding an unit to my property which would duplicate slugs
     Given the following units:
@@ -41,6 +42,7 @@ Feature: Units Management
       | Name         | Standard  Apt |
       | Bedrooms     | 1             |
       | SizeM2       | 52            |
+      | SizeFT2      | 560           |
       | MaxOccupancy | 3             |
       | Count        | 15            |
     Then I should receive an "UNPROCESSABLE ENTITY" response with the following errors:
@@ -51,12 +53,13 @@ Feature: Units Management
       | MaxOccupancy | 3                                            |
       | Overview     | <strong>Big rooms!<script></script></strong> |
     Then I should receive an "UNPROCESSABLE ENTITY" response with the following errors:
-      | property is required                  |
-      | name is required                      |
-      | bedrooms is required                  |
-      | size is required                      |
-      | number of unit type is required       |
-      | overview: script tags are not allowed |
+      | Property is required                  |
+      | Name is required                      |
+      | Bedrooms is required                  |
+      | Size in m² is required                |
+      | Size in ft² is required               |
+      | Number of unit type is required       |
+      | Overview: script tags are not allowed |
     And I should have no units
 
   Scenario: Adding an unit to a property that does not belong to me
@@ -71,6 +74,7 @@ Feature: Units Management
       | Name         | Standard Apt |
       | Bedrooms     | 1            |
       | SizeM2       | 52           |
+      | SizeFT2      | 560          |
       | MaxOccupancy | 3            |
       | Count        | 15           |
     Then I should receive a "NOT FOUND" response
@@ -78,8 +82,8 @@ Feature: Units Management
 
   Scenario: Updating an unit
     Given the following units:
-      | Property      | Name         | Bedrooms | SizeM2 | MaxOccupancy | Count |
-      | ACME Downtown | Standard Apt | 1        | 52     | 3            | 15    |
+      | Property      | Name         | Bedrooms | SizeM2 | SizeFT2 | MaxOccupancy | Count |
+      | ACME Downtown | Standard Apt | 1        | 52     | 550     | 3            | 15    |
     And the following images:
       | ID | Unit         | Name          | Uploaded |
       | 3  | Standard Apt | blueprint.jpg | true     |
@@ -88,6 +92,7 @@ Feature: Units Management
       | Bedrooms         | 2                                                                               |
       | Bathrooms        | 3                                                                               |
       | SizeM2           | 50                                                                              |
+      | SizeFT2          | 560                                                                             |
       | MaxOccupancy     | 2                                                                               |
       | Count            | 20                                                                              |
       | Prices           | 1: 11000, 2: 12000, 7: 40000, 30: 160000, 90: 350000, 180: 650000, 365: 1200000 |
@@ -95,8 +100,8 @@ Feature: Units Management
       | Overview         | <strong>Big windows!</strong>                                                   |
     Then I should receive an "OK" response
     And I should have the following units:
-      | Property      | Name          | Slug          | Bedrooms | Bathrooms | SizeM2 | MaxOccupancy | Count | FloorPlanImageID | Overview                      |
-      | ACME Downtown | Std Apartment | std-apartment | 2        | 3         | 50     | 2            | 20    | 3                | <strong>Big windows!</strong> |
+      | Property      | Name          | Slug          | Bedrooms | Bathrooms | SizeM2 | SizeFT2 | MaxOccupancy | Count | FloorPlanImageID | Overview                      |
+      | ACME Downtown | Std Apartment | std-apartment | 2        | 3         | 50     | 560     | 2            | 20    | 3                | <strong>Big windows!</strong> |
     And I should have the following prices:
       | Unit          | MinNights | Cents   |
       | Std Apartment | 1         | 11000   |
@@ -129,9 +134,9 @@ Feature: Units Management
 
   Scenario: Updating an unit with a name which would duplicate slugs
     Given the following units:
-      | Property      | Name         | Bedrooms | SizeM2 | MaxOccupancy | Count |
-      | ACME Downtown | Standard Apt | 1        | 52     | 3            | 10    |
-      | ACME Downtown | Double Apt   | 1        | 52     | 3            | 15    |
+      | Property      | Name         | Bedrooms | SizeM2 | SizeFT2 | MaxOccupancy | Count |
+      | ACME Downtown | Standard Apt | 1        | 52     | 560     | 3            | 10    |
+      | ACME Downtown | Double Apt   | 1        | 52     | 560     | 3            | 15    |
     When I update unit "Double Apt" with the following attributes:
       | Name | Standard  Apt |
     Then I should receive an "UNPROCESSABLE ENTITY" response with the following errors:
@@ -139,8 +144,8 @@ Feature: Units Management
 
   Scenario: Updating an unit with invalid Overview
     Given the following units:
-      | Property      | Name         | Bedrooms | SizeM2 | MaxOccupancy | Count |
-      | ACME Downtown | Standard Apt | 1        | 52     | 3            | 15    |
+      | Property      | Name         | Bedrooms | SizeM2 | SizeFT2 | MaxOccupancy | Count |
+      | ACME Downtown | Standard Apt | 1        | 52     | 560     | 3            | 15    |
     When I update unit "Standard Apt" with the following attributes:
       | Overview | <strong>Big windows!</strong><script></script> |
     Then I should receive an "UNPROCESSABLE ENTITY" response with the following errors:
@@ -154,18 +159,19 @@ Feature: Units Management
       | ID | Account | Name        | Country | City  |
       | 2  | Other   | ACME Uptown | Japan   | Osaka |
     And the following units:
-      | Property    | Name         | Bedrooms | SizeM2 | MaxOccupancy | Count |
-      | ACME Uptown | Standard Apt | 1        | 52     | 3            | 15    |
+      | Property    | Name         | Bedrooms | SizeM2 | SizeFT2 | MaxOccupancy | Count |
+      | ACME Uptown | Standard Apt | 1        | 52     | 560     | 3            | 15    |
     When I update unit "Standard Apt" with the following attributes:
       | Name         | Std Apartment |
       | Bedrooms     | 2             |
       | SizeM2       | 50            |
+      | SizeFT2      | 550           |
       | MaxOccupancy | 2             |
       | Count        | 20            |
     Then I should receive a "NOT FOUND" response
     And I should have the following units:
-      | Property    | Name         | Bedrooms | SizeM2 | MaxOccupancy | Count |
-      | ACME Uptown | Standard Apt | 1        | 52     | 3            | 15    |
+      | Property    | Name         | Bedrooms | SizeM2 | SizeFT2 | MaxOccupancy | Count |
+      | ACME Uptown | Standard Apt | 1        | 52     | 560     | 3            | 15    |
 
   Scenario: Updating an unit with a floor plan image that does not belong to me
     Given the following accounts:
@@ -175,9 +181,9 @@ Feature: Units Management
       | ID | Account | Name            | Country | City  |
       | 2  | Other   | ACME Apartments | Japan   | Osaka |
     And the following units:
-      | Property        | Name               | Bedrooms | SizeM2 | MaxOccupancy | Count |
-      | ACME Downtown   | Standard Apt       | 1        | 52     | 3            | 15    |
-      | ACME Apartments | Standard Other Apt | 1        | 52     | 3            | 15    |
+      | Property        | Name               | Bedrooms | SizeM2 | SizeFT2 | MaxOccupancy | Count |
+      | ACME Downtown   | Standard Apt       | 1        | 52     | 560     | 3            | 15    |
+      | ACME Apartments | Standard Other Apt | 1        | 52     | 560     | 3            | 15    |
     And the following images:
       | ID | Unit               | Name          | Uploaded |
       | 3  | Standard Other Apt | blueprint.jpg | true     |
@@ -185,20 +191,21 @@ Feature: Units Management
       | Name             | Std Apartment |
       | Bedrooms         | 2             |
       | SizeM2           | 50            |
+      | SizeFT2          | 550           |
       | MaxOccupancy     | 2             |
       | Count            | 20            |
       | FloorPlanImageID | 3             |
     Then I should receive an "UNPROCESSABLE ENTITY" response with the following errors:
       | floor plan image does not exist |
     And I should have the following units:
-      | Property        | Name               | Bedrooms | SizeM2 | MaxOccupancy | Count |
-      | ACME Downtown   | Standard Apt       | 1        | 52     | 3            | 15    |
-      | ACME Apartments | Standard Other Apt | 1        | 52     | 3            | 15    |
+      | Property        | Name               | Bedrooms | SizeM2 | SizeFT2 | MaxOccupancy | Count |
+      | ACME Downtown   | Standard Apt       | 1        | 52     | 560     | 3            | 15    |
+      | ACME Apartments | Standard Other Apt | 1        | 52     | 560     | 3            | 15    |
 
   Scenario: Updating unit amenities
     Given the following units:
-      | Property      | Name         | Bedrooms | SizeM2 | MaxOccupancy | Count |
-      | ACME Downtown | Standard Apt | 1        | 52     | 3            | 15    |
+      | Property      | Name         | Bedrooms | SizeM2 | SizeFT2 | MaxOccupancy | Count |
+      | ACME Downtown | Standard Apt | 1        | 52     | 560     | 3            | 15    |
     And the following amenities:
       | Unit         | Type      |
       | Standard Apt | bathrobes |
@@ -223,8 +230,8 @@ Feature: Units Management
 
   Scenario: Getting unit details
     Given the following units:
-      | ID | Property      | Name         | Bedrooms | Bathrooms | SizeM2 | MaxOccupancy | Count | Overview                    |
-      | 2  | ACME Downtown | Standard Apt | 1        | 2         | 52     | 3            | 15    | <strong>Good view!</strong> |
+      | ID | Property      | Name         | Bedrooms | Bathrooms | SizeM2 | SizeFT2 | MaxOccupancy | Count | Overview                    |
+      | 2  | ACME Downtown | Standard Apt | 1        | 2         | 52     | 560     | 3            | 15    | <strong>Good view!</strong> |
     And the following prices:
       | Unit         | MinNights | Cents   |
       | Standard Apt | 1         | 11000   |
@@ -257,6 +264,7 @@ Feature: Units Management
         "bedrooms": 1,
         "bathrooms": 2,
         "sizeM2": 52,
+        "sizeFT2": 560,
         "maxOccupancy": 3,
         "count": 15,
         "overview": "<strong>Good view!</strong>",
@@ -332,8 +340,8 @@ Feature: Units Management
 
   Scenario Outline: Publishing my unit
     Given the following units:
-      | ID | Property      | Name         | Bedrooms | SizeM2 | MaxOccupancy | Count | FirstPublishedAt         |
-      | 2  | ACME Downtown | Standard Apt | 1        | 52     | 3            | 15    | <FirstPublishedAtBefore> |
+      | ID | Property      | Name         | Bedrooms | SizeM2 | SizeFT2 | MaxOccupancy | Count | FirstPublishedAt         |
+      | 2  | ACME Downtown | Standard Apt | 1        | 52     | 560     | 3            | 15    | <FirstPublishedAtBefore> |
     And the following prices:
       | Unit         | MinNights | Cents |
       | Standard Apt | 1         | 11000 |
@@ -357,8 +365,8 @@ Feature: Units Management
 
   Scenario: Publishing an unit with missing information
     Given the following units:
-      | ID | Property      | Name | Bedrooms | SizeM2 | Count |
-      | 2  | ACME Downtown |      | 0        | 0      | 0     |
+      | ID | Property      | Name | Bedrooms | SizeM2 | SizeFT2 | Count |
+      | 2  | ACME Downtown |      | 0        | 0      | 0       | 0     |
     And the following images:
       | ID | PropertyID | Uploaded | Name      | URL                                | Type       | Size    | Position |
       | 1  | 1          | false    | front.jpg | https://s3.amazonaws.com/front.jpg | image/jpeg | 1000000 | 2        |
@@ -369,7 +377,8 @@ Feature: Units Management
     Then I should receive an "UNPROCESSABLE ENTITY" response with the following errors:
       | Name is required                 |
       | Bedrooms is required             |
-      | Size is required                 |
+      | Size in m² is required           |
+      | Size in ft² is required          |
       | Number of Unit Type is required  |
       | At least one amenity is required |
       | At least one image is required   |

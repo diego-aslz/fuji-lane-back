@@ -20,10 +20,10 @@ Feature: Searching for Units
 
   Scenario: Searching for units in a city
     Given the following units:
-      | ID | Property              | Name         | Bedrooms | Bathrooms | SizeM2 | MaxOccupancy | Count | PublishedAt          |
-      | 11 | Awesome Property      | Double Apt   | 2        | 2         | 62     | 6            | 10    | 2018-06-01T08:00:00Z |
-      | 10 | Awesome Property      | Standard Apt | 1        | 1         | 52     | 3            | 15    | 2018-06-01T08:00:00Z |
-      | 12 | Other City's Property | Triple Apt   | 3        | 4         | 80     | 6            | 5     | 2018-06-01T08:00:00Z |
+      | ID | Property              | Name         | Bedrooms | Bathrooms | SizeM2 | SizeFT2 | MaxOccupancy | Count | PublishedAt          |
+      | 11 | Awesome Property      | Double Apt   | 2        | 2         | 62     | 650     | 6            | 10    | 2018-06-01T08:00:00Z |
+      | 10 | Awesome Property      | Standard Apt | 1        | 1         | 52     | 560     | 3            | 15    | 2018-06-01T08:00:00Z |
+      | 12 | Other City's Property | Triple Apt   | 3        | 4         | 80     | 1000    | 6            | 5     | 2018-06-01T08:00:00Z |
     And the following prices:
       | Unit         | MinNights | Cents |
       | Double Apt   | 1         | 12000 |
@@ -81,6 +81,7 @@ Feature: Searching for Units
           "perNightCents": 10000,
           "totalCents": 10000,
           "sizeM2": 52,
+          "sizeFT2": 560,
           "slug": "standard-apt"
         }, {
           "amenities": [],
@@ -93,6 +94,7 @@ Feature: Searching for Units
           "perNightCents": 12000,
           "totalCents": 12000,
           "sizeM2": 62,
+          "sizeFT2": 650,
           "slug": "double-apt"
         }]
       }]
@@ -105,11 +107,11 @@ Feature: Searching for Units
 
   Scenario: Ignoring unpublished units or properties
     Given the following units:
-      | ID | Property         | Name         | Bedrooms | Bathrooms | SizeM2 | MaxOccupancy | Count | PublishedAt          |
-      | 11 | Awesome Property | Double Apt   | 2        | 2         | 62     | 6            | 10    | 2018-06-01T08:00:00Z |
-      | 13 | Draft Property   | Penthouse    | 2        | 2         | 62     | 6            | 10    | 2018-06-01T08:00:00Z |
-      | 10 | Awesome Property | Standard Apt | 1        | 1         | 52     | 3            | 15    |                      |
-      | 12 | Nice Property    | Triple Apt   | 3        | 4         | 80     | 6            | 5     |                      |
+      | ID | Property         | Name         | Bedrooms | Bathrooms | SizeM2 | SizeFT2 | MaxOccupancy | Count | PublishedAt          |
+      | 11 | Awesome Property | Double Apt   | 2        | 2         | 62     | 640     | 6            | 10    | 2018-06-01T08:00:00Z |
+      | 13 | Draft Property   | Penthouse    | 2        | 2         | 62     | 640     | 6            | 10    | 2018-06-01T08:00:00Z |
+      | 10 | Awesome Property | Standard Apt | 1        | 1         | 52     | 560     | 3            | 15    |                      |
+      | 12 | Nice Property    | Triple Apt   | 3        | 4         | 80     | 1000    | 6            | 5     |                      |
     And the following prices:
       | Unit         | MinNights | Cents |
       | Standard Apt | 1         | 10000 |
@@ -129,8 +131,8 @@ Feature: Searching for Units
 
   Scenario: Paginating listings
     Given the following units:
-      | ID | Property         | Name       | Bedrooms | Bathrooms | SizeM2 | MaxOccupancy | Count | PublishedAt          |
-      | 11 | Awesome Property | Double Apt | 2        | 2         | 62     | 6            | 10    | 2018-06-01T08:00:00Z |
+      | ID | Property         | Name       | Bedrooms | Bathrooms | SizeM2 | SizeFT2 | MaxOccupancy | Count | PublishedAt          |
+      | 11 | Awesome Property | Double Apt | 2        | 2         | 62     | 640     | 6            | 10    | 2018-06-01T08:00:00Z |
     And the following prices:
       | Unit       | MinNights | Cents |
       | Double Apt | 1         | 12000 |
@@ -149,11 +151,11 @@ Feature: Searching for Units
 
   Scenario: Searching for units with at least 2 bedrooms
     Given the following units:
-      | ID | Property         | Name         | Bedrooms | Bathrooms | SizeM2 | MaxOccupancy | Count | PublishedAt          |
-      | 11 | Awesome Property | Double Apt   | 2        | 2         | 62     | 6            | 10    | 2018-06-01T08:00:00Z |
-      | 10 | Awesome Property | Standard Apt | 1        | 1         | 52     | 3            | 15    | 2018-06-01T08:00:00Z |
-      | 12 | Awesome Property | Triple Apt   | 3        | 4         | 80     | 6            | 5     | 2018-06-01T08:00:00Z |
-      | 13 | Nice Property    | Basic Apt    | 1        | 1         | 20     | 1            | 5     | 2018-06-01T08:00:00Z |
+      | ID | Property         | Name         | Bedrooms | Bathrooms | SizeM2 | SizeFT2 | MaxOccupancy | Count | PublishedAt          |
+      | 11 | Awesome Property | Double Apt   | 2        | 2         | 62     | 640     | 6            | 10    | 2018-06-01T08:00:00Z |
+      | 10 | Awesome Property | Standard Apt | 1        | 1         | 52     | 560     | 3            | 15    | 2018-06-01T08:00:00Z |
+      | 12 | Awesome Property | Triple Apt   | 3        | 4         | 80     | 1000    | 6            | 5     | 2018-06-01T08:00:00Z |
+      | 13 | Nice Property    | Basic Apt    | 1        | 1         | 20     | 240     | 1            | 5     | 2018-06-01T08:00:00Z |
     And the following prices:
       | Unit       | MinNights | Cents |
       | Double Apt | 1         | 12000 |

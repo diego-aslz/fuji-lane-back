@@ -55,6 +55,7 @@ func searchUnit(u *flentities.Unit, nights int) map[string]interface{} {
 		"bedrooms":      u.Bedrooms,
 		"bathrooms":     u.Bathrooms,
 		"sizeM2":        u.SizeM2,
+		"sizeFT2":       u.SizeFT2,
 		"maxOccupancy":  u.MaxOccupancy,
 		"amenities":     listingAmenities(u.Amenities),
 		"images":        listingImages(u.Images),

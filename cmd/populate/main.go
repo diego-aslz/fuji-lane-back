@@ -165,6 +165,7 @@ func createAccount() error {
 			for j := 0; j < 6; j++ {
 				publishedAt := time.Now().AddDate(0, 0, randomInt(365)*-1)
 
+				sizeM2 := randomInt(100) + 20
 				unit := &flentities.Unit{
 					PublishedAt:      &publishedAt,
 					FirstPublishedAt: &publishedAt,
@@ -173,7 +174,8 @@ func createAccount() error {
 					Overview:         str(randomOverview()),
 					Bedrooms:         randomInt(8),
 					Bathrooms:        randomInt(10),
-					SizeM2:           randomInt(100) + 20,
+					SizeM2:           sizeM2,
+					SizeFT2:          int(float64(sizeM2) * 10.764),
 					MaxOccupancy:     in(randomInt(12) + 2),
 					Count:            randomInt(50) + 5,
 				}

@@ -12,24 +12,26 @@ import (
 
 // UnitsCreateBody is the representation of the payload for creating a Unit
 type UnitsCreateBody struct {
-	PropertyID   uint         `json:"propertyID"`
-	Name         string       `json:"name"`
-	Overview     string       `json:"overview"`
-	Bedrooms     int          `json:"bedrooms"`
-	SizeM2       int          `json:"sizeM2"`
-	MaxOccupancy optional.Int `json:"maxOccupancy"`
-	Count        int          `json:"count"`
+	PropertyID   uint            `json:"propertyID"`
+	Name         string          `json:"name"`
+	Overview     optional.String `json:"overview"`
+	Bedrooms     int             `json:"bedrooms"`
+	SizeM2       int             `json:"sizeM2"`
+	SizeFT2      int             `json:"sizeFT2"`
+	MaxOccupancy optional.Int    `json:"maxOccupancy"`
+	Count        int             `json:"count"`
 }
 
 // Validate the request body
 func (b *UnitsCreateBody) Validate() []error {
 	return flentities.ValidateFields(
-		flentities.ValidateField("property", b.PropertyID).Required(),
-		flentities.ValidateField("name", b.Name).Required(),
-		flentities.ValidateField("bedrooms", b.Bedrooms).Required(),
-		flentities.ValidateField("size", b.SizeM2).Required(),
-		flentities.ValidateField("number of unit type", b.Count).Required(),
-		flentities.ValidateField("overview", b.Overview).HTML(),
+		flentities.ValidateField("Property", b.PropertyID).Required(),
+		flentities.ValidateField("Name", b.Name).Required(),
+		flentities.ValidateField("Bedrooms", b.Bedrooms).Required(),
+		flentities.ValidateField("Size in m²", b.SizeM2).Required(),
+		flentities.ValidateField("Size in ft²", b.SizeFT2).Required(),
+		flentities.ValidateField("Number of unit type", b.Count).Required(),
+		flentities.ValidateField("Overview", b.Overview.Value).HTML(),
 	)
 }
 
@@ -60,14 +62,11 @@ func (a *UnitsCreate) Perform() {
 		Name:     a.Name,
 		Bedrooms: a.Bedrooms,
 		SizeM2:   a.SizeM2,
+		SizeFT2:  a.SizeFT2,
 		Count:    a.Count,
 	}
 
-	a.MaxOccupancy.Update(&unit.MaxOccupancy, true)
-
-	if a.Overview != "" {
-		unit.Overview = &a.Overview
-	}
+	optional.Update(a.UnitsCreateBody, unit)
 
 	if err := a.Repository().Create(unit).Error; err != nil {
 		if flentities.IsUniqueConstraintViolation(err) && strings.Index(err.Error(), "_slug") > -1 {
