@@ -9,6 +9,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/nerde/assistdog"
 	"github.com/nerde/fuji-lane-back/flconfig"
+	"github.com/nerde/fuji-lane-back/fljobs"
 	"github.com/nerde/fuji-lane-back/flservices"
 	"github.com/nerde/fuji-lane-back/flweb"
 )
@@ -39,13 +40,19 @@ func setupApplication() {
 		panic(err)
 	}
 
+	mailer = &fakeMailer{}
+
 	application = &flweb.Application{
 		RandSource: fakeRandSource{},
 		S3Service:  newFakeS3(s3),
+		Mailer:     mailer,
+		Jobs:       &fljobs.Application{Mailer: mailer, Adapter: &inlineJobsAdapter{jobRoutes{}}},
 		TimeFunc: func() time.Time {
 			return appTime
 		},
 	}
+
+	application.Jobs.AddJobs()
 
 	router = application.CreateRouter()
 }
@@ -77,6 +84,7 @@ func forceConfiguration(table *gherkin.DataTable) error {
 func ApplicationContext(s *godog.Suite) {
 	s.BeforeSuite(setupApplication)
 	s.BeforeScenario(func(_ interface{}) {
+		mailer.cleanup()
 		appTime = time.Now()
 	})
 

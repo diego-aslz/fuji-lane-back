@@ -21,6 +21,10 @@ func (m *fakeMailer) Send(e *email.Email) error {
 	return nil
 }
 
+func (m *fakeMailer) cleanup() {
+	m.emails = []*email.Email{}
+}
+
 func assertEmail(to string, doc *gherkin.DocString) error {
 	for _, e := range mailer.emails {
 		if strings.Join(e.To, ", ") != to {
@@ -53,11 +57,6 @@ func assertNoEmails() error {
 }
 
 func MailerContext(s *godog.Suite) {
-	s.BeforeScenario(func(_ interface{}) {
-		mailer = &fakeMailer{}
-		application.Mailer = mailer
-	})
-
 	s.Step(`^"([^"]*)" should have received the following email:$`, assertEmail)
 	s.Step(`^no emails should have been sent$`, assertNoEmails)
 }

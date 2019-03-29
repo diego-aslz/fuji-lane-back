@@ -160,7 +160,7 @@ func (a *Application) imagesDestroy(c flactions.Context) flactions.Action {
 }
 
 func (a *Application) bookingsCreate(c flactions.Context) flactions.Action {
-	return flactions.NewBookingsCreate(c, a.Mailer)
+	return flactions.NewBookingsCreate(c, a.Jobs)
 }
 
 func (a *Application) newsletterSubscribe(c flactions.Context) flactions.Action {

@@ -7,7 +7,7 @@ import (
 
 func main() {
 	flconfig.LoadConfiguration()
-	app, err := flweb.NewApplication()
+	app, err := flweb.NewDefaultApplication()
 	if err != nil {
 		panic(err)
 	}

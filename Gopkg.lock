@@ -50,6 +50,12 @@
   version = "v1.15.45"
 
 [[projects]]
+  name = "github.com/bitly/go-simplejson"
+  packages = ["."]
+  revision = "aabad6e819789e569bd6aabf444c935aa9ba1e44"
+  version = "v0.5.0"
+
+[[projects]]
   name = "github.com/certifi/gocertifi"
   packages = ["."]
   revision = "deb3ae2ef2610fde3330947281941c562861188b"
@@ -72,6 +78,15 @@
   packages = ["."]
   revision = "9f541cc9db5d55bce703bd99987c9d5cb8eea45e"
   version = "v1.0.0"
+
+[[projects]]
+  name = "github.com/garyburd/redigo"
+  packages = [
+    "internal",
+    "redis"
+  ]
+  revision = "a69d19351219b6dd56f274f96d85a7014a2ec34e"
+  version = "v1.6.0"
 
 [[projects]]
   name = "github.com/getsentry/raven-go"
@@ -159,6 +174,12 @@
   version = "v3.0"
 
 [[projects]]
+  branch = "master"
+  name = "github.com/jrallison/go-workers"
+  packages = ["."]
+  revision = "dbf81d0b75bbe2fd90ef66a07643dd70cb42a88a"
+
+[[projects]]
   name = "github.com/json-iterator/go"
   packages = ["."]
   revision = "1624edc4454b8682399def8740d46db5e4362ba4"
@@ -206,6 +227,12 @@
   packages = ["."]
   revision = "ba968bfe8b2f7e042a574c888954fccecfa385b4"
   version = "v0.8.1"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/rdumont/assistdog"
+  packages = ["defaults"]
+  revision = "c91d7a54538c6d66d976d4e71ad31b8661eddea3"
 
 [[projects]]
   name = "github.com/sendgrid/rest"
@@ -279,6 +306,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "ee2bdcc92fc2799467431b13c2053d83d5ce738538a2ebcaa3e1df99f42f876c"
+  inputs-digest = "83509ed18584d4d6e4144baf377865c0f6e2241b2df9082dea6c3f620e3f2c40"
   solver-name = "gps-cdcl"
   solver-version = 1

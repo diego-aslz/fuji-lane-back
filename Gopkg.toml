@@ -66,3 +66,7 @@
 [[constraint]]
   name = "github.com/getsentry/raven-go"
   version = "0.2.0"
+
+[[constraint]]
+  branch = "master"
+  name = "github.com/jrallison/go-workers"

@@ -30,7 +30,9 @@ type Configuration struct {
 	DatabaseURL              string
 	FacebookAppID            string
 	FacebookClientToken      string
+	JobsStatsPort            int
 	MaxImageSizeMB           int
+	RedisURL                 string
 	Stage                    string
 	TokenSecret              string
 	SendgridKey              string
@@ -63,7 +65,9 @@ func LoadConfiguration() {
 		DatabaseURL:              os.Getenv("DATABASE_URL"),
 		FacebookAppID:            os.Getenv("FACEBOOK_APP_ID"),
 		FacebookClientToken:      os.Getenv("FACEBOOK_CLIENT_TOKEN"),
+		JobsStatsPort:            getIntVar("JOBS_STATS_PORT"),
 		MaxImageSizeMB:           maxImageSize,
+		RedisURL:                 os.Getenv("REDIS_URL"),
 		Stage:                    stage,
 		TokenSecret:              os.Getenv("TOKEN_SECRET"),
 		SendgridKey:              os.Getenv("SENDGRID_KEY"),
@@ -82,16 +86,16 @@ func LoadConfiguration() {
 func getIntVar(name string) int {
 	value := os.Getenv(name)
 
-	if value != "" {
-		i, err := strconv.Atoi(value)
-		if err != nil {
-			fmt.Printf("Unable to parse int var %s with value %s (%s)\n", name, value, err.Error())
-		} else {
-			return i
-		}
+	if value == "" {
+		return 0
 	}
 
-	return 0
+	i, err := strconv.Atoi(value)
+	if err != nil {
+		fmt.Printf("Unable to parse int var %s with value %s (%s)\n", name, value, err.Error())
+	}
+
+	return i
 }
 
 // LoadEnv loads environment variables from the YAML configuration file for the current stage. If not present, it

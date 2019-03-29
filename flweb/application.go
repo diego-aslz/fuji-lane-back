@@ -4,6 +4,8 @@ import (
 	"math/rand"
 	"time"
 
+	"github.com/nerde/fuji-lane-back/fljobs"
+
 	"github.com/nerde/fuji-lane-back/fujilane"
 
 	"github.com/gin-gonic/gin"
@@ -18,6 +20,7 @@ type Application struct {
 	Mailer         flservices.Mailer
 	S3Service      flservices.S3Service
 	Sendgrid       flservices.Sendgrid
+	Jobs           *fljobs.Application
 }
 
 // Start listening to requests
@@ -35,8 +38,8 @@ func (a *Application) CreateRouter() *gin.Engine {
 	return r
 }
 
-// NewApplication with the injected dependencies
-func NewApplication() (*Application, error) {
+// NewDefaultApplication returns a new web application
+func NewDefaultApplication() (*Application, error) {
 	s3, err := flservices.NewS3()
 	if err != nil {
 		return nil, err
@@ -49,5 +52,6 @@ func NewApplication() (*Application, error) {
 		S3Service:      s3,
 		Sendgrid:       flservices.NewSendgridAPI(),
 		Mailer:         flservices.NewSMTPMailer(),
+		Jobs:           fljobs.NewDefaultApplication(),
 	}, nil
 }

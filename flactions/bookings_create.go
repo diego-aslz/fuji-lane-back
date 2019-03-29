@@ -4,10 +4,10 @@ import (
 	"errors"
 	"net/http"
 
+	"github.com/nerde/fuji-lane-back/fljobs"
+
 	"github.com/jinzhu/gorm"
-	"github.com/nerde/fuji-lane-back/flemail"
 	"github.com/nerde/fuji-lane-back/flentities"
-	"github.com/nerde/fuji-lane-back/flservices"
 )
 
 // BookingsCreateBody is the payload to create a booking
@@ -22,7 +22,7 @@ type BookingsCreateBody struct {
 type BookingsCreate struct {
 	BookingsCreateBody
 	Context
-	flservices.Mailer
+	jobs *fljobs.Application
 }
 
 // Validate the request body
@@ -40,13 +40,6 @@ func (a *BookingsCreate) Perform() {
 	unit := &flentities.Unit{ID: a.UnitID}
 
 	if err := a.Repository().Preload("Property").Find(unit).Error; err != nil {
-		a.ServerError(err)
-		return
-	}
-
-	owner := &flentities.User{}
-
-	if err := a.Repository().Where("account_id = ?", unit.Property.AccountID).Find(owner).Error; err != nil {
 		a.ServerError(err)
 		return
 	}
@@ -93,19 +86,7 @@ func (a *BookingsCreate) Perform() {
 			return
 		}
 
-		mail, err := flemail.BookingCreated(booking, owner)
-		if err != nil {
-			a.Diagnostics().AddErrorAs("email_error", err)
-		} else {
-			if mail != nil {
-				a.Mailer.Send(mail)
-				a.Diagnostics().Add("email_sent", "true")
-			} else {
-				a.Diagnostics().Add("email_sent", "false")
-			}
-		}
-
-		err = a.Repository().
+		err := a.Repository().
 			Table("users").
 			Where("account_id = ?", unit.Property.AccountID).
 			UpdateColumn("unread_bookings_count", gorm.Expr("unread_bookings_count + ?", 1)).
@@ -129,6 +110,20 @@ func (a *BookingsCreate) Perform() {
 			return
 		}
 
+		var jobID string
+		if jobID, err = a.jobs.EnqueueBookingCreated(booking.ID); err != nil {
+			a.ServerError(err)
+			tx.Rollback()
+			return
+		}
+
+		a.Diagnostics().Add("BookingCreatedJobID", jobID)
+
+		if err = tx.Commit().Error; err != nil {
+			a.ServerError(err)
+			return
+		}
+
 		a.Respond(http.StatusCreated, booking)
 	})
 }
@@ -138,6 +133,6 @@ func (a *BookingsCreate) invalidUnit() {
 }
 
 // NewBookingsCreate returns a new BookingsCreate action
-func NewBookingsCreate(c Context, m flservices.Mailer) Action {
-	return &BookingsCreate{Context: c, Mailer: m}
+func NewBookingsCreate(c Context, jobs *fljobs.Application) Action {
+	return &BookingsCreate{Context: c, jobs: jobs}
 }
