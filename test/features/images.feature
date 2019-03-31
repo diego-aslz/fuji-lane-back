@@ -76,8 +76,8 @@ Feature: Images Management
       | Name                |
       | Somebody Apartments |
     And the following properties:
-      | Account             | Name             | Country | City  |
-      | Somebody Apartments | Other Skyscraper | Japan   | Osaka |
+      | ID | Account             | Name             | Country | City  |
+      | 20 | Somebody Apartments | Other Skyscraper | Japan   | Osaka |
     And the following units:
       | Property         | Name         |
       | Other Skyscraper | Standard Apt |
@@ -165,8 +165,8 @@ Feature: Images Management
       | Name      |
       | Other Acc |
     And the following properties:
-      | Account   | Name             | Country | City  |
-      | Other Acc | Other Skyscraper | Japan   | Osaka |
+      | ID | Account   | Name             | Country | City  |
+      | 20 | Other Acc | Other Skyscraper | Japan   | Osaka |
     And the following images:
       | Property         | Name         | URL                                                                                               |
       | Other Skyscraper | building.jpg | https://fujilane-test.s3.amazonaws.com/public/properties/20/images/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa |
@@ -194,8 +194,8 @@ Feature: Images Management
       | Name      |
       | Other Acc |
     And the following properties:
-      | Account   | Name             | Country | City  |
-      | Other Acc | Other Skyscraper | Japan   | Osaka |
+      | ID | Account   | Name             | Country | City  |
+      | 20 | Other Acc | Other Skyscraper | Japan   | Osaka |
     And the following images:
       | ID | Position | Property         | Name      | URL                                                                    |
       | 5  | 1        | Other Skyscraper | front.jpg | https://fujilane-test.s3.amazonaws.com/public/properties/20/images/aaa |
