@@ -20,7 +20,7 @@ func (a *ImagesDestroy) Perform() {
 
 	id := a.Param("id")
 	image := &flentities.Image{}
-	err := a.Repository().Preload("Property").Preload("Unit.Property").Find(image, map[string]interface{}{"id": id}).Error
+	err := a.Repository().Preload("Property").Preload("Unit.Property").Find(image, flentities.ColVal("id", id)).Error
 	if gorm.IsRecordNotFoundError(err) {
 		a.Diagnostics().AddQuoted("reason", "Could not find Image")
 		a.RespondNotFound()

@@ -37,7 +37,11 @@ func (a *ImagesSort) Perform() {
 				continue
 			}
 
-			tx.Model(image).Updates(map[string]interface{}{"Position": idx + 1})
+			if err := tx.UpdatesColVal(image, "Position", idx+1); err != nil {
+				tx.Rollback()
+				a.ServerError(err)
+				return
+			}
 		}
 
 		if err := tx.Commit().Error; err != nil {

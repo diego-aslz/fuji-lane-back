@@ -42,8 +42,7 @@ func (a *PropertiesUnpublish) Perform() {
 	}
 
 	if property.PublishedAt != nil {
-		updates := map[string]interface{}{"PublishedAt": nil}
-		if err = a.Repository().Model(property).Updates(updates).Error; err != nil {
+		if err = a.Repository().UpdatesColVal(property, "PublishedAt", nil); err != nil {
 			a.ServerError(err)
 			return
 		}

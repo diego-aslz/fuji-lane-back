@@ -25,8 +25,8 @@ func (r *Repository) SignUp(email, password string) (u *User, err error) {
 // RemoveImage removes an image and nullifies references
 func (r *Repository) RemoveImage(image *Image) (err error) {
 	r.Transaction(func(t *Repository) {
-		err = t.Table("units").Where(map[string]interface{}{"floor_plan_image_id": image.ID}).
-			Updates(map[string]interface{}{"floor_plan_image_id": nil}).Error
+		err = t.Table("units").Where(ColVal("floor_plan_image_id", image.ID)).Updates(ColVal("floor_plan_image_id", nil)).
+			Error
 		if err != nil {
 			t.Rollback()
 			return
@@ -65,6 +65,11 @@ func (r *Repository) FindBy(model, conditions interface{}) (bool, error) {
 	}
 
 	return true, nil
+}
+
+// UpdatesColVal updates the model with the given column/value combinations
+func (r *Repository) UpdatesColVal(model interface{}, colVals ...interface{}) error {
+	return r.Model(model).Updates(ColVal(colVals...)).Error
 }
 
 // Transaction calls the callback function with a transactional Repository. Any panics will be rolled back
@@ -116,7 +121,7 @@ func (r *UsersRepository) FindUserForFacebookSignIn(facebookID, email string) (*
 	}
 
 	if !found {
-		found, err = r.FindBy(user, map[string]interface{}{"email": email})
+		found, err = r.FindBy(user, ColVal("email", email))
 		if err != nil {
 			return nil, err
 		}
@@ -127,14 +132,13 @@ func (r *UsersRepository) FindUserForFacebookSignIn(facebookID, email string) (*
 
 // TrackFacebookAuth updates the given user with Facebook Auth details
 func (r *UsersRepository) TrackFacebookAuth(user *User, name, facebookID string, now time.Time) error {
-	updates := map[string]interface{}{"Name": name, "FacebookID": facebookID, "LastSignedIn": &now}
-	return r.Model(user).Updates(updates).Error
+	return r.UpdatesColVal(user, "Name", name, "FacebookID", facebookID, "LastSignedIn", now)
 }
 
 // GoogleSignIn signs an user in from Google Authentication request. If user does not exist, it will be created
 func (r *UsersRepository) GoogleSignIn(claims map[string]string, now time.Time) (*User, error) {
 	user := &User{}
-	found, err := r.FindBy(user, map[string]interface{}{"email": claims["email"]})
+	found, err := r.FindBy(user, ColVal("email", claims["email"]))
 	if err != nil {
 		return nil, err
 	}
@@ -165,10 +169,26 @@ func (r *UsersRepository) CreateFromGoogleAuth(claims map[string]string, now tim
 
 // UpdateFromGoogleAuth updates user attributes from a google auth
 func (r *UsersRepository) UpdateFromGoogleAuth(user *User, claims map[string]string, now time.Time) error {
-	return r.Model(user).Updates(map[string]interface{}{
-		"Name":         claims["name"],
-		"PictureURL":   claims["picture"],
-		"GoogleID":     claims["googleID"],
-		"LastSignedIn": &now,
-	}).Error
+	return r.UpdatesColVal(user,
+		"Name", claims["name"],
+		"PictureURL", claims["picture"],
+		"GoogleID", claims["googleID"],
+		"LastSignedIn", now,
+	)
+}
+
+// ColVal helps building maps to be used in database conditions and updates
+func ColVal(args ...interface{}) map[string]interface{} {
+	res := map[string]interface{}{}
+
+	key := ""
+	for i, arg := range args {
+		if i%2 == 0 {
+			key = arg.(string)
+		} else {
+			res[key] = arg
+		}
+	}
+
+	return res
 }

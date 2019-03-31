@@ -40,8 +40,7 @@ func (a *UnitsUnpublish) Perform() {
 	}
 
 	if unit.PublishedAt != nil {
-		updates := map[string]interface{}{"PublishedAt": nil}
-		if err = a.Repository().Model(unit).Updates(updates).Error; err != nil {
+		if err = a.Repository().UpdatesColVal(unit, "PublishedAt", nil); err != nil {
 			a.ServerError(err)
 			return
 		}

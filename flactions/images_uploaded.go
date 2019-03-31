@@ -19,7 +19,7 @@ func (a *ImagesUploaded) Perform() {
 	id := a.Param("id")
 	image := &flentities.Image{}
 	err := a.Repository().Preload("Property").Preload("Unit.Property").Find(image,
-		map[string]interface{}{"id": id, "uploaded": false}).Error
+		flentities.ColVal("id", id, "uploaded", false)).Error
 	if gorm.IsRecordNotFoundError(err) {
 		a.Diagnostics().AddQuoted("reason", "Could not find Image")
 		a.RespondNotFound()
@@ -43,7 +43,7 @@ func (a *ImagesUploaded) Perform() {
 		return
 	}
 
-	if err = a.Repository().Model(image).Updates(map[string]interface{}{"uploaded": true}).Error; err != nil {
+	if err = a.Repository().UpdatesColVal(image, "uploaded", true); err != nil {
 		a.ServerError(err)
 		return
 	}

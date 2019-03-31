@@ -59,7 +59,7 @@ func (a *ProfileUpdate) Perform() {
 		}
 	} else if a.ResetUnreadBookingsCount {
 		user.UnreadBookingsCount = 0
-		if err := a.Repository().Model(user).Updates(map[string]interface{}{"UnreadBookingsCount": 0}).Error; err != nil {
+		if err := a.Repository().UpdatesColVal(user, "UnreadBookingsCount", 0); err != nil {
 			a.ServerError(err)
 			return
 		}

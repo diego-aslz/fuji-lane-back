@@ -23,7 +23,7 @@ func (a *ListingsShow) Perform() {
 		return
 	}
 
-	publishedNull := map[string]interface{}{"published_at": nil}
+	publishedNull := flentities.ColVal("published_at", nil)
 
 	property := &flentities.Property{}
 

@@ -50,7 +50,7 @@ func (a *SignIn) Perform() {
 	}
 
 	now := a.Now()
-	if err = a.Repository().Model(user).Updates(flentities.User{LastSignedIn: &now}).Error; err != nil {
+	if err = a.Repository().UpdatesColVal(user, "LastSignedIn", &now); err != nil {
 		a.ServerError(err)
 		return
 	}

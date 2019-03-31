@@ -125,14 +125,14 @@ func updateUnit(name string, table *gherkin.DataTable) error {
 		return err
 	}
 
-	updates := map[string]interface{}{}
-	updates["FloorPlanImageID"], err = strconv.Atoi(tbl["FloorPlanImageID"])
+	var fpID int
+	fpID, err = strconv.Atoi(tbl["FloorPlanImageID"])
 	if err != nil {
 		return err
 	}
 
 	return flentities.WithRepository(func(r *flentities.Repository) error {
-		return r.Model(unit).Updates(updates).Error
+		return r.UpdatesColVal(unit, "FloorPlanImageID", fpID)
 	})
 }
 

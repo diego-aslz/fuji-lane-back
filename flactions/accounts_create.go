@@ -40,8 +40,7 @@ func (a *AccountsCreate) Perform() {
 			return
 		}
 
-		err = tx.Model(user).Updates(map[string]interface{}{"name": a.UserName, "account_id": account.ID}).Error
-		if err != nil {
+		if err = tx.UpdatesColVal(user, "name", a.UserName, "account_id", account.ID); err != nil {
 			tx.Rollback()
 			a.ServerError(err)
 			return
