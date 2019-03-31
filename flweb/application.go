@@ -4,6 +4,8 @@ import (
 	"math/rand"
 	"time"
 
+	"github.com/nerde/fuji-lane-back/flconfig"
+
 	"github.com/nerde/fuji-lane-back/fljobs"
 
 	"github.com/nerde/fuji-lane-back/fujilane"
@@ -20,6 +22,7 @@ type Application struct {
 	Mailer         flservices.Mailer
 	S3Service      flservices.S3Service
 	Sendgrid       flservices.Sendgrid
+	GoogleAuth     flservices.GoogleAuth
 	Jobs           *fljobs.Application
 }
 
@@ -47,6 +50,7 @@ func NewDefaultApplication() (*Application, error) {
 
 	return &Application{
 		FacebookClient: flservices.NewFacebookHTTPClient(),
+		GoogleAuth:     flservices.NewGoogleAuth(flconfig.Config.GoogleAuthAppID),
 		TimeFunc:       time.Now,
 		RandSource:     fujilane.NewRandomSource(),
 		S3Service:      s3,

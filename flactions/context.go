@@ -22,6 +22,7 @@ type Context interface {
 	Param(string) string
 	Query(string) string
 
+	GetHeader(string) string
 	Header(string, string)
 
 	RandomSource() rand.Source

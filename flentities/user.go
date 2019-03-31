@@ -16,8 +16,10 @@ type User struct {
 	Name                *string    `json:"name"`
 	Email               string     `json:"email"`
 	FacebookID          *string    `json:"-"`
+	GoogleID            *string    `json:"-"`
 	EncryptedPassword   *string    `json:"-"`
 	LastSignedIn        *time.Time `json:"-"`
+	PictureURL          *string    `json:"-"`
 	UnreadBookingsCount int        `json:"unreadBookingsCount"`
 }
 
@@ -41,6 +43,10 @@ func (u *User) ValidatePassword(password string) bool {
 
 // Picture returns an URL to the user's profile picture
 func (u *User) Picture() *string {
+	if u.PictureURL != nil {
+		return u.PictureURL
+	}
+
 	if u.FacebookID != nil {
 		str := fmt.Sprintf("https://graph.facebook.com/%s/picture?width=64&height=64", *u.FacebookID)
 		return &str

@@ -160,7 +160,7 @@ func postTableStep(path string) func(*gherkin.DataTable) error {
 	}
 }
 
-func performPOST(path string, body interface{}) (err error) {
+func performPOST(path string, body interface{}, decorators ...func(*http.Request)) (err error) {
 	var bodyIO io.Reader
 
 	if body != nil {
@@ -169,7 +169,7 @@ func performPOST(path string, body interface{}) (err error) {
 		}
 	}
 
-	return perform("POST", path, bodyIO)
+	return perform("POST", path, bodyIO, decorators...)
 }
 
 func bodyFromObject(body interface{}) (io.Reader, error) {
@@ -250,7 +250,7 @@ func performGETWithQueryStep(path string) func(*gherkin.DataTable) error {
 	}
 }
 
-func perform(method, path string, body io.Reader) error {
+func perform(method, path string, body io.Reader, decorators ...func(*http.Request)) error {
 	response = httptest.NewRecorder()
 
 	req, err := http.NewRequest(method, path, body)
@@ -261,6 +261,10 @@ func perform(method, path string, body io.Reader) error {
 
 	if currentSession != nil {
 		req.Header["Authorization"] = []string{fmt.Sprintf("Bearer %s", currentSession.Token)}
+	}
+
+	for _, dec := range decorators {
+		dec(req)
 	}
 
 	router.ServeHTTP(response, req)

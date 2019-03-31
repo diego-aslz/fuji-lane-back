@@ -30,13 +30,14 @@ const authenticationFailedMessage = "Invalid email or password"
 
 // Perform executes the action
 func (a *SignIn) Perform() {
-	user, err := a.Repository().FindUserByEmail(a.Email)
+	user := &flentities.User{}
+	found, err := a.Repository().FindBy(user, map[string]interface{}{"email": a.Email})
 	if err != nil {
 		a.ServerError(err)
 		return
 	}
 
-	if user == nil || user.ID == 0 {
+	if !found {
 		a.Diagnostics().AddQuoted("reason", "User not found")
 		a.RespondError(http.StatusUnauthorized, errors.New(authenticationFailedMessage))
 		return

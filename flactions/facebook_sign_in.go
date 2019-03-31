@@ -40,30 +40,22 @@ func (a *FacebookSignIn) Perform() {
 		return
 	}
 
-	user, err := a.Repository().FindUserForFacebookSignIn(a.ID, a.Email)
-	if err != nil {
-		a.ServerError(err)
-		return
-	}
-
-	now := a.Now()
-	if user.ID > 0 {
-		updates := flentities.User{Name: &a.Name, FacebookID: &a.ID, LastSignedIn: &now}
-		err = a.Repository().Model(user).Updates(updates).Error
-	} else {
-		user.Email = a.Email
-		user.Name = &a.Name
-		user.FacebookID = &a.ID
-		user.LastSignedIn = &now
-		err = a.Repository().Create(user).Error
-	}
-
+	users := flentities.UsersRepository{Repository: a.Repository()}
+	user, err := users.FacebookSignIn(a.claims(), a.Now())
 	if err != nil {
 		a.ServerError(err)
 		return
 	}
 
 	a.createSession(user)
+}
+
+func (a *FacebookSignIn) claims() map[string]string {
+	return map[string]string{
+		"email":      a.Email,
+		"name":       a.Name,
+		"facebookID": a.ID,
+	}
 }
 
 // NewFacebookSignIn creates a new FacebookSignIn instance

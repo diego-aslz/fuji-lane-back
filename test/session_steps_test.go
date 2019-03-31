@@ -14,11 +14,12 @@ var currentSession *flentities.Session
 
 func iAmAuthenticatedWith(email string) error {
 	return flentities.WithRepository(func(r *flentities.Repository) error {
-		user, err := r.FindUserByEmail(email)
+		user := &flentities.User{}
+		found, err := r.FindBy(user, map[string]interface{}{"email": email})
 		if err != nil {
 			return err
 		}
-		if user.ID == 0 {
+		if !found {
 			return fmt.Errorf("User not found: %s", email)
 		}
 

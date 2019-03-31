@@ -11,6 +11,8 @@ const (
 
 	// FacebookSignInPath for Facebook sign in
 	FacebookSignInPath = "/sign_in/facebook"
+	// GoogleSignInPath for Google sign in
+	GoogleSignInPath = "/sign_in/google"
 	// RenewSessionPath use used to get a new session and a new token
 	RenewSessionPath = "/renew_session"
 	// SignInPath for email sign in
@@ -99,6 +101,7 @@ func (a *Application) routeAuthentication(e *gin.Engine) {
 
 	a.route(e.GET, RenewSessionPath, flactions.NewSessionsRenew, withRepository, loadSession, requireUser)
 	a.route(e.POST, FacebookSignInPath, a.facebookSignIn, withRepository, parseBody)
+	a.route(e.POST, GoogleSignInPath, a.googleSignIn, withRepository)
 	a.route(e.POST, SignInPath, flactions.NewSignIn, withRepository, parseBody)
 	a.route(e.POST, SignUpPath, flactions.NewSignUp, withRepository, parseBody)
 }
@@ -149,6 +152,10 @@ func (a *Application) newContext(c *gin.Context) *Context {
 
 func (a *Application) facebookSignIn(c flactions.Context) flactions.Action {
 	return flactions.NewFacebookSignIn(a.FacebookClient, c)
+}
+
+func (a *Application) googleSignIn(c flactions.Context) flactions.Action {
+	return flactions.NewGoogleSignIn(a.GoogleAuth, c)
 }
 
 func (a *Application) imagesCreate(c flactions.Context) flactions.Action {

@@ -80,6 +80,12 @@
   version = "v1.0.0"
 
 [[projects]]
+  branch = "master"
+  name = "github.com/futurenda/google-auth-id-token-verifier"
+  packages = ["."]
+  revision = "2a5b89f28b7e414a23e04fdf768f14740a4ec2ed"
+
+[[projects]]
   name = "github.com/garyburd/redigo"
   packages = [
     "internal",
@@ -287,6 +293,12 @@
 
 [[projects]]
   branch = "master"
+  name = "golang.org/x/oauth2"
+  packages = ["jws"]
+  revision = "c85d3e98c914e3a33234ad863dcbff5dbc425bb8"
+
+[[projects]]
+  branch = "master"
   name = "golang.org/x/sys"
   packages = ["unix"]
   revision = "4910a1d54f876d7b22162a85f4d066d3ee649450"
@@ -306,6 +318,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "83509ed18584d4d6e4144baf377865c0f6e2241b2df9082dea6c3f620e3f2c40"
+  inputs-digest = "c89b10671008b3821001cb2a5a4650decc46eac892b07dc169c279753ee5c759"
   solver-name = "gps-cdcl"
   solver-version = 1

@@ -70,3 +70,7 @@
 [[constraint]]
   branch = "master"
   name = "github.com/jrallison/go-workers"
+
+[[constraint]]
+  branch = "master"
+  name = "github.com/futurenda/google-auth-id-token-verifier"

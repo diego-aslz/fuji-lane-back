@@ -97,7 +97,8 @@ func (c *Context) parseBodyOrFail(dst interface{}) bool {
 	return err == nil
 }
 
-func (c *Context) getHeader(key string) string {
+// GetHeader returns a request HTTP header
+func (c *Context) GetHeader(key string) string {
 	values := c.Request.Header[key]
 	if len(values) == 0 {
 		return ""

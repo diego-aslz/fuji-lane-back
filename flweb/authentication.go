@@ -35,7 +35,7 @@ func (c *Context) unauthorized(msg ...string) {
 
 func loadSession(next contextFunc) contextFunc {
 	return func(c *Context) {
-		auth := c.getHeader("Authorization")
+		auth := c.GetHeader("Authorization")
 
 		if auth == "" {
 			c.Diagnostics().AddQuoted("session_info", "No authentication token provided")
@@ -54,13 +54,14 @@ func loadSession(next contextFunc) contextFunc {
 				return
 			}
 
-			user, err := c.repository.FindUserByEmail(session.Email)
+			user := &flentities.User{}
+			found, err := c.repository.FindBy(user, map[string]interface{}{"email": session.Email})
 			if err != nil {
 				c.Diagnostics().AddJSON("session", session).AddErrorAs("session_user_load_failed", err)
 				return
 			}
 
-			if user == nil || user.ID == 0 {
+			if !found {
 				c.Diagnostics().AddJSON("session", session).AddQuoted("session_warn", "User not found")
 			} else {
 				c.session = session

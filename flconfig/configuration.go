@@ -30,6 +30,7 @@ type Configuration struct {
 	DatabaseURL              string
 	FacebookAppID            string
 	FacebookClientToken      string
+	GoogleAuthAppID          string
 	JobsStatsPort            int
 	MaxImageSizeMB           int
 	RedisURL                 string
@@ -65,6 +66,7 @@ func LoadConfiguration() {
 		DatabaseURL:              os.Getenv("DATABASE_URL"),
 		FacebookAppID:            os.Getenv("FACEBOOK_APP_ID"),
 		FacebookClientToken:      os.Getenv("FACEBOOK_CLIENT_TOKEN"),
+		GoogleAuthAppID:          os.Getenv("GOOGLE_AUTH_APP_ID"),
 		JobsStatsPort:            getIntVar("JOBS_STATS_PORT"),
 		MaxImageSizeMB:           maxImageSize,
 		RedisURL:                 os.Getenv("REDIS_URL"),
