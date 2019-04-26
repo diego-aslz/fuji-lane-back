@@ -42,15 +42,18 @@ type PropertiesCreate struct {
 func (a *PropertiesCreate) Perform() {
 	user := a.CurrentUser()
 
-	property := &flentities.Property{
-		AccountID: *user.AccountID,
-		Name:      a.Name,
-		Address1:  a.Address1,
-		CityID:    a.CityID,
+	err := a.Repository().Where("name = ?", a.Name).Find(&flentities.Property{}).Error
+	if err != nil && !gorm.IsRecordNotFoundError(err) {
+		a.ServerError(err)
+		return
+	}
+	if err == nil {
+		a.RespondError(http.StatusUnprocessableEntity, errors.New("Name is not unique"))
+		return
 	}
 
 	city := &flentities.City{}
-	err := a.Repository().Find(city, a.CityID).Error
+	err = a.Repository().Find(city, a.CityID).Error
 
 	if gorm.IsRecordNotFoundError(err) {
 		a.RespondError(http.StatusUnprocessableEntity, errors.New("Invalid City"))
@@ -61,8 +64,13 @@ func (a *PropertiesCreate) Perform() {
 		return
 	}
 
-	property.CityID = city.ID
-	property.CountryID = city.CountryID
+	property := &flentities.Property{
+		AccountID: *user.AccountID,
+		Name:      a.Name,
+		Address1:  a.Address1,
+		CityID:    city.ID,
+		CountryID: city.CountryID,
+	}
 
 	optional.Update(a.PropertiesCreateBody, property)
 

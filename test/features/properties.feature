@@ -39,6 +39,21 @@ Feature: Properties Management
       | address is required |
       | city is required    |
 
+  Scenario: Creating a new property with existing name
+    Given the following properties:
+      | ID | Account          | Name          | City  | Country |
+      | 1  | Diego Apartments | ACME Downtown | Osaka | Japan   |
+    When I create the following property:
+      | Name       | ACME Downtown                |
+      | Overview   | <strong>Good place!</strong> |
+      | Address1   | Add. One                     |
+      | CityID     | 3                            |
+      | PostalCode | 223344                       |
+      | Latitude   | 34.69374                     |
+      | Longitude  | 135.50218                    |
+    Then I should receive a "UNPROCESSABLE ENTITY" response with the following errors:
+      | Name is not unique |
+
   Scenario: Adding a new property without having an Account
     Given the following users:
       | Email                | Name             |
