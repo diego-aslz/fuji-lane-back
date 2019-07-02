@@ -290,17 +290,11 @@ func float64PtrParser(raw string) (interface{}, error) {
 }
 
 func float64Parser(raw string) (interface{}, error) {
-	var f float64
 	if raw == "" {
-		return f, nil
+		return nil, nil
 	}
 
-	f, err := strconv.ParseFloat(raw, 64)
-	if err != nil {
-		return f, err
-	}
-
-	return f, nil
+	return strconv.ParseFloat(raw, 64)
 }
 
 func uintPtrParser(raw string) (interface{}, error) {

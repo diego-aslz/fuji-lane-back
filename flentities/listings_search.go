@@ -215,9 +215,9 @@ func (s ListingsSearch) addMetadata(unitConditions *gorm.DB, result *ListingsSea
 		") best_price ON best_price.unit_id = units.id"
 
 	selects := "COUNT(distinct units.property_id)"
-	selects += ", COALESCE(ROUND(MIN(" + PerNightPriceSQL + ")), 0)"
-	selects += ", COALESCE(ROUND(MAX(" + PerNightPriceSQL + ")), 0)"
-	selects += ", COALESCE(ROUND(AVG(" + PerNightPriceSQL + ")), 0)"
+	selects += ", COALESCE(ROUND(MIN(" + PerNightPriceSQL + ")), 0)::INTEGER"
+	selects += ", COALESCE(ROUND(MAX(" + PerNightPriceSQL + ")), 0)::INTEGER"
+	selects += ", COALESCE(ROUND(AVG(" + PerNightPriceSQL + ")), 0)::INTEGER"
 
 	rows, err := unitConditions.
 		Model(&Unit{}).
