@@ -2,6 +2,7 @@ package fljobs
 
 import (
 	"fmt"
+	"net/url"
 	"strings"
 
 	workers "github.com/jrallison/go-workers"
@@ -60,14 +61,31 @@ func (a *WorkersAdapter) Work() error {
 }
 
 func configureWorkers(uri string) {
-	workers.Configure(map[string]string{
-		// location of redis instance
-		"server": uri,
-		// number of connections to keep open with redis
-		"pool": "10",
-		// unique process id for this instance of workers (for proper recovery of inprogress jobs on crash)
-		"process": "1",
-	})
+	u, err := url.Parse(uri)
+	if err != nil {
+		panic(err)
+	}
+
+	workers.Configure(getConfig(u))
+}
+
+func getConfig(u *url.URL) map[string]string {
+	config := map[string]string{
+		"server":   u.Host,
+		"database": strings.Trim(u.Path, "/"),
+		"pool":     "10",
+		"process":  "1",
+	}
+
+	for k, v := range u.Query() {
+		config[k] = v[0]
+	}
+
+	if pass, exists := u.User.Password(); exists {
+		config["password"] = pass
+	}
+
+	return config
 }
 
 // NewWorkersAdapter creates a new GoWorkerAdapter
@@ -75,11 +93,6 @@ func NewWorkersAdapter() *WorkersAdapter {
 	uri := flconfig.Config.RedisURL
 	if uri == "" {
 		panic(fmt.Errorf("REDIS_URL is not defined"))
-	}
-
-	protocol := "redis://"
-	if strings.Index(uri, protocol) == 0 {
-		uri = uri[len(protocol):]
 	}
 
 	configureWorkers(uri)
