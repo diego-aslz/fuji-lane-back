@@ -1,8 +1,5 @@
 dependencies:
-	go get github.com/golang/dep/cmd/dep
-	dep ensure -v
-
-	go get github.com/DATA-DOG/godog/cmd/godog
+	go mod download
 
 migrate:
 	go run cmd/migrate/main.go
