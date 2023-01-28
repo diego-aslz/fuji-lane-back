@@ -1,6 +1,8 @@
 package fujilane
 
-import "os"
+import (
+	"os"
+)
 
 const projectPath = "github.com/nerde/fuji-lane-back"
 
