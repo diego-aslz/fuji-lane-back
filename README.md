@@ -29,7 +29,7 @@ If you need credentials you'll have to ask a co-worker for them.
 - Install dependencies: `make dependencies`.
 - Migrating the database: `make migrate`. For test database, use `STAGE=test make migrate`.
 - Run all the tests: `make feature`.
-- Run the web server: `make server`.
+- Run the web server: `APP_ROOT=. REDIS_URL=http://localhost:6379 make server`.
 
 ## Facebook Authentication
 
